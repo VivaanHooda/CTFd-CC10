@@ -109,7 +109,7 @@
     font-variant-numeric: lining-nums;
   }
 
-  /* ===== Challenge cards: spotlight cards, after ~/CTFd ===== */
+  /* ===== Challenge cards: laurel wreath around the points (Figma 6:2 / 6:73) ===== */
   /* cancel the stock theme's glow so cards sit flat until hovered */
   [data-bs-theme] .challenge-button { box-shadow: none; }
   .challenge-button {
@@ -117,10 +117,16 @@
     overflow: hidden;
     --mouse-x: 50%;
     --mouse-y: 50%;
-    --spotlight-color: rgba(217, 181, 107, 0.12);
-    border: 1px solid #222 !important;
-    background-color: #0f1216 !important;
-    border-radius: 0.75rem !important;
+    --spotlight-color: rgba(var(--acc-rgb), 0.1);
+    --stem: rgba(var(--acc-rgb), 0.35);
+    --leaf-fill: none;
+    --leaf-stroke: rgba(var(--acc-rgb), 0.5);
+    min-height: 180px;
+    padding: 17px 1rem 46px !important;
+    border: 1px solid rgba(var(--acc-rgb), 0.28) !important;
+    border-radius: 14px !important;
+    background: #000 !important;
+    color: #f4ecdc !important;
     transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
   }
 
@@ -136,123 +142,137 @@
     border-radius: inherit;
   }
 
-  .challenge-button:hover::before {
-    opacity: 1;
-  }
+  .challenge-button:hover::before { opacity: 1; }
 
   .challenge-button:hover {
-    border-color: rgba(217, 181, 107, 0.3) !important;
-    box-shadow: 0 0 20px rgba(217, 181, 107, 0.08);
+    border-color: rgba(var(--acc-rgb), 0.5) !important;
+    box-shadow: 0 0 20px rgba(var(--acc-rgb), 0.08);
     transform: translateY(-2px);
   }
 
+  .challenge-button:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+  .challenge-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* wreath: two laurels framing the value, POINTS tucked between their stems */
+  .chal-wreath {
+    position: relative;
+    width: 150px;
+    height: 48px;
+    flex: none;
+  }
+
+  .chal-laurel {
+    position: absolute;
+    top: 0;
+    width: 29.684px;
+    height: 51.544px;
+    overflow: visible;
+  }
+
+  .chal-laurel.is-left { left: 13.5px; transform: scaleX(-1); }
+  .chal-laurel.is-right { right: 13.5px; }
+
+  .chal-value {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    font-family: 'Voyage Display', Marcellus, Georgia, serif;
+    font-size: 22px;
+    line-height: 1.2;
+    color: rgba(244, 236, 220, 0.9);
+    font-variant-numeric: lining-nums;
+  }
+
+  .chal-points {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    padding-left: 0.3em;
+    font-family: 'Voyage Display', Marcellus, Georgia, serif;
+    font-size: 8px;
+    line-height: 1.2;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(244, 236, 220, 0.5);
+  }
+
+  .chal-name {
+    margin: 16px 0 0;
+    font-family: 'Voyage Uncial', 'Voyage Display', serif;
+    font-size: 28px;
+    line-height: 1.25;
+    color: #f4ecdc;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .chal-rule {
+    display: block;
+    width: 180px;
+    max-width: 100%;
+    height: 1px;
+    margin-top: 16px;
+    background: linear-gradient(90deg, rgba(var(--acc-rgb), 0), rgba(var(--acc-rgb), 0.12), rgba(var(--acc-rgb), 0));
+  }
+
+  .chal-band { display: none; }
+
+  /* ----- solved: CTFd's challenge-solved state ----- */
   .challenge-button.challenge-solved {
-    --spotlight-color: rgba(217, 181, 107, 0.24);
-    border-color: rgba(217, 181, 107, 0.7) !important;
-    background:
-      linear-gradient(#0f1216, #0f1216) padding-box,
-      linear-gradient(120deg, #d9b56b, #f1d79c, #d9b56b) border-box !important;
-    animation: solvedGlow 2s ease-in-out infinite;
-  }
-
-  .challenge-button.challenge-solved.solved-tier-rookie {
-    border-color: rgba(217, 181, 107, 0.75) !important;
-    background:
-      linear-gradient(#0f1216, #0f1216) padding-box,
-      linear-gradient(120deg, #d9b56b, #b98f4c, #d9b56b) border-box !important;
-  }
-
-  .challenge-button.challenge-solved.solved-tier-elite {
-    border-color: rgba(241, 215, 156, 0.85) !important;
-    background:
-      linear-gradient(#0f1216, #0f1216) padding-box,
-      linear-gradient(120deg, #f1d79c, #f6e3b4, #d9b56b) border-box !important;
-  }
-
-  .challenge-button.challenge-solved.solved-tier-legendary {
-    border-color: rgba(255, 196, 0, 0.95) !important;
-    background:
-      linear-gradient(#0f1216, #0f1216) padding-box,
-      linear-gradient(120deg, #ffd54d, #ff9f1c, #ffe27a) border-box !important;
+    --spotlight-color: rgba(var(--acc-rgb), 0.18);
+    --stem: var(--acc-light);
+    --leaf-fill: var(--acc-light);
+    --leaf-stroke: none;
+    padding: 12px 1rem 50px !important;
+    border: 1.5px solid rgba(var(--acc-rgb), 0.9) !important;
+    box-shadow: 0 0 28px rgba(var(--acc-rgb), 0.3);
   }
 
   .challenge-button.challenge-solved:hover {
-    border-color: rgba(217, 181, 107, 0.95) !important;
-    box-shadow: 0 0 24px rgba(217, 181, 107, 0.45), 0 0 34px rgba(241, 215, 156, 0.28);
-    transform: translateY(-3px) scale(1.01);
+    border-color: var(--acc-light) !important;
+    box-shadow: 0 0 34px rgba(var(--acc-rgb), 0.42);
   }
 
-  .challenge-button.challenge-solved::after {
-    content : 'SOLVED';
+  .challenge-solved .chal-wreath { filter: drop-shadow(0 0 5px rgba(var(--acc-rgb), 0.6)); }
+  .challenge-solved .chal-value { color: #fbf3e2; }
+  .challenge-solved .chal-points { color: rgba(var(--acc-rgb), 0.7); }
+
+  .challenge-solved .chal-name {
+    margin-top: 12px;
+    font-size: 30px;
+    color: var(--acc-light);
+    text-shadow: 0 0 14px rgba(var(--acc-rgb), 0.5);
+  }
+
+  .challenge-solved .chal-rule { display: none; }
+
+  .challenge-solved .chal-band {
     position: absolute;
-    top: 5px;
-    right: 6px;
-    padding: 2px 8px;
-    border-radius: 999px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9em;
+    height: 34px;
+    padding-left: 0.34em;
+    background: linear-gradient(90deg, #b98f4c, #f2d9a2 50%, #b98f4c);
+    font-family: 'Voyage Display', Marcellus, Georgia, serif;
     font-size: 10px;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-    font-family: 'Lato', system-ui, sans-serif;
-    color: #14100a;
-    background: linear-gradient(90deg, #d9b56b, #f1d79c);
-    box-shadow: 0 0 14px rgba(217, 181, 107, 0.45);
-    z-index: 2;
-  }
-
-  .challenge-button.challenge-solved.solved-tier-elite::after {
-    background: linear-gradient(90deg, #f1d79c, #f6e3b4);
-  }
-
-  .challenge-button.challenge-solved.solved-tier-legendary::after {
-    color: #2a1700;
-    background: linear-gradient(90deg, #ffd54d, #ffb703);
-    box-shadow: 0 0 16px rgba(255, 183, 3, 0.55);
-  }
-
-  .challenge-button.challenge-solved .challenge-inner::before {
-    content: '';
-    position: absolute;
-    top: -30%;
-    left: -120%;
-    width: 70%;
-    height: 180%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transform: skewX(-20deg);
-    animation: solvedShimmer 3.6s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  .challenge-button.challenge-solved .challenge-inner p,
-  .challenge-button.challenge-solved .challenge-inner span {
-    color: #fbf3e2;
-    text-shadow: 0 0 10px rgba(217, 181, 107, 0.2);
-  }
-
-  @keyframes solvedGlow {
-    0% {
-      box-shadow: 0 0 10px rgba(217, 181, 107, 0.22), inset 0 0 0 rgba(217, 181, 107, 0.02);
-    }
-    50% {
-      box-shadow: 0 0 24px rgba(217, 181, 107, 0.45), inset 0 0 18px rgba(241, 215, 156, 0.08);
-    }
-    100% {
-      box-shadow: 0 0 10px rgba(217, 181, 107, 0.22), inset 0 0 0 rgba(217, 181, 107, 0.02);
-    }
-  }
-
-  @keyframes solvedShimmer {
-    0%,
-    65% {
-      left: -120%;
-      opacity: 0;
-    }
-    75% {
-      opacity: 0.45;
-    }
-    100% {
-      left: 140%;
-      opacity: 0;
-    }
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--acc-ink);
   }
 
   .challenge-button.solve-burst {
@@ -312,39 +332,11 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .challenge-button.challenge-solved,
-    .challenge-button.challenge-solved .challenge-inner::before,
     .challenge-button.solve-burst,
     .challenge-button .solve-particle {
       animation: none !important;
     }
   }
-
-  .challenge-inner {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* card text */
-  .challenge-button .challenge-inner p {
-    margin: 0 0 0.35rem;
-    font-family: 'Voyage Serif', Georgia, serif;
-    font-weight: 500;
-    font-size: 1.25rem;
-    line-height: 1.25;
-    color: #f4ecdc;
-    font-variant-numeric: lining-nums;
-    overflow-wrap: anywhere;
-    white-space: normal;
-  }
-  .challenge-button .challenge-inner span {
-    font-family: 'Voyage Display', Georgia, serif;
-    font-size: 1rem;
-    letter-spacing: 0.08em;
-    color: rgba(244, 236, 220, 0.6);
-  }
-  .challenge-button { color: #f4ecdc !important; min-height: 120px; }
-  .challenge-button:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
 
   .spinner { color: var(--acc); opacity: 0.6; }
 
@@ -360,6 +352,28 @@
 {% endblock %}
 
 {% block content %}
+<svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+  <symbol id="chal-laurel" viewBox="0 0 29.684 51.5437">
+    <g style="fill: var(--stem)">
+      <rect x="7.19253" y="46" width="11.5907" height="1" transform="rotate(-59.6282 7.19253 46)"/>
+      <rect x="13.0529" y="36" width="11.2009" height="1" transform="rotate(-63.2251 13.0529 36)"/>
+      <rect x="18.0988" y="26" width="10.6048" height="1" transform="rotate(-70.5567 18.0988 26)"/>
+      <rect x="21.6288" y="16" width="10.1154" height="1" transform="rotate(-81.3368 21.6288 16)"/>
+    </g>
+    <g style="fill: var(--leaf-fill); stroke: var(--leaf-stroke); stroke-width: 0.75">
+      <ellipse cx="6.20324" cy="45.7718" rx="2.5" ry="6" transform="rotate(50 6.20324 45.7718)"/>
+      <ellipse cx="5.16026" cy="42.1485" rx="2.5" ry="6" transform="rotate(-15 5.16026 42.1485)"/>
+      <ellipse cx="12.7097" cy="36.063" rx="2.5" ry="6" transform="rotate(43.75 12.7097 36.063)"/>
+      <ellipse cx="11.2414" cy="31.9705" rx="2.5" ry="6" transform="rotate(-17.5 11.2414 31.9705)"/>
+      <ellipse cx="18.4296" cy="26.282" rx="2.5" ry="6" transform="rotate(37.5 18.4296 26.282)"/>
+      <ellipse cx="16.5001" cy="21.7831" rx="2.5" ry="6" transform="rotate(-20 16.5001 21.7831)"/>
+      <ellipse cx="22.6535" cy="16.4264" rx="2.5" ry="6" transform="rotate(31.25 22.6535 16.4264)"/>
+      <ellipse cx="20.2346" cy="11.5866" rx="2.5" ry="6" transform="rotate(-22.5 20.2346 11.5866)"/>
+      <ellipse cx="24.8826" cy="6.49439" rx="2.5" ry="6" transform="rotate(25 24.8826 6.49439)"/>
+    </g>
+  </symbol>
+</svg>
+
 <header class="page-head">
   <h1 class="page-title">{% trans %}Challenges{% endtrans %}</h1>
   <p class="page-sub">Every challenge brings you closer to home.</p>
@@ -399,17 +413,23 @@
                     class="challenge-button btn btn-dark w-100 h-100"
                     :class="[
                       c.solved_by_me ? 'challenge-solved' : '',
-                      c.solved_by_me ? (c.value >= 500 ? 'solved-tier-legendary' : (c.value >= 250 ? 'solved-tier-elite' : 'solved-tier-rookie')) : '',
                       ...c.tags.map((tag) => `tag-${tag.value.replace(/ /g, '-')}`),
                     ];"
                     :data-challenge-id="c.id"
                     :data-solved="c.solved_by_me ? '1' : '0'"
                     :value="c.id" @click="loadChallenge(c.id)"
                 >
-                  <div class="challenge-inner my-3">
-                    <p x-text="c.name"></p>
-                    <span x-text="c.value"></span>
+                  <div class="challenge-inner">
+                    <div class="chal-wreath">
+                      <svg class="chal-laurel is-left" viewBox="0 0 29.684 51.5437" aria-hidden="true"><use href="#chal-laurel"></use></svg>
+                      <span class="chal-value" x-text="c.value"></span>
+                      <svg class="chal-laurel is-right" viewBox="0 0 29.684 51.5437" aria-hidden="true"><use href="#chal-laurel"></use></svg>
+                      <span class="chal-points">{% trans %}Points{% endtrans %}</span>
+                    </div>
+                    <p class="chal-name" x-text="c.name"></p>
+                    <span class="chal-rule" aria-hidden="true"></span>
                   </div>
+                  <span class="chal-band">&#10003; {% trans %}Conquered{% endtrans %}</span>
                 </button>
               </div>
             </template>
