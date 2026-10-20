@@ -1,68 +1,538 @@
 {% extends "base.html" %}
 
+{% block stylesheets %}
+{{ super() }}
+<style>
+  @font-face {
+    font-family: 'Voyage Serif';
+    src: url('{{ url_for("views.themes", path="webfonts/cormorant-italic.woff2") }}') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  :root {
+    --v-gold: var(--acc);
+    --v-gold-light: var(--acc-light);
+    --v-ivory: #f4ecdc;
+    --v-line: rgba(var(--acc-rgb), 0.18);
+    --m-gold: #e8c77e;
+    --m-silver: #c9d1d6;
+    --m-bronze: #c0874a;
+  }
+
+  html,
+  body {
+    background: #000;
+  }
+
+  body {
+    color: var(--v-ivory);
+    background:
+      radial-gradient(60% 40% at 50% 0%, rgba(var(--acc-rgb), 0.09), transparent 70%),
+      #000;
+    background-attachment: fixed;
+  }
+
+  .footer .text-muted {
+    color: rgba(244, 236, 220, 0.35) !important;
+  }
+
+  /* ===== Header ===== */
+  .hall-head {
+    padding: 3.2rem 1rem 2rem;
+    text-align: center;
+  }
+
+  .hall-title {
+    margin: 0 0 1.1rem;
+    font-family: 'Voyage Title', serif;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--v-gold-light);
+    text-shadow: 0 6px 30px rgba(0, 0, 0, 0.8);
+  }
+
+  .hall-sub {
+    margin: 0;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    color: rgba(244, 236, 220, 0.75);
+  }
+
+  /* Greek key divider, fading at both ends */
+  .hall-key {
+    width: 240px;
+    height: 8px;
+    margin: 1.6rem auto 0;
+    background:
+      linear-gradient(90deg, #000 0%, transparent 25%, transparent 75%, #000 100%),
+      var(--v-gold);
+    opacity: 0.65;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 16 8'%3E%3Cpath d='M0 7.4H16M4 7.4V.8h9.4v4.4H7V3h2.8' fill='none' stroke='%23000' stroke-width='1.1'/%3E%3C/svg%3E") repeat-x center / 16px 8px;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 16 8'%3E%3Cpath d='M0 7.4H16M4 7.4V.8h9.4v4.4H7V3h2.8' fill='none' stroke='%23000' stroke-width='1.1'/%3E%3C/svg%3E") repeat-x center / 16px 8px;
+  }
+
+  .hall {
+    max-width: 1080px;
+    padding-bottom: 4rem;
+  }
+
+  /* ===== Brackets ===== */
+  .hall-brackets {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 2.2rem;
+    padding: 4px;
+    border: 1px solid rgba(var(--acc-rgb), 0.32);
+    border-radius: 999px;
+    background: rgba(7, 6, 5, 0.9);
+  }
+
+  .hall-brackets button {
+    height: 34px;
+    padding: 0 1rem 0 calc(1rem + 0.2em);
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(244, 236, 220, 0.6);
+    transition: color 0.25s ease, background 0.25s ease;
+  }
+
+  .hall-brackets button:hover {
+    color: var(--v-ivory);
+  }
+
+  .hall-brackets button.active {
+    background: var(--acc-grad);
+    color: var(--acc-ink);
+  }
+
+  /* ===== Chart ===== */
+  .hall-panel {
+    margin-bottom: 2.4rem;
+    padding: 1.2rem 1.2rem 0.4rem;
+    border: 1px solid var(--v-line);
+    border-radius: 18px;
+    background: rgba(10, 9, 7, 0.85);
+  }
+
+  .hall-panel-label {
+    margin: 0 0 0.4rem 0.4rem;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.82rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--v-gold);
+  }
+
+  #score-graph {
+    min-height: 380px;
+  }
+
+  /* hide the frame while the chart has nothing to draw */
+  .hall-panel:has(#score-graph.d-none) {
+    display: none;
+  }
+
+  /* ===== The voyage: one sea lane per hero, ship at score / leader ===== */
+  .voyage {
+    --cols: 64px minmax(150px, 230px) 1fr 90px;
+  }
+
+  .voyage-head,
+  .lane {
+    display: grid;
+    grid-template-columns: var(--cols);
+    align-items: center;
+    column-gap: 1.2rem;
+  }
+
+  .voyage-head {
+    padding: 0 0.6rem 0.6rem;
+    opacity: 0.7;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.78rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--v-gold);
+  }
+
+  .vh-rank { text-align: center; }
+  .vh-score { text-align: right; }
+
+
+  .lanes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lane {
+    --metal: rgba(244, 236, 220, 0.55);
+    --sail: rgba(244, 236, 220, 0.75);
+    position: relative;
+    min-height: 70px;
+    padding: 0 0.6rem;
+    border-radius: 999px;
+    transition: background-color 0.3s ease;
+  }
+
+  .lane:hover {
+    background: radial-gradient(60% 120% at 50% 50%, rgba(var(--acc-rgb), 0.07), transparent 75%);
+  }
+
+  .lane.place-1 { --metal: var(--m-gold); --sail: var(--m-gold); }
+  .lane.place-2 { --metal: var(--m-silver); --sail: var(--m-silver); }
+  .lane.place-3 { --metal: var(--m-bronze); --sail: var(--m-bronze); }
+
+  .lane.is-you .lane-name a {
+    color: var(--v-gold-light);
+  }
+
+  .lane-rank {
+    font-family: 'Voyage Title', serif;
+    font-size: 1.3rem;
+    text-align: center;
+    color: var(--metal);
+  }
+
+  .lane-name {
+    font-variant-numeric: lining-nums;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.12rem;
+  }
+
+  .lane-name a {
+    color: var(--v-ivory);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s ease;
+  }
+
+  .lane-name a:hover { color: var(--v-gold-light); }
+
+  .lane-score {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.12rem;
+    text-align: right;
+    font-variant-numeric: lining-nums tabular-nums;
+    color: var(--v-gold-light);
+  }
+
+  /* the sea: a dotted sailing line from Troy to Ithaca */
+  .lane-sea {
+    position: relative;
+    height: 40px;
+    margin: 0 22px 0 6px;
+  }
+
+  .lane-sea::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 1px dashed rgba(var(--acc-rgb), 0.22);
+  }
+
+  /* Ithaca waiting at the end of every lane */
+  .lane-port {
+    position: absolute;
+    right: -16px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    transform: translateY(-50%) rotate(45deg);
+    border: 1px solid rgba(var(--acc-rgb), 0.6);
+  }
+
+  .lane.place-1 .lane-port {
+    background: var(--m-gold);
+    box-shadow: 0 0 12px rgba(232, 199, 126, 0.7);
+  }
+
+  /* the golden wake left behind */
+  .lane-wake {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 2px;
+    width: calc(var(--p) * 100%);
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--metal) 85%, transparent));
+    animation: lane-sail 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i) * 70ms);
+  }
+
+  .lane-boat {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--p) * 100%);
+    width: 56px;
+    height: 26px;
+    margin: -19px 0 0 -50px;
+    animation: lane-boat 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i) * 70ms);
+  }
+
+  .lane-ship {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    animation: lane-bob 4s ease-in-out infinite;
+    animation-delay: calc(var(--i) * -0.6s);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--metal) 35%, transparent));
+  }
+
+  .lane-ship .ship-hull { fill: var(--metal); }
+  .lane-ship .ship-sail { fill: var(--sail); opacity: 0.9; }
+  .lane-ship .ship-mast,
+  .lane-ship .ship-prow,
+  .lane-ship .ship-oars {
+    fill: none;
+    stroke: var(--metal);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+  }
+
+  .lane:hover .lane-ship {
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--metal) 70%, transparent));
+  }
+
+  @keyframes lane-sail {
+    from { width: 0; }
+  }
+
+  @keyframes lane-boat {
+    from { left: 0; opacity: 0; }
+    20% { opacity: 1; }
+  }
+
+  @keyframes lane-bob {
+    0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+    50% { transform: translateY(-2px) rotate(1.5deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lane-wake, .lane-boat, .lane-ship { animation: none; }
+  }
+
+  /* shared tags */
+  .hall-you {
+    margin-left: 0.6rem;
+    padding: 0.1rem 0.55rem 0.1rem 0.7rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.5);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--v-gold);
+    vertical-align: middle;
+  }
+
+  .hall-bracket-tag {
+    margin-left: 0.6rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(244, 236, 220, 0.5);
+  }
+
+  @media (max-width: 720px) {
+    .voyage { --cols: 40px 1fr 64px; }
+    .vh-sea { display: none; }
+    .lane { grid-template-rows: auto auto; padding: 0.7rem 0.4rem 0.5rem; row-gap: 0.1rem; }
+    .lane-rank { grid-row: 1; }
+    .lane-name { grid-row: 1; grid-column: 2; font-size: 1rem; }
+    .lane-score { grid-row: 1; grid-column: 3; font-size: 1rem; }
+    .lane-sea { grid-row: 2; grid-column: 2 / 4; height: 30px; margin-right: 18px; }
+  }
+
+  .hall-empty {
+    padding: 4rem 1rem;
+    text-align: center;
+  }
+
+  .hall-empty p {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: rgba(244, 236, 220, 0.6);
+  }
+
+  .spinner { color: var(--v-gold); opacity: 0.6; }
+
+  /* ===== Night: a faint starfield over the whole hall ===== */
+  .hall-sky {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .hall-head, .hall { position: relative; z-index: 1; }
+
+  @media (max-width: 640px) {
+    #score-graph { min-height: 300px; }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>
-        {% trans %}Scoreboard{% endtrans %}
-      </h1>
-    </div>
-  </div>
-  <div class="container">
-    {% include "components/errors.html" %}
+{% set my_account = Team.id if Configs.user_mode == 'teams' else Session.id %}
+<canvas class="hall-sky" aria-hidden="true"></canvas>
+<header class="hall-head">
+  <h1 class="hall-title">Hall of Heroes</h1>
+  <p class="hall-sub">Every challenge solved is a deed remembered.</p>
+  <div class="hall-key" aria-hidden="true"></div>
+</header>
 
-    <div id="score-graph" class="align-items-center" :class="{'d-flex': show, 'd-none': !show}" x-data="ScoreboardDetail" x-ref="scoregraph" @bracket-change.window="activeBracket=$event.detail; update();">
-      <div class="col-md-12 text-center">
-        <i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
-      </div>
-    </div>
+<div class="container hall">
+  {% include "components/errors.html" %}
 
-    <div id="scoreboard" class="row" x-data="ScoreboardList">
-      <template x-if="brackets.length && standings.length">
-        <div class="col-md-12 py-3">
-          <nav class="nav nav-pills nav-fill">
-            <button :class="{'nav-link': true, 'active': !activeBracket}" @click="activeBracket=null">{% trans %}All{% endtrans %}</button>
-            <template x-for="bracket in brackets">
-              <button :class="{'nav-link': true, 'active': activeBracket == bracket.id}" x-text="bracket.name" @click="activeBracket=bracket.id"></button>
-            </template>
-          </nav>
+  <div id="scoreboard" x-data="ScoreboardList">
+    <template x-if="brackets.length && standings.length">
+      <nav class="hall-brackets" aria-label="{% trans %}Brackets{% endtrans %}">
+        <button :class="{'active': !activeBracket}" @click="activeBracket=null">{% trans %}All{% endtrans %}</button>
+        <template x-for="bracket in brackets">
+          <button :class="{'active': activeBracket == bracket.id}" x-text="bracket.name" @click="activeBracket=bracket.id"></button>
+        </template>
+      </nav>
+    </template>
+
+    <div class="hall-panel">
+      <p class="hall-panel-label">{% trans %}The course of the voyage{% endtrans %}</p>
+      <div id="score-graph" class="align-items-center" :class="{'d-flex': show, 'd-none': !show}" x-data="ScoreboardDetail" x-ref="scoregraph" @bracket-change.window="activeBracket=$event.detail; update();">
+        <div class="col-md-12 text-center">
+          <i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
         </div>
-      </template>
-
-      <div class="col-md-12" x-show="standings.length">
-        <table class="table table-striped align-middle">
-          <thead>
-          <tr>
-            <th style="width: 10px">{% trans %}Place{% endtrans %}</th>
-            <th class="text-start ps-3">{{ get_mode_as_word(capitalize=True) }}</th>
-            <th>{% trans %}Score{% endtrans %}</th>
-          </tr>
-          </thead>
-
-          <tbody>
-            <template x-for="(standing, index) in standings.filter(i => activeBracket ? i.bracket_id==activeBracket : true)">
-              <tr>
-                <th scope="row" class="text-center" x-text="index + 1"></th>
-                <td class="text-start">
-                  <a :href="standing.account_url" x-text="standing.name"></a>
-                  <template x-if="standing.bracket_name">
-                    <span class="badge bg-secondary ms-2" x-text="standing.bracket_name"></span>
-                  </template>
-                </td>
-                <td x-text="standing.score"></td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="col-md-12" x-show="! standings.length">
-        <h3 class="text-center text-muted">{% trans %}Scoreboard is empty{% endtrans %}</h3>
       </div>
     </div>
+
+    <section class="voyage" x-show="standings.length" aria-label="{% trans %}Standings{% endtrans %}">
+      <div class="voyage-head" aria-hidden="true">
+        <span class="vh-rank">{% trans %}Rank{% endtrans %}</span>
+        <span class="vh-name">{{ get_mode_as_word(capitalize=True) }}</span>
+        <span class="vh-sea"></span>
+        <span class="vh-score">{% trans %}Score{% endtrans %}</span>
+      </div>
+
+      <ol class="lanes">
+        <template x-for="(standing, index) in standings.filter(i => activeBracket ? i.bracket_id==activeBracket : true)" :key="standing.account_id">
+          <li class="lane"
+              :class="[index < 3 ? 'place-' + (index + 1) : '', standing.account_id == {{ my_account | tojson }} ? 'is-you' : '']"
+              :style="`--p: ${Math.max(0, Math.min(1, standing.score / Math.max(1, standings.filter(i => activeBracket ? i.bracket_id==activeBracket : true)[0].score)))}; --i: ${index}`">
+            <span class="lane-rank" x-text="index + 1"></span>
+            <span class="lane-name">
+              <a :href="standing.account_url" x-text="standing.name"></a>
+              <template x-if="standing.account_id == {{ my_account | tojson }}">
+                <span class="hall-you">{% trans %}You{% endtrans %}</span>
+              </template>
+              <template x-if="standing.bracket_name">
+                <span class="hall-bracket-tag" x-text="standing.bracket_name"></span>
+              </template>
+            </span>
+            <span class="lane-sea" aria-hidden="true">
+              <span class="lane-wake"></span>
+              <span class="lane-boat"><svg class="lane-ship" viewBox="0 0 64 30" aria-hidden="true"><path class="ship-sail" d="M30 3 C38 6 41 12 40 19 L22 19 C24 13 26 7 30 3 Z"/><path class="ship-mast" d="M31 2 V21"/><path class="ship-hull" d="M2 21 H58 C55 25 50 28 42 28 H14 C8 28 4 25 2 21 Z"/><path class="ship-prow" d="M58 21 C61 19 62 16 61 13"/><path class="ship-oars" d="M14 28 L11 30 M22 28 L19 30 M30 28 L27 30 M38 28 L35 30"/></svg></span>
+              <span class="lane-port"></span>
+            </span>
+            <span class="lane-score" x-text="standing.score"></span>
+          </li>
+        </template>
+      </ol>
+    </section>
+
+    <div class="hall-empty" x-show="!standings.length">
+      <p>{% trans %}No heroes yet. The first flag will carve the first name.{% endtrans %}</p>
+    </div>
   </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
   {{ Assets.js("assets/js/scoreboard.js") }}
+  <script>
+    // a faint starfield: sparse, small, slow to twinkle; still under reduced motion
+    (function () {
+      var canvas = document.querySelector(".hall-sky");
+      if (!canvas || !canvas.getContext) return;
+      var ctx = canvas.getContext("2d");
+      var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var stars = [], dpr = 1, w = 0, h = 0, frame = null;
+
+      function seed() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = window.innerWidth; h = window.innerHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var count = Math.round(w * h / 7000);
+        stars = [];
+        for (var i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            r: Math.random() < 0.08 ? 0.9 + Math.random() * 0.5 : 0.3 + Math.random() * 0.55,
+            a: 0.12 + Math.random() * 0.38,
+            s: 0.25 + Math.random() * 0.6,
+            o: Math.random() * Math.PI * 2,
+            warm: Math.random() < 0.3
+          });
+        }
+      }
+
+      function draw(t) {
+        ctx.clearRect(0, 0, w, h);
+        for (var i = 0; i < stars.length; i++) {
+          var st = stars[i];
+          var tw = still ? 1 : 0.65 + 0.35 * Math.sin(t / 1000 * st.s + st.o);
+          ctx.globalAlpha = st.a * tw;
+          ctx.fillStyle = st.warm ? "#f1d79c" : "#f4ecdc";
+          ctx.beginPath();
+          ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        if (!still) frame = requestAnimationFrame(draw);
+      }
+
+      function start() { if (frame) cancelAnimationFrame(frame); frame = null; draw(performance.now()); }
+
+      seed(); start();
+      var resizeTimer;
+      window.addEventListener("resize", function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () { seed(); start(); }, 150);
+      });
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) { if (frame) cancelAnimationFrame(frame); frame = null; }
+        else start();
+      });
+    })();
+  </script>
 {% endblock %}

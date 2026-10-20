@@ -1,61 +1,48 @@
 {% extends "base.html" %}
 
+{% block stylesheets %}
+  {{ super() }}
+  {% with auth_backdrop="img/hoplite-wide.jpg", auth_backdrop_pos="left 30%", auth_backdrop_pos_sm="12% 30%" %}{% include "components/auth_styles.html" %}{% endwith %}
+{% endblock %}
+
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>
-        {% trans %}Login{% endtrans %}
-      </h1>
-    </div>
+<div class="auth-backdrop" aria-hidden="true"></div>
+<div class="container auth">
+  <div class="auth-card">
+    <h1 class="auth-title">{% trans %}Login{% endtrans %}</h1>
+    <p class="auth-sub">Welcome back, sailor. The voyage awaits.</p>
+
+    {% include "components/errors.html" %}
+
+    {% if integrations.mlc() %}
+      <a class="auth-oauth" href="{{ url_for('auth.oauth_login') }}">Login with Major League Cyber</a>
+    {% endif %}
+
+    {% with form = Forms.auth.LoginForm() %}
+      <form method="post" accept-charset="utf-8">
+        <div class="mb-3">
+          <b>{{ form.name.label(class="form-label") }}</b>
+          {{ form.name(class="form-control", value=name, autocomplete="username email") }}
+        </div>
+
+        <div class="mb-3">
+          <b>{{ form.password.label(class="form-label") }}</b>
+          {{ form.password(class="form-control", value=password, autocomplete="current-password") }}
+        </div>
+
+        <div class="auth-row">
+          <a class="auth-forgot" href="{{ url_for('auth.reset_password') }}">{% trans %}Forgot your password?{% endtrans %}</a>
+        </div>
+
+        {{ form.submit(class="auth-submit", value='Login') }}
+
+        {{ form.nonce() }}
+      </form>
+    {% endwith %}
+
+    {% if registration_visible() %}
+      <p class="auth-switch">New to the voyage? <a href="{{ url_for('auth.register') }}">{% trans %}Register{% endtrans %}</a></p>
+    {% endif %}
   </div>
-
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 col offset-md-2 col-lg-6 offset-lg-3">
-        {% include "components/errors.html" %}
-
-        {% if integrations.mlc() %}
-          <a class="btn btn-secondary btn-lg btn-block w-100" href="{{ url_for('auth.oauth_login') }}">
-            Login with Major League Cyber
-          </a>
-
-          <hr>
-        {% endif %}
-
-        {% with form = Forms.auth.LoginForm() %}
-          <form method="post" accept-charset="utf-8">
-            <div class="mb-3">
-              <b>
-                {{ form.name.label(class="form-label") }}
-                <span class="text-danger">*</span>
-              </b>
-              {{ form.name(class="form-control", value=name, autocomplete="username email") }}
-            </div>
-
-            <div class="mb-3">
-              <b>
-                {{ form.password.label(class="form-label") }}
-                <span class="text-danger">*</span>
-              </b>
-              {{ form.password(class="form-control", value=password, autocomplete="current-password") }}
-            </div>
-
-            <div class="row pt-3">
-              <div class="col-6 col-md-8">
-                <a class="align-middle" href="{{ url_for('auth.reset_password') }}">
-                  {% trans %}Forgot your password?{% endtrans %}
-                </a>
-              </div>
-
-              <div class="col-6 col-md-4">
-                {{ form.submit(class="btn btn-block btn-primary w-100") }}
-              </div>
-            </div>
-
-            {{ form.nonce() }}
-          </form>
-        {% endwith %}
-      </div>
-    </div>
-  </div>
+</div>
 {% endblock %}

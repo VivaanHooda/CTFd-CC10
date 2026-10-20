@@ -1,0 +1,907 @@
+{% extends "base.html" %}
+
+{% block html_attrs %} data-accent="gold"{% endblock %}
+
+{% block stylesheets %}
+
+{{ Assets.css("assets/scss/main.scss") }}
+<style>
+  @font-face {
+    font-family: 'Voyage Display';
+    src: url('{{ url_for("views.themes", path="webfonts/marcellus.woff2") }}') format('woff2');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Voyage Title';
+    src: url('{{ url_for("views.themes", path="webfonts/uncial-antiqua.woff2") }}') format('woff2');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Voyage Serif';
+    src: url('{{ url_for("views.themes", path="webfonts/cormorant.woff2") }}') format('woff2');
+    font-weight: 500;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Voyage Serif';
+    src: url('{{ url_for("views.themes", path="webfonts/cormorant-italic.woff2") }}') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  :root {
+    --v-gold: var(--acc);
+    --v-gold-light: var(--acc-light);
+    --v-ivory: #f4ecdc;
+    --v-ink: #0b0f14;
+  }
+
+  .onepiece-hero {
+    background: #000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+  }
+
+  /* ===== Odysseus in torchlight ===== */
+  .vault {
+    --mx: 62%;
+    --my: 40%;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .vault__head {
+    position: absolute;
+    right: -6vw;
+    bottom: -6vh;
+    height: 108vh;
+    aspect-ratio: 1600 / 1893;
+    -webkit-mask-image: radial-gradient(70% 62% at 50% 45%, #000 55%, transparent 100%);
+    mask-image: radial-gradient(70% 62% at 50% 45%, #000 55%, transparent 100%);
+  }
+
+  .vault__head img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* the marble in darkness */
+  .vault__dark {
+    filter: brightness(0.22) contrast(1.15);
+  }
+
+  /* the marble where the torch falls */
+  .vault__lit {
+    filter: brightness(calc(1.12 * var(--flicker, 1))) sepia(0.28) saturate(1.25);
+    -webkit-mask-image: radial-gradient(circle 280px at var(--hx) var(--hy), #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
+    mask-image: radial-gradient(circle 280px at var(--hx) var(--hy), #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
+  }
+
+  /* warm glow of the flame in the air */
+  .vault__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle 520px at var(--mx) var(--my), rgba(255, 170, 80, 0.10), transparent 70%);
+    mix-blend-mode: screen;
+  }
+
+  /* Greek name carved huge into the dark */
+  .vault__carving {
+    position: absolute;
+    left: -1vw;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Voyage Display', serif;
+    font-size: 22vw;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(var(--acc-rgb), 0.045);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .hero-logo-bar {
+    position: absolute;
+    top: 2%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .logo-left,
+  .logo-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    pointer-events: none;
+  }
+
+  .logo-left img,
+  .logo-right img {
+    pointer-events: none;
+    width: auto;
+  }
+
+  .logo-left img {
+    height: clamp(56px, 6.6vw, 96px);
+  }
+
+  .logo-right img {
+    height: clamp(64px, 7.5vw, 104px);
+  }
+
+  /* ===== Title & copy ===== */
+  .event-title {
+    font-family: 'Voyage Title', 'Voyage Display', serif;
+    font-size: clamp(2.2rem, 5.2vw, 5rem);
+    white-space: nowrap;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--v-gold-light);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6), 0 8px 30px rgba(0, 0, 0, 0.85);
+    margin-bottom: 1.6rem;
+    text-align: center;
+  }
+
+  .event-rule {
+    display: block;
+    width: 72px;
+    height: 1px;
+    margin: 0 auto 1.4rem;
+    background: var(--v-gold);
+  }
+
+  .onepiece-subtitle {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+    color: var(--v-ivory);
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
+    text-align: center;
+    margin-bottom: 1.4rem;
+  }
+
+  .event-lead {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+    line-height: 1.6;
+    color: rgba(244, 236, 220, 0.9);
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+    margin: 0 auto 2.2rem;
+    max-width: 640px;
+  }
+
+  /* ===== Buttons: dark glass pills; the main one has light travelling round its rim ===== */
+  @property --gk-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    pointer-events: auto;
+  }
+
+  .gk-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+    height: 58px;
+    padding: 0 2rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.28);
+    border-radius: 999px;
+    background: rgba(18, 15, 10, 0.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: rgba(244, 236, 220, 0.85);
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    text-decoration: none;
+    pointer-events: auto;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.4s ease, transform 0.3s ease;
+  }
+
+  .gk-btn span {
+    position: relative;
+    padding-left: 0.24em; /* optically centre the tracked capitals */
+  }
+
+  .gk-btn:hover,
+  .gk-btn:focus-visible {
+    color: var(--v-gold-light);
+    border-color: rgba(var(--acc-rgb), 0.65);
+    background: rgba(var(--acc-rgb), 0.08);
+    transform: translateY(-2px);
+  }
+
+  .gk-btn:active { transform: translateY(0); }
+
+  /* the main call: a beam of gold light circling the border */
+  .gk-btn--primary {
+    padding: 0 0.45rem 0 2.1rem;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(180deg, #16120b, #0b0906) padding-box,
+      conic-gradient(from var(--gk-angle), rgba(var(--acc-rgb), 0.25) 0%, rgba(var(--acc-rgb), 0.25) 58%, #fff3d1 72%, var(--v-gold) 78%, rgba(var(--acc-rgb), 0.25) 92%) border-box;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 24px rgba(var(--acc-rgb), 0.12);
+    animation: gk-orbit 4.5s linear infinite;
+  }
+
+  .gk-btn--primary span {
+    background: linear-gradient(180deg, #fbe7b8, #d9b56b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .gk-chip {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--acc-grad);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 4px 14px rgba(var(--acc-rgb), 0.3);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+  }
+
+  .gk-chip svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--acc-ink);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .gk-btn--primary:hover,
+  .gk-btn--primary:focus-visible {
+    background:
+      linear-gradient(180deg, #1b160d, #0e0b07) padding-box,
+      conic-gradient(from var(--gk-angle), rgba(var(--acc-rgb), 0.4) 0%, rgba(var(--acc-rgb), 0.4) 50%, #fff3d1 70%, var(--v-gold) 80%, rgba(var(--acc-rgb), 0.4) 95%) border-box;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 0 34px rgba(var(--acc-rgb), 0.28);
+  }
+
+  .gk-btn--primary:hover .gk-chip,
+  .gk-btn--primary:focus-visible .gk-chip {
+    transform: scale(1.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 22px rgba(var(--acc-rgb), 0.6);
+  }
+
+  .gk-btn--primary:hover .gk-chip svg,
+  .gk-btn--primary:focus-visible .gk-chip svg { transform: translateX(3px); }
+
+  @keyframes gk-orbit {
+    to { --gk-angle: 360deg; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gk-btn--primary { animation: none; --gk-angle: 200deg; }
+  }
+
+  .gk-btn:focus-visible {
+    outline: 1px solid var(--v-gold-light);
+    outline-offset: 5px;
+  }
+
+  @media (max-width: 768px) {
+    .hero-logo-bar {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 0 1rem;
+    }
+
+    .logo-left img {
+      height: clamp(34px, 10vw, 50px);
+    }
+
+    .logo-right img {
+      height: clamp(48px, 13vw, 70px);
+    }
+
+    .btn-voyage {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+
+  /* ===== General ===== */
+  body,
+  html {
+    background: #000;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    scrollbar-width: none;
+  }
+
+  #particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: auto;
+  }
+
+  .onepiece-hero .container {
+    position: relative;
+    z-index: 1;
+    padding-top: clamp(70px, 15vw, 80px);
+  }
+
+  .hero-copy {
+    max-width: 760px;
+    text-align: left;
+  }
+
+  .hero-copy .event-title,
+  .hero-copy .onepiece-subtitle {
+    text-align: left;
+  }
+
+  .hero-copy .event-rule {
+    margin-left: 0;
+  }
+
+  .hero-copy .event-lead {
+    margin-left: 0;
+  }
+
+  .hero-kicker {
+    margin-bottom: 1.2rem;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--v-gold);
+  }
+
+  @media (max-width: 991px) {
+    .vault__head {
+      right: 50%;
+      transform: translateX(50%);
+      bottom: auto;
+      top: 6vh;
+      height: 70vh;
+      opacity: 0.85;
+    }
+
+    .vault__carving {
+      display: none;
+    }
+
+    .hero-kicker {
+      font-size: 0.66rem;
+      letter-spacing: 0.22em;
+    }
+
+    .hero-copy {
+      margin: 42vh auto 0;
+      text-align: center;
+    }
+
+    .hero-copy .event-title,
+    .hero-copy .onepiece-subtitle {
+      text-align: center;
+    }
+
+    .hero-copy .event-rule,
+    .hero-copy .event-lead {
+      margin-left: auto;
+    }
+
+    .hero-actions {
+      justify-content: center;
+    }
+
+
+  }
+
+  /* ===== Fit the homepage to one screen: no scrolling ===== */
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  .footer {
+    display: none !important;
+  }
+
+  .onepiece-hero {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  /* logos sit just under the floating navbar */
+  .hero-logo-bar {
+    top: 76px;
+  }
+
+  .logo-left img {
+    height: clamp(40px, min(6.6vw, 9vh), 96px);
+  }
+
+  .logo-right img {
+    height: clamp(52px, min(7.5vw, 10vh), 104px);
+  }
+
+  .vault__head {
+    height: min(108vh, 128vw);
+  }
+
+  .onepiece-hero .container {
+    padding-top: 60px;
+  }
+
+  /* type scales with whichever is tighter, width or height */
+  .hero-kicker {
+    font-size: clamp(0.7rem, min(0.95rem, 1.7vh), 0.95rem);
+    margin-bottom: min(1.2rem, 1.8vh);
+  }
+
+  .event-title {
+    font-size: clamp(1.9rem, min(5.2vw, 9vh), 5rem);
+    margin-bottom: min(1.6rem, 2.6vh);
+  }
+
+  .onepiece-subtitle {
+    font-size: clamp(1.05rem, min(2.6vw, 3.4vh), 1.9rem);
+    margin-bottom: min(1.4rem, 2.2vh);
+  }
+
+  .event-lead {
+    font-size: clamp(0.92rem, min(1.7vw, 2.5vh), 1.35rem);
+    margin-bottom: min(2.2rem, 3.6vh);
+  }
+
+  .gk-btn {
+    height: clamp(50px, 6.8vh, 58px);
+  }
+
+  .gk-chip {
+    width: clamp(38px, 5.4vh, 46px);
+    height: clamp(38px, 5.4vh, 46px);
+  }
+
+  @media (max-width: 991px) {
+    .hero-logo-bar {
+      top: 66px;
+    }
+
+    .vault__head {
+      top: calc(66px + 4vh);
+      height: min(44vh, 100vw);
+    }
+
+    .hero-copy {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 4vh;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    .onepiece-hero .container {
+      position: static;
+      padding-top: 0;
+    }
+
+    .event-title {
+      font-size: clamp(1.4rem, min(7.2vw, 6.4vh), 3.4rem);
+    }
+
+    .onepiece-subtitle {
+      font-size: clamp(1rem, min(4.6vw, 3vh), 1.5rem);
+    }
+
+    .event-lead {
+      font-size: clamp(0.88rem, min(3.9vw, 2.2vh), 1.15rem);
+      line-height: 1.5;
+    }
+  }
+
+  /* desktop, laid out like the poster: Odysseus centred above, the words centred beneath him */
+  @media (min-width: 992px) {
+    .vault__carving {
+      display: none;
+    }
+
+    .vault__head {
+      right: 50%;
+      bottom: auto;
+      top: calc(76px - 2vh);
+      height: min(62vh, 74vw);
+      transform: translateX(50%);
+      -webkit-mask-image: radial-gradient(64% 58% at 50% 44%, #000 50%, transparent 100%);
+      mask-image: radial-gradient(64% 58% at 50% 44%, #000 50%, transparent 100%);
+    }
+
+    .onepiece-hero .container {
+      position: static;
+      padding-top: 0;
+    }
+
+    .hero-copy {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 4.5vh;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      text-align: center;
+    }
+
+    .hero-copy .event-title,
+    .hero-copy .onepiece-subtitle {
+      text-align: center;
+    }
+
+    .hero-copy .event-lead {
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-actions {
+      justify-content: center;
+    }
+
+    .event-title {
+      font-size: clamp(2.4rem, min(5.4vw, 8vh), 5.4rem);
+    }
+
+    .event-lead {
+      font-size: clamp(0.95rem, min(1.4vw, 2.2vh), 1.25rem);
+      line-height: 1.55;
+    }
+  }
+
+  /* very short screens (e.g. landscape phones): drop the long paragraph */
+  @media (max-height: 560px) {
+    .event-lead {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<!-- Hero Section -->
+<section class="onepiece-hero">
+  <div class="vault" aria-hidden="true">
+    <div class="vault__carving">ΟΔΥΣΣΕΥΣ</div>
+    <div class="vault__head">
+      <img class="vault__dark" src="{{ url_for('views.themes', path='img/odysseus-sperlonga.jpg') }}" alt="">
+      <img class="vault__lit" src="{{ url_for('views.themes', path='img/odysseus-sperlonga.jpg') }}" alt="">
+    </div>
+    <div class="vault__glow"></div>
+  </div>
+  <canvas id="particle-canvas"></canvas>
+  <div class="hero-logo-bar">
+    <div class="logo-left">
+      <img src="{{ url_for('views.themes', path='img/rvce-logo.png') }}" alt="RV College of Engineering">
+    </div>
+    <div class="logo-right">
+      <img src="{{ url_for('views.themes', path='img/cc-10-years.png') }}" alt="Coding Club, 10 years">
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="hero-copy">
+      <p class="hero-kicker">Coding Club &middot; Tenth Anniversary CTF</p>
+      <h1 class="event-title">Voyage to Ithaca</h1>
+      <p class="onepiece-subtitle">Every challenge brings you closer to home.</p>
+      <p class="event-lead">
+        Odysseus spent ten years finding his way home to Ithaca. Coding Club has spent ten years getting here. Brave the trials of the voyage, outwit giants and sirens, and find your way home.
+      </p>
+
+      <div class="hero-actions">
+        {% if authed() %}
+        <a href="{{ url_for('challenges.listing') }}" class="gk-btn gk-btn--primary"><span>Begin the Voyage</span><i class="gk-chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></i></a>
+        {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
+        <a href="{{ url_for('scoreboard.listing') }}" class="gk-btn gk-btn--secondary"><span>Hall of Heroes</span></a>
+        {% endif %}
+        {% else %}
+        {% if registration_visible() %}
+        <a href="{{ url_for('auth.register') }}" class="gk-btn gk-btn--primary"><span>Join the Voyage</span><i class="gk-chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></i></a>
+        {% endif %}
+        <a href="{{ url_for('auth.login') }}" class="gk-btn gk-btn--secondary"><span>Login</span></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Torchlight: the cursor carries a flame across the marble; idle, it drifts.
+  (function () {
+    const vault = document.querySelector('.vault');
+    const head = document.querySelector('.vault__head');
+    if (!vault || !head) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let tx = window.innerWidth * 0.62, ty = window.innerHeight * 0.4;
+    let x = tx, y = ty, last = 0, idle = true;
+
+    window.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      tx = e.clientX; ty = e.clientY; last = performance.now(); idle = false;
+    }, { passive: true });
+
+    function frame(t) {
+      if (performance.now() - last > 2500) idle = true;
+      if (idle) {
+        // slow wandering flame over the face
+        const r = head.getBoundingClientRect();
+        tx = r.left + r.width * (0.5 + Math.sin(t / 2600) * 0.22);
+        ty = r.top + r.height * (0.42 + Math.cos(t / 3400) * 0.16);
+      }
+      x += (tx - x) * 0.08;
+      y += (ty - y) * 0.08;
+      // small flicker
+      const f = 1 + Math.sin(t / 90) * 0.015 + Math.sin(t / 37) * 0.01;
+      const r = head.getBoundingClientRect();
+      window.__torch = { x, y };
+      vault.style.setProperty('--mx', x + 'px');
+      vault.style.setProperty('--my', y + 'px');
+      head.style.setProperty('--hx', (x - r.left) + 'px');
+      head.style.setProperty('--hy', (y - r.top) + 'px');
+      head.style.setProperty('--flicker', f);
+      requestAnimationFrame(frame);
+    }
+
+    if (reduce) {
+      const r = head.getBoundingClientRect();
+      head.style.setProperty('--hx', r.width * 0.5 + 'px');
+      head.style.setProperty('--hy', r.height * 0.42 + 'px');
+    } else {
+      requestAnimationFrame(frame);
+    }
+  })();
+
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    width = rect.width;
+    height = rect.height;
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+
+  let particles = [];
+  const config = {
+    particleCount: window.innerWidth < 768 ? 30 : 90,
+    maxSize: 1.8,
+    minSize: 0.4,
+    maxSpeed: window.innerWidth < 768 ? 0.25 : 0.35,
+    connectionDistance: window.innerWidth < 768 ? 60 : 72,
+    mouseRadius: window.innerWidth < 768 ? 120 : 200,
+    particleColor: getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || "#e3c27e",
+    lineColor: "rgba(" + (getComputedStyle(document.documentElement).getPropertyValue('--acc-rgb').trim() || "227,194,126") + ",0.07)",
+    maxCursorConnections: window.innerWidth < 768 ? 3 : 4
+  };
+
+  const mouse = {
+    x: null,
+    y: null,
+    active: false
+  };
+
+  canvas.style.position = 'absolute';
+  canvas.style.top = 0;
+  canvas.style.left = 0;
+  canvas.style.zIndex = 1; // behind content
+
+  class Particle {
+    constructor(x, y, special = false) {
+      this.x = x ?? Math.random() * width;
+      this.y = y ?? Math.random() * height;
+      this.size = Math.random() * (config.maxSize - config.minSize) + config.minSize;
+      this.speedX = (Math.random() - 0.5) * config.maxSpeed * 2;
+      this.speedY = (Math.random() - 0.5) * config.maxSpeed * 2;
+      this.special = special; // true for click burst
+      this.opacity = special ? 1 : undefined; // start fully visible
+    }
+
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      if (this.special) {
+        this.opacity -= 0.01; // decrease opacity by fixed amount per frame
+        if (this.opacity < 0) this.opacity = 0;
+      } else {
+        // wrap around for normal particles
+        if (this.x > width) this.x = 0;
+        if (this.x < 0) this.x = width;
+        if (this.y > height) this.y = 0;
+        if (this.y < 0) this.y = height;
+      }
+    }
+
+    draw() {
+      ctx.save();
+      if (this.special) ctx.globalAlpha = this.opacity;
+      ctx.fillStyle = config.particleColor;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < config.particleCount; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function connectParticles() {
+    for (let a = 0; a < particles.length; a++) {
+      for (let b = a + 1; b < particles.length; b++) {
+        let dx = particles[a].x - particles[b].x;
+        let dy = particles[a].y - particles[b].y;
+        let d2 = dx * dx + dy * dy;
+        if (d2 < config.connectionDistance * config.connectionDistance) {
+          ctx.strokeStyle = config.lineColor;
+          ctx.lineWidth = 1.6 - d2 / (config.connectionDistance * config.connectionDistance);
+          ctx.beginPath();
+          ctx.moveTo(particles[a].x, particles[a].y);
+          ctx.lineTo(particles[b].x, particles[b].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function connectToMouse() {
+    if (!mouse.active || mouse.x === null) return;
+    let closest = particles.slice().filter(p => {
+      let dx = p.x - mouse.x;
+      let dy = p.y - mouse.y;
+      return (dx * dx + dy * dy) < config.mouseRadius * config.mouseRadius;
+    }).sort((a, b) => {
+      let da = (a.x - mouse.x) ** 2 + (a.y - mouse.y) ** 2;
+      let db = (b.x - mouse.x) ** 2 + (b.y - mouse.y) ** 2;
+      return da - db;
+    }).slice(0, config.maxCursorConnections);
+
+    closest.forEach(p => {
+      ctx.strokeStyle = "#e3c27e";
+      ctx.lineWidth = 0.3;
+      ctx.beginPath();
+      ctx.moveTo(mouse.x, mouse.y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+
+      let dx = mouse.x - p.x,
+        dy = mouse.y - p.y;
+      p.x += dx * 0.05;
+      p.y += dy * 0.05;
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.update();
+      p.draw();
+
+      if (p.special && p.opacity <= 0.03) {
+        particles.splice(i, 1); // remove faded burst particle
+      }
+    }
+
+    connectParticles();
+    connectToMouse();
+    requestAnimationFrame(animate);
+  }
+
+
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+    mouse.active = true;
+  });
+
+  canvas.addEventListener('mouseout', () => {
+    mouse.active = false;
+  });
+
+
+  // Correct click handler
+  canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    for (let i = 0; i < 16; i++) {
+      const angle = (Math.PI * 2) / 16 * i;
+      const speed = 5 + Math.random() * 3;
+      const p = new Particle(x, y, true); // special = true
+      p.speedX = Math.cos(angle) * speed;
+      p.speedY = Math.sin(angle) * speed;
+      p.size = 3.2;
+      particles.push(p);
+    }
+  });
+
+
+
+  window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    initParticles();
+  });
+
+  initParticles();
+  animate();
+</script>
+
+
+{% endblock %}

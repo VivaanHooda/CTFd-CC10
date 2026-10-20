@@ -78,6 +78,7 @@ Alpine.data("Challenge", () => ({
   selectedRating: 0,
   ratingReview: "",
   ratingSubmitted: false,
+  solve_count: 0,
 
   async init() {
     highlight();
@@ -120,6 +121,7 @@ Alpine.data("Challenge", () => ({
 
   async showSolves() {
     this.solves = await CTFd.pages.challenge.loadSolves(this.id);
+    this.solve_count = this.solves.length;
     this.solves.forEach(solve => {
       solve.date = intl.format(new Date(solve.date));
       return solve;
@@ -226,6 +228,7 @@ Alpine.data("Challenge", () => ({
   async renderSubmissionResponse() {
     if (this.response.data.status === "correct") {
       this.submission = "";
+      this.solve_count += 1;
     }
 
     // Decide whether to check for the solution

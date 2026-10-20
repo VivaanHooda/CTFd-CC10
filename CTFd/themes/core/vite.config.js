@@ -36,6 +36,10 @@ export default defineConfig({
               dest: "static/webfonts",
             },
             {
+              src: "./assets/fonts/**",
+              dest: "static/webfonts",
+            },
+            {
               src: "./assets/img/**",
               dest: "static/img",
             },

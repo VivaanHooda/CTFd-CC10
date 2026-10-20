@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html{% block html_attrs %}{% endblock %}>
 <head>
   <title>{{ title or Configs.ctf_name }}</title>
   <meta charset="utf-8">
@@ -37,7 +37,272 @@
       }
   </script>
 
+  <style>
+    /* ===== Accent palette: gold site-wide ===== */
+    :root {
+      --acc: #d9b56b;
+      --acc-light: #f1d79c;
+      --acc-rgb: 217, 181, 107;
+      --acc-ink: #14100a;
+      --acc-grad: linear-gradient(180deg, #f2d9a2 0%, #d9b56b 55%, #b98f4c 100%);
+      --cta: var(--acc);
+      --cta-light: var(--acc-light);
+      --cta-rgb: var(--acc-rgb);
+      --cta-ink: var(--acc-ink);
+    }
+  </style>
+
   {{ Configs.theme_header }}
+  <style>
+    @font-face {
+        font-family: 'Voyage Display';
+        src: url('{{ url_for("views.themes", path="webfonts/marcellus.woff2") }}') format('woff2');
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'Voyage Uncial';
+        src: url('{{ url_for("views.themes", path="webfonts/uncial-antiqua.woff2") }}') format('woff2');
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Voyage Title';
+        src: url('{{ url_for("views.themes", path="webfonts/uncial-antiqua.woff2") }}') format('woff2');
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Voyage Serif';
+        src: url('{{ url_for("views.themes", path="webfonts/cormorant.woff2") }}') format('woff2');
+        font-weight: 500;
+        font-display: swap;
+    }
+
+    /* ===== Navbar: floating capsules with a sliding gold pill ===== */
+    main { padding-top: 80px; }
+
+    .voyage-nav {
+        --cap-bg: rgba(7, 6, 5, 0.93);
+        --cap-edge: rgba(var(--acc-rgb), 0.32);
+        padding: 14px 20px 0;
+        background: transparent;
+        pointer-events: none;
+    }
+    .voyage-nav > .container {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0;
+        align-items: center;
+    }
+    .voyage-nav .navbar-brand,
+    .voyage-nav .navbar-toggler,
+    .voyage-nav .navbar-collapse { pointer-events: auto; }
+
+    /* each part sits in its own black capsule with a fine gold edge */
+    .voyage-nav .navbar-brand,
+    .voyage-nav .nav-main,
+    .voyage-nav .nav-side {
+        border: 1px solid var(--cap-edge);
+        border-radius: 999px;
+        background: var(--cap-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+        transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .voyage-nav.is-scrolled {
+        --cap-bg: rgba(7, 6, 5, 0.97);
+        --cap-edge: rgba(var(--acc-rgb), 0.45);
+    }
+    .voyage-nav.is-scrolled .navbar-brand,
+    .voyage-nav.is-scrolled .nav-main,
+    .voyage-nav.is-scrolled .nav-side { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55); }
+
+    .voyage-nav .navbar-brand {
+        display: inline-flex;
+        align-items: center;
+        height: 46px;
+        margin: 0;
+        padding: 0 1.25rem;
+    }
+    .navwordmark {
+        font-family: 'Voyage Uncial', 'Voyage Display', serif;
+        font-size: 1.15rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--acc-light);
+    }
+    .voyage-nav .navlogo { max-height: 30px; width: auto; }
+
+    .voyage-nav .nav-main,
+    .voyage-nav .nav-side {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 46px;
+        padding: 4px;
+    }
+
+    .voyage-nav .nav-link {
+        position: relative;
+        z-index: 1;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 1.05rem 0 calc(1.05rem + 0.22em) !important;
+        border: 0;
+        border-radius: 999px;
+        background: none;
+        font-family: 'Voyage Serif', Georgia, serif;
+        font-weight: 500;
+        font-size: 0.88rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(244, 236, 220, 0.6) !important;
+        transition: color 0.25s ease;
+    }
+    .voyage-nav .nav-link:hover,
+    .voyage-nav .nav-link:focus-visible,
+    .voyage-nav .nav-link.active { color: #f4ecdc !important; }
+    .voyage-nav .nav-link:focus-visible { outline: none; }
+    .voyage-nav .nav-main .nav-link.is-under-pill { color: var(--acc-light) !important; }
+
+    /* the pill: translucent gold glass */
+    .voyage-nav .nav-pill {
+        position: absolute;
+        left: 0;
+        top: 4px;
+        height: 36px;
+        width: 0;
+        opacity: 0;
+        z-index: 0;
+        border-radius: 999px;
+        pointer-events: none;
+        list-style: none;
+        border: 1px solid rgba(var(--acc-rgb), 0.55);
+        background: linear-gradient(180deg, rgba(var(--acc-rgb), 0.24), rgba(var(--acc-rgb), 0.1));
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 246, 220, 0.22),
+            0 0 16px rgba(var(--acc-rgb), 0.18);
+    }
+
+    /* right capsule: icons, or Login + Register */
+    .voyage-nav .nav-side { margin-left: 0; }
+    .voyage-nav .nav-icon {
+        width: 38px;
+        justify-content: center;
+        padding: 0 !important;
+        font-size: 0.95rem;
+        letter-spacing: 0;
+        cursor: pointer;
+    }
+    .voyage-nav .nav-icon:hover { color: var(--acc-light) !important; }
+    .voyage-nav .nav-icon-label { display: none; }
+    .voyage-nav .nav-count {
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 4px;
+        border-radius: 8px;
+        background: #c4473b;
+        color: #fff;
+        font-family: system-ui, sans-serif;
+        font-size: 0.6rem;
+        line-height: 15px;
+        text-align: center;
+        letter-spacing: 0;
+    }
+    .voyage-nav .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        height: 36px;
+        padding: 0 1.15rem 0 calc(1.15rem + 0.22em);
+        border-radius: 999px;
+        background: var(--acc-grad);
+        box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.6);
+        font-family: 'Voyage Serif', Georgia, serif;
+        font-weight: 500;
+        font-size: 0.86rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--acc-ink);
+        text-decoration: none;
+        transition: filter 0.25s ease, box-shadow 0.25s ease;
+    }
+    .voyage-nav .nav-cta:hover,
+    .voyage-nav .nav-cta:focus-visible {
+        color: var(--acc-ink);
+        filter: brightness(1.08);
+        box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.7), 0 0 18px rgba(var(--acc-rgb), 0.45);
+    }
+
+    /* mobile */
+    .voyage-nav .navbar-toggler {
+        width: 46px;
+        height: 46px;
+        place-items: center;
+        border: 1px solid var(--cap-edge);
+        border-radius: 50%;
+        background: var(--cap-bg);
+        backdrop-filter: blur(12px);
+        box-shadow: none !important;
+    }
+    .nav-burger { display: block; width: 20px; height: 8px; position: relative; }
+    .nav-burger i {
+        position: absolute; left: 0; right: 0; height: 1px; background: var(--acc-light);
+        transition: transform 0.3s ease, top 0.3s ease;
+    }
+    .nav-burger i:first-child { top: 0; }
+    .nav-burger i:last-child { top: 7px; }
+    .navbar-toggler[aria-expanded="true"] .nav-burger i:first-child { top: 3.5px; transform: rotate(45deg); }
+    .navbar-toggler[aria-expanded="true"] .nav-burger i:last-child { top: 3.5px; transform: rotate(-45deg); }
+
+    @media (max-width: 991.98px) {
+        .voyage-nav .navbar-toggler { display: grid; place-items: center; }
+        .voyage-nav { padding: 10px 12px 0; }
+        .voyage-nav .navbar-collapse {
+            margin-top: 10px;
+            padding: 0.75rem 1.25rem 1.25rem;
+            border: 1px solid var(--cap-edge);
+            border-radius: 22px;
+            background: rgba(6, 6, 5, 0.95);
+            backdrop-filter: blur(12px);
+        }
+        .voyage-nav .nav-main,
+        .voyage-nav .nav-side {
+            display: block;
+            height: auto;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: none;
+            box-shadow: none !important;
+            backdrop-filter: none;
+        }
+        .voyage-nav .nav-pill { display: none; }
+        .voyage-nav .nav-link {
+            width: 100%;
+            height: auto;
+            padding: 0.85rem 0 !important;
+            border-radius: 0;
+            border-bottom: 1px solid rgba(var(--acc-rgb), 0.12);
+        }
+        .voyage-nav .nav-main .nav-link.is-under-pill { color: #f4ecdc !important; }
+        .voyage-nav .nav-link.active { color: var(--acc-light) !important; }
+        .voyage-nav .nav-icon { width: 100%; justify-content: flex-start; gap: 0.7rem; font-size: 0.88rem; letter-spacing: 0.22em; }
+        .voyage-nav .nav-icon i { width: 1.2rem; color: var(--acc); }
+        .voyage-nav .nav-icon-label { display: inline; }
+        .voyage-nav .nav-count { position: static; }
+        .voyage-nav .nav-cta { margin-top: 1rem; }
+        .voyage-nav .navbar-brand { height: 46px; padding: 0 1rem; }
+        .navwordmark { font-size: 1rem; }
+    }
+  </style>
 </head>
 <body>
 {% include "components/navbar.html" %}

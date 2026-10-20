@@ -19,6 +19,7 @@ function getPreferredTheme() {
  */
 function showActiveTheme(theme) {
   const activeThemeIcon = document.querySelector(".theme-switch i.fas");
+  if (!activeThemeIcon) return;
   activeThemeIcon.classList.toggle("fa-moon", theme === "dark");
   activeThemeIcon.classList.toggle("fa-sun", theme !== "dark");
 }

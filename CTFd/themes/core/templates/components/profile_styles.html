@@ -1,0 +1,173 @@
+<style>
+  html, body { background: #000; }
+  body { color: #f4ecdc; }
+  .footer .text-muted { color: rgba(244, 236, 220, 0.35) !important; }
+
+  /* the backdrop is the whole scene; the dark gathers on the right where the profile sits.
+     pages set profile_backdrop (and optionally profile_backdrop_pos / profile_backdrop_pos_sm) before including this */
+  .profile-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: url('{{ url_for("views.themes", path=profile_backdrop) }}') {{ profile_backdrop_pos | default("30% 62%") }} / cover no-repeat;
+  }
+
+  .profile-backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.35) 30%, rgba(0, 0, 0, 0.78) 52%, rgba(0, 0, 0, 0.9) 100%),
+      linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.25) 22%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 85%, #000 100%);
+  }
+
+  .profile-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    padding-top: 3rem;
+    padding-bottom: 4rem;
+  }
+
+  .profile-card {
+    padding: 2rem 2.2rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    border-radius: 14px;
+    background: rgba(10, 9, 7, 0.72);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: #f4ecdc;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-variant-numeric: lining-nums;
+  }
+
+  .profile-title {
+    margin: 0 0 1rem;
+    font-family: 'Voyage Title', serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--acc-light);
+    overflow-wrap: anywhere;
+  }
+
+  .profile-card h2, .profile-card h3 {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    color: #f4ecdc;
+  }
+
+  .profile-card h3 { font-size: 1.15rem; }
+
+  .profile-card .badge,
+  .table-themed .badge {
+    padding: 0.3em 0.8em 0.3em 1em;
+    border: 1px solid rgba(var(--acc-rgb), 0.45);
+    border-radius: 999px;
+    background: transparent !important;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--acc) !important;
+    vertical-align: middle;
+  }
+
+  .profile-card a { color: var(--acc); }
+  .profile-card a:hover { color: var(--acc-light); }
+
+  .profile-card hr { border-color: rgba(var(--acc-rgb), 0.35); opacity: 1; }
+
+  /* place and points */
+  #team-place, #team-score, .profile-card .profile-stat {
+    margin: 0.2rem 0;
+    font-family: 'Voyage Display', Georgia, serif;
+    font-size: 2rem;
+    color: var(--acc-light);
+    font-variant-numeric: lining-nums;
+  }
+
+  #team-place small, #team-score small, .profile-card .profile-stat small {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(244, 236, 220, 0.6);
+  }
+
+  .profile-section {
+    margin: 0 0 0.9rem;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--acc);
+  }
+
+  /* tables */
+  .table-themed {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(10, 9, 7, 0.72);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-variant-numeric: lining-nums tabular-nums;
+    --bs-table-bg: transparent;
+    --bs-table-color: #f4ecdc;
+  }
+
+  .table-themed thead th {
+    padding: 0.85rem 1.2rem;
+    border-bottom: 1px solid rgba(var(--acc-rgb), 0.4);
+    background: rgba(var(--acc-rgb), 0.05);
+    font-weight: 500;
+    font-size: 0.78rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--acc);
+  }
+
+  .table-themed tbody td {
+    padding: 0.75rem 1.2rem;
+    border-bottom: 1px solid rgba(var(--acc-rgb), 0.12);
+    background: transparent;
+    font-size: 1.1rem;
+  }
+
+  .table-themed tbody tr:last-child td { border-bottom: 0; }
+  .table-themed tbody tr { transition: background-color 0.2s ease; }
+  .table-themed tbody tr:hover { background: rgba(var(--acc-rgb), 0.05); }
+  .table-themed a { color: #f4ecdc; font-weight: 500; text-decoration: none; }
+  .table-themed a:hover { color: var(--acc-light); }
+
+  .awards-row p { color: rgba(244, 236, 220, 0.8); font-family: 'Voyage Serif', Georgia, serif; }
+  .awards-row i { color: var(--acc); }
+
+  .profile-empty {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: rgba(244, 236, 220, 0.6) !important;
+    opacity: 1 !important;
+  }
+
+  @media (max-width: 767px) {
+    .profile-backdrop { background-position: {{ profile_backdrop_pos_sm | default('42% center') }}; }
+    .profile-backdrop::after { background: rgba(0, 0, 0, 0.62); }
+    .profile-card { padding: 1.5rem; text-align: center; }
+    .table-themed thead th { padding: 0.75rem 0.6rem; letter-spacing: 0.16em; }
+    .table-themed tbody td { padding: 0.65rem 0.6rem; font-size: 1rem; }
+  }
+</style>

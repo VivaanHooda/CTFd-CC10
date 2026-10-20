@@ -1,44 +1,248 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>{% trans %}Team{% endtrans %}</h1>
-    </div>
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 offset-md-3 text-center">
-        <p class="h2">{% trans %}Welcome to{% endtrans %} {{ Configs.ctf_name }}!</p>
-        <p>
-          {% trans %}In order to participate you must either join or create a team.{% endtrans %}
-        </p>
-      </div>
-    </div>
+{% block stylesheets %}
+{{ super() }}
+<style>
+  @keyframes zoomIn {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
+  
+  .background-image {
+    width: 100%;
+    height: 100%;
+    background: url('{{ url_for("views.themes", path="img/Banner.png") }}') no-repeat center bottom;
+    background-size: cover;
+    opacity: 0.2;
+  }
+  
+  .content-wrapper {
+    position: relative;
+    z-index: 1;
+  }
+  
+  :root {
+    --onepiece-gold: #ffd700;
+    --onepiece-red: #dc143c;
+    --onepiece-orange: #ff6b35;
+    --onepiece-dark-red: #8b0000;
+  }
 
-    {% if integrations.mlc() %}
-      <div class="row">
-        <div class="col-md-6 offset-md-3 text-center">
-          <a class="btn btn-primary w-100" href="{{ url_for('auth.oauth_login') }}">{% trans %}Play with Official Team{% endtrans %}</a>
+  body {
+    background-color: #1a1a1a;
+    color: #fff;
+    font-family: 'Voyage Display', 'Arial', sans-serif;
+  }
+
+  .jumbotron {
+    background-color: transparent !important;
+    border-bottom: 3px solid var(--onepiece-gold);
+    padding-bottom: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .container h1 {
+    color: var(--onepiece-gold);
+    text-shadow: 3px 3px 6px var(--onepiece-red), 0 0 25px rgba(255, 215, 0, 0.5);
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-size: 3.5rem;
+  }
+
+  .container .h2 {
+    color: var(--onepiece-gold);
+    text-shadow: 3px 3px 6px var(--onepiece-red), 0 0 25px rgba(255, 215, 0, 0.5);
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+
+  .themed-container {
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.4) 0%, rgba(220, 20, 60, 0.3) 50%, rgba(139, 0, 0, 0.4) 100%);
+    border: 3px solid var(--onepiece-gold);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 0 60px rgba(255, 215, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .themed-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, transparent, var(--onepiece-gold), transparent);
+    background-size: 200% 200%;
+    border-radius: 20px;
+    z-index: -1;
+    opacity: 0.3;
+  }
+
+  .themed-container p {
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  
+  .themed-container .h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--onepiece-gold) 0%, var(--onepiece-orange) 100%);
+    border: 3px solid var(--onepiece-gold);
+    color: #000;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    text-shadow: none;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--onepiece-red) 0%, var(--onepiece-dark-red) 100%);
+    border-color: var(--onepiece-gold);
+    color: var(--onepiece-gold);
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(255, 215, 0, 0.6);
+  }
+
+  .btn-outline-info {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 3px solid var(--onepiece-orange);
+    color: var(--onepiece-gold);
+    font-weight: bold;
+    font-size: 1.05rem;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-info:hover {
+    background: linear-gradient(135deg, var(--onepiece-gold) 0%, var(--onepiece-orange) 100%);
+    border-color: var(--onepiece-gold);
+    color: #000;
+    transform: scale(1.05);
+  }
+  
+  .crew-image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+  .crew-image {
+    max-height: 450px;
+    height: 450px;
+    width: auto;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+    transition: all 0.4s ease;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .crew-image:hover {
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.9));
+    animation: none;
+  }
+
+  
+  hr {
+    border-top: 2px solid var(--onepiece-gold);
+    opacity: 0.6;
+    margin: 2rem 0;
+  }
+  
+  @media (max-width: 768px) {
+    .themed-container {
+      padding: 2rem 1.5rem;
+    }
+    
+    .themed-container .h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="background-container">
+    <div class="background-image"></div>
+  </div>
+  <div class="content-wrapper">
+    <div class="jumbotron">
+      <div class="container">
+        <h1>{% trans %}Crew Enrollment{% endtrans %}</h1>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <!-- Pirate crew member on the left -->
+        <div class="col-md-3 d-none d-md-block">
+          <div class="crew-image-container">
+            <img src="{{ url_for('views.themes', path='img/merry.png') }}" alt="Pirate Crew" class="img-fluid crew-image">
+          </div>
+        </div>
+        
+        <!-- Main content in the center -->
+        <div class="col-md-6">
+          <div class="themed-container text-center">
+            <p class="h2">{% trans %}Set Sail with{% endtrans %} {{ Configs.ctf_name }}!</p>
+            <p style="font-size: 1.1rem;">{% trans %}In order to participate you must either join or create a pirate crew.{% endtrans %}</p>
+
+            {% if integrations.mlc() %}
+              <div class="row justify-content-center mt-4">
+                <div class="col-md-8">
+                  <a class="btn btn-primary w-100" href="{{ url_for('auth.oauth_login') }}">{% trans %}Sail with Official Crew{% endtrans %}</a>
+                </div>
+              </div>
+              <hr>
+              <p style="font-size: 1.05rem;">{% trans %}Or sail with an unofficial crew:{% endtrans %}</p>
+              <div class="row justify-content-center mt-3">
+                <div class="col-md-5 mb-3 mb-md-0">
+                  <a class="btn btn-outline-info w-100" href="{{ url_for('teams.join') }}">{% trans %}Join Unofficial Crew{% endtrans %}</a>
+                </div>
+                <div class="col-md-5">
+                  <a class="btn btn-outline-info w-100" href="{{ url_for('teams.new') }}">{% trans %}Create Unofficial Crew{% endtrans %}</a>
+                </div>
+              </div>
+            {% else %}
+              <div class="row justify-content-center mt-4">
+                <div class="col-md-5 mb-3 mb-md-0">
+                  <a class="btn btn-primary w-100" href="{{ url_for('teams.join') }}">{% trans %}Join Crew{% endtrans %}</a>
+                </div>
+                <div class="col-md-5">
+                  <a class="btn btn-primary w-100" href="{{ url_for('teams.new') }}">{% trans %}Create Crew{% endtrans %}</a>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Pirate crew member on the right -->
+        <div class="col-md-3 d-none d-md-block">
+          <div class="crew-image-container">
+            <img src="{{ url_for('views.themes', path='img/sunny.png') }}" alt="Pirate Crew" class="img-fluid crew-image">
+          </div>
         </div>
       </div>
-      <div class="row">
-        <div class="mt-3 col-md-3 offset-md-3 text-center">
-          <a class="btn btn-outline-info w-100" href="{{ url_for('teams.join') }}">{% trans %}Join Unofficial Team{% endtrans %}</a>
-        </div>
-        <div class="mt-3 col-md-3 text-center">
-          <a class="btn btn-outline-info w-100" href="{{ url_for('teams.new') }}">{% trans %}Create Unofficial Team{% endtrans %}</a>
-        </div>
-      </div>
-    {% else %}
-      <div class="row">
-        <div class="mt-3 col-sm-4 col-md-3 offset-sm-2 offset-md-3 text-center">
-          <a class="btn btn-primary w-100" href="{{ url_for('teams.join') }}">{% trans %}Join Team{% endtrans %}</a>
-        </div>
-        <div class="mt-3 col-sm-4 col-md-3 text-center">
-          <a class="btn btn-primary w-100" href="{{ url_for('teams.new') }}">{% trans %}Create Team{% endtrans %}</a>
-        </div>
-      </div>
-    {% endif %}
+    </div>
   </div>
 {% endblock %}

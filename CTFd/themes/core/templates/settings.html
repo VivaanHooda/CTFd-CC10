@@ -1,264 +1,224 @@
 {% extends "base.html" %}
 {% from "macros/forms.html" import render_extra_fields %}
 
+{% block stylesheets %}
+{{ super() }}
+<style>
+  @font-face {
+    font-family: 'Voyage Serif';
+    src: url('{{ url_for("views.themes", path="webfonts/cormorant-italic.woff2") }}') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  html, body { background: #000; }
+  body {
+    color: #f4ecdc;
+    background: radial-gradient(60% 40% at 50% 0%, rgba(var(--acc-rgb), 0.08), transparent 70%), #000;
+    background-attachment: fixed;
+  }
+  .footer .text-muted { color: rgba(244, 236, 220, 0.35) !important; }
+
+  /* ===== Header ===== */
+  .page-head {
+    padding: 3.2rem 1rem 2.4rem;
+    text-align: center;
+  }
+
+  .page-title {
+    margin: 0 0 1rem;
+    font-family: 'Voyage Title', serif;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--acc-light);
+  }
+
+  .page-key {
+    width: 240px;
+    height: 8px;
+    margin: 1.4rem auto 0;
+    background: linear-gradient(90deg, #000 0%, transparent 25%, transparent 75%, #000 100%), var(--acc);
+    opacity: 0.65;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 16 8'%3E%3Cpath d='M0 7.4H16M4 7.4V.8h9.4v4.4H7V3h2.8' fill='none' stroke='%23000' stroke-width='1.1'/%3E%3C/svg%3E") repeat-x center / 16px 8px;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 16 8'%3E%3Cpath d='M0 7.4H16M4 7.4V.8h9.4v4.4H7V3h2.8' fill='none' stroke='%23000' stroke-width='1.1'/%3E%3C/svg%3E") repeat-x center / 16px 8px;
+  }
+
+  .settings {
+    max-width: 1000px;
+    padding-bottom: 4rem;
+    font-family: 'Voyage Serif', Georgia, serif;
+  }
+
+  /* ===== Tabs ===== */
+  .settings .nav-pills { gap: 0.5rem; }
+
+  .settings .nav-pills .nav-link {
+    padding: 0.7rem 1.1rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.25);
+    border-radius: 999px;
+    background: rgba(10, 9, 7, 0.88);
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(244, 236, 220, 0.7);
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+
+  .settings .nav-pills .nav-link:hover { border-color: rgba(var(--acc-rgb), 0.6); color: var(--acc-light); }
+
+  .settings .nav-pills .nav-link.active {
+    border-color: transparent;
+    background: var(--acc-grad);
+    color: var(--acc-ink);
+  }
+
+  /* ===== Panel ===== */
+  .settings .tab-content {
+    padding: 2rem 2.2rem 1.6rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    border-radius: 14px;
+    background: rgba(10, 9, 7, 0.88);
+  }
+
+  .settings .tab-content::after { content: ""; display: block; clear: both; }
+
+  .settings b, .settings .form-label {
+    font-weight: 500;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--acc);
+  }
+
+  .settings hr { margin: 1.6rem 0; border-color: rgba(var(--acc-rgb), 0.2); opacity: 1; }
+  .settings .text-muted, .settings .form-text { color: rgba(244, 236, 220, 0.5) !important; }
+
+  .settings .form-control, .settings .form-select {
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    color: #f4ecdc;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.08rem;
+    font-variant-numeric: lining-nums;
+  }
+
+  .settings .form-select option { background: #0b0a08; color: #f4ecdc; }
+  .settings .form-control::placeholder { color: rgba(244, 236, 220, 0.35); }
+
+  .settings .form-control:focus, .settings .form-select:focus {
+    border-color: rgba(var(--acc-rgb), 0.75);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #f4ecdc;
+    box-shadow: 0 0 0 3px rgba(var(--acc-rgb), 0.15);
+    outline: none;
+  }
+
+  .settings .form-control[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8) sepia(1) saturate(2); }
+
+  .settings .btn-primary {
+    padding: 0.55rem 1.6rem 0.55rem calc(1.6rem + 0.2em);
+    border: 0;
+    border-radius: 999px;
+    background: var(--acc-grad);
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--acc-ink);
+  }
+
+  .settings .btn-primary:hover, .settings .btn-primary:focus { filter: brightness(1.08); color: var(--acc-ink); }
+
+  .settings .alert { border-radius: 10px; font-family: 'Voyage Serif', Georgia, serif; }
+
+  @media (max-width: 767px) {
+    .settings .tab-content { padding: 1.5rem 1.2rem 1.2rem; }
+    .settings .nav-pills { flex-direction: row !important; justify-content: center; }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>
-        {% trans %}Settings{% endtrans %}
-      </h1>
-    </div>
-  </div>
+<header class="page-head">
+  <h1 class="page-title">{% trans %}Settings{% endtrans %}</h1>
+  <div class="page-key" aria-hidden="true"></div>
+</header>
 
-  <div class="container">
+<div class="container settings">
     <div class="row">
-
-      <div class="col-md-3 offset-md-1 mb-3 mb-md-0">
-        <div class="nav flex-column nav-pills" role="tablist">
-          <button
-              class="nav-link active" id="settings-profile-tab" data-bs-toggle="pill"
-              data-bs-target="#profile" role="tab"
-          >{% trans %}Profile{% endtrans %}
-          </button>
-          <button
-              class="nav-link" id="settings-tokens-tab" data-bs-toggle="pill" data-bs-target="#tokens"
-              role="tab"
-          >{% trans %}Access Tokens{% endtrans %}
-          </button>
+        <div class="col-md-3 mb-3">
+            <div class="nav flex-column nav-pills" role="tablist">
+                <button class="nav-link active" id="settings-profile-tab" data-bs-toggle="pill" data-bs-target="#profile" role="tab">{% trans %}Profile{% endtrans %}</button>
+                <button class="nav-link" id="settings-tokens-tab" data-bs-toggle="pill" data-bs-target="#tokens" role="tab">{% trans %}Access Tokens{% endtrans %}</button>
+            </div>
         </div>
-      </div>
 
-      <div class="col-md-8">
-        <div class="tab-content" id="v-pills-tabContent">
-          <div class="tab-pane fade show active" id="profile" role="tabpanel">
-            {% include "components/errors.html" %}
-
-            {% with form = Forms.self.SettingsForm(language=language, country=country) %}
-              <form
-                  method="post" accept-charset="utf-8" autocomplete="off" role="form"
-                  x-data="SettingsForm"
-                  @submit.prevent="updateProfile()"
-                  class="form-horizontal"
-              >
-
-                <div class="mb-3">
-                  <b>{{ form.name.label(class="form-label") }}</b>
-                  {{ form.name(class="form-control", value=name) }}
-                </div>
-
-                <div class="mb-3">
-                  <b>{{ form.email.label(class="form-label") }}</b>
-                  {{ form.email(class="form-control", value=email) }}
-                </div>
-
-                <div class="mb-3">
-                  <b>{{ form.language.label(class="form-label") }}</b>
-                  {{ form.language(class="form-select", value=language) }}
-                </div>
-
-                <hr>
-
-                <div class="mb-3">
-                  <b>{{ form.confirm.label(class="form-label") }}</b>
-                  {{ form.confirm(class="form-control") }}
-                </div>
-                <div class="mb-3">
-                  <b>{{ form.password.label(class="form-label") }}</b>
-                  {{ form.password(class="form-control") }}
-                </div>
-
-                <hr>
-
-                <div class="mb-3">
-                  <b>{{ form.affiliation.label(class="form-label") }}</b>
-                  {{ form.affiliation(class="form-control", value=affiliation or "") }}
-                </div>
-                <div class="mb-3">
-                  <b>{{ form.website.label(class="form-label") }}</b>
-                  {{ form.website(class="form-control", value=website or "") }}
-                </div>
-                <div class="mb-3">
-                  <b>{{ form.country.label(class="form-label") }}</b>
-                  {{ form.country(class="form-select", value=country) }}
-                </div>
-
-                <hr>
-
-                {{ render_extra_fields(form.extra) }}
-
-                <div id="results" class="mb-3">
-                  <div
-                      class="alert alert-success alert-dismissible submit-row" role="alert"
-                      x-cloak="success" x-show="success"
-                  >
-                    <strong>Success!</strong>
-                    {% trans %}Your profile has been updated{% endtrans %}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                    </button>
-                  </div>
-
-
-                  <template x-for="(msg, idx) in errors" :key="idx">
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                      <span class="sr-only">{% trans %}Error:{% endtrans %}</span>
-                      <span x-text="msg"></span>
-                      <button
-                          type="button" class="btn-close" data-bs-dismiss="alert"
-                          aria-label="Close"
-                      >
-                      </button>
-                    </div>
-                  </template>
-                </div>
-
-                <div class="mb-3">
-                  {{ form.submit(class="btn btn-primary float-end px-4") }}
-                </div>
-              </form>
-            {% endwith %}
-          </div>
-
-          <div class="tab-pane fade" id="tokens" role="tabpanel">
-
-            {% with form = Forms.self.TokensForm() %}
-              <form method="POST" x-data="TokensForm" @submit.prevent="generateToken()" class="mb-3">
-                <div class="modal fade" tabindex="-1" x-ref="tokenModal">
-                  <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">{% trans %}API Key Generated{% endtrans %}</h5>
-                        <button
-                            type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"
-                        ></button>
-                      </div>
-
-                      <div class="modal-body">
-                        <p>{% trans %}Please copy your API Key, it won't be shown again!{% endtrans %}</p>
-
-                        <div class="input-group mb-3">
-                          <input
-                              type="text" class="form-control bg-white" x-ref="token"
-                              x-model="token" readonly
-                          >
-                          <button
-                              class="btn btn-outline-secondary px-3" type="button"
-                              @click="copyToken()"
-                          >
-                            <i class="fas fa-clipboard"></i>
-                          </button>
+        <div class="col-md-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                    {% include "components/errors.html" %}
+                    {% with form = Forms.self.SettingsForm(language=language, country=country) %}
+                    <form method="post" x-data="SettingsForm" @submit.prevent="updateProfile()">
+                        <div class="mb-3">
+                            <b>{{ form.name.label(class="form-label") }}</b>
+                            {{ form.name(class="form-control", value=name) }}
                         </div>
-                      </div>
-
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                          Got it!
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                        <div class="mb-3">
+                            <b>{{ form.email.label(class="form-label") }}</b>
+                            {{ form.email(class="form-control", value=email) }}
+                        </div>
+                        <div class="mb-3">
+                            <b>{{ form.language.label(class="form-label") }}</b>
+                            {{ form.language(class="form-select", value=language) }}
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <b>{{ form.confirm.label(class="form-label") }}</b>
+                            {{ form.confirm(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            <b>{{ form.password.label(class="form-label") }}</b>
+                            {{ form.password(class="form-control") }}
+                        </div>
+                        <hr>
+                        {{ render_extra_fields(form.extra) }}
+                        <div class="mb-3">
+                            {{ form.submit(class="btn btn-primary float-end px-4") }}
+                        </div>
+                    </form>
+                    {% endwith %}
                 </div>
 
-                <div class="mb-3">
-                  <b>{{ form.expiration.label(class="form-label") }}</b>
-                  {{ form.expiration(class="form-control") }}
+                <div class="tab-pane fade" id="tokens" role="tabpanel">
+                    {% with form = Forms.self.TokensForm() %}
+                    <form method="POST" x-data="TokensForm" @submit.prevent="generateToken()" class="mb-3">
+                        <div class="mb-3">
+                            <b>{{ form.expiration.label(class="form-label") }}</b>
+                            {{ form.expiration(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            <b>{{ form.description.label(class="form-label") }}</b>
+                            {{ form.description(class="form-control", rows="3") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.submit(class="btn btn-primary float-end px-4") }}
+                        </div>
+                    </form>
+                    {% endwith %}
                 </div>
-
-                <div class="mb-3">
-                  <b>{{ form.description.label(class="form-label") }}</b>
-                  {{ form.description(class="form-control", rows="3") }}
-                </div>
-
-                <div class="row">
-                  <div class="col">
-                    {{ form.submit(class="btn btn-block btn-primary float-end px-4") }}
-                  </div>
-                </div>
-              </form>
-            {% endwith %}
-
-            {% if tokens %}
-              <hr>
-
-              <h4 class="text-center mt-3">{% trans %}Active Tokens{% endtrans %}</h4>
-
-              {# This has to be wrapping the table modal, because div with modal will get pushed out
-                 of the table and alpine ref will not work #}
-              <div x-data="Tokens">
-                <div
-                    class="modal fade" x-ref="confirmModal" tabindex="-1" role="dialog"
-                    aria-modal="true"
-                >
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">{% trans %}Delete Token{% endtrans %}</h5>
-                        <button
-                            type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"
-                        >
-                        </button>
-                      </div>
-
-                      <div class="modal-body">
-                        <p>{% trans %}Are you sure you want to delete this token?{% endtrans %}</p>
-                      </div>
-
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                          No
-                        </button>
-                        <button
-                            type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            @click="deleteSelectedToken()"
-                        >Yes
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <table class="table table-striped align-middle">
-                  <thead>
-                  <tr>
-                    <th class="text-center">{% trans %}Created{% endtrans %}</th>
-                    <th>{% trans %}Expiration{% endtrans %}</th>
-                    <th>{% trans %}Description{% endtrans %}</th>
-                    <th>{% trans %}Delete{% endtrans %}</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {% for token in tokens %}
-                    <tr x-ref="token-{{ token.id }}">
-                      <td class="text-center">
-                        <span data-time="{{ token.created | isoformat }}"></span>
-                      </td>
-                      <td>
-                        <span data-time="{{ token.expiration | isoformat }}"></span>
-                      </td>
-                      <td>
-                        <span>{{ token.description | default('', true) }}</span>
-                      </td>
-                      <td class="text-center">
-                        <span
-                            class="delete-token" role="button"
-                            @click="deleteTokenModal({{ token.id }})">
-                            <i class="cursor-pointer fas fa-times"></i>
-                        </span>
-                      </td>
-                    </tr>
-                  {% endfor %}
-
-                  </tbody>
-                </table>
-              </div>
-            {% endif %}
-
-          </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

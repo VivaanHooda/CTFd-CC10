@@ -1,0 +1,210 @@
+<style>
+  @property --auth-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  html, body { background: #000; }
+  body { color: #f4ecdc; }
+  .footer { display: none !important; }
+
+  /* the scene fills the screen; the dark gathers on the right where the card sits.
+     pages set auth_backdrop (and optionally auth_backdrop_pos / auth_backdrop_pos_sm) before including this */
+  .auth-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: url('{{ url_for("views.themes", path=auth_backdrop) }}') {{ auth_backdrop_pos | default("30% center") }} / cover no-repeat;
+  }
+
+  .auth-backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.8) 60%, rgba(0, 0, 0, 0.9) 100%),
+      linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 85%, #000 100%);
+  }
+
+  .auth {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: calc(100vh - 80px);
+    max-width: 1180px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+  }
+
+  .auth-card {
+    width: min(100%, 460px);
+    margin-right: 4%;
+    padding: 2.6rem 2.4rem 2.2rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    border-radius: 22px;
+    background: rgba(10, 9, 7, 0.68);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    font-family: 'Voyage Serif', Georgia, serif;
+  }
+
+  .auth-title {
+    margin: 0 0 0.4rem;
+    font-family: 'Voyage Title', serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4vw, 2.9rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--acc-light);
+  }
+
+  .auth-sub {
+    margin: 0 0 2rem;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.15rem;
+    color: rgba(244, 236, 220, 0.65);
+  }
+
+  .auth-card .mb-3 { margin-bottom: 1.25rem !important; }
+
+  .auth-card b, .auth-card .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.74rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--acc);
+  }
+
+  .auth-card .form-control, .auth-card .form-select {
+    height: 52px;
+    padding: 0 1.1rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.22);
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.035);
+    color: #f4ecdc;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.1rem;
+    font-variant-numeric: lining-nums;
+    transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .auth-card .form-control:focus, .auth-card .form-select:focus {
+    border-color: rgba(var(--acc-rgb), 0.7);
+    background-color: rgba(255, 255, 255, 0.055);
+    color: #f4ecdc;
+    box-shadow: 0 0 0 4px rgba(var(--acc-rgb), 0.12);
+    outline: none;
+  }
+
+  .auth-card .form-control:-webkit-autofill {
+    -webkit-text-fill-color: #f4ecdc;
+    -webkit-box-shadow: 0 0 0 40px #15120d inset;
+    caret-color: #f4ecdc;
+  }
+
+  .auth-card .form-text, .auth-card .text-muted {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: rgba(244, 236, 220, 0.45) !important;
+  }
+
+  /* the submit: dark glass pill with gold light travelling round its rim */
+  .auth-submit {
+    width: 100%;
+    height: 56px;
+    margin-top: 0.6rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, #19140c, #0c0a06) padding-box,
+      conic-gradient(from var(--auth-angle), rgba(var(--acc-rgb), 0.3) 0%, rgba(var(--acc-rgb), 0.3) 58%, #fff3d1 72%, var(--acc) 78%, rgba(var(--acc-rgb), 0.3) 92%) border-box;
+    color: var(--acc-light);
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.26em;
+    text-indent: 0.26em;
+    text-transform: uppercase;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 22px rgba(var(--acc-rgb), 0.1);
+    animation: auth-orbit 4.5s linear infinite;
+    transition: box-shadow 0.35s ease, transform 0.25s ease, color 0.25s ease;
+  }
+
+  .auth-submit:hover, .auth-submit:focus-visible {
+    color: #fff3d1;
+    transform: translateY(-1px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55), 0 0 32px rgba(var(--acc-rgb), 0.3);
+    outline: none;
+  }
+
+  .auth-submit:active { transform: translateY(1px); }
+
+  @keyframes auth-orbit { to { --auth-angle: 360deg; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .auth-submit { animation: none; --auth-angle: 200deg; }
+  }
+
+  .auth-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: -0.2rem 0 1.2rem;
+  }
+
+  .auth-card a { color: var(--acc); text-decoration: none; transition: color 0.2s ease; }
+  .auth-card a:hover { color: var(--acc-light); }
+
+  .auth-forgot { font-style: italic; font-size: 1rem; }
+
+  .auth-switch {
+    margin: 1.8rem 0 0;
+    padding-top: 1.4rem;
+    border-top: 1px solid rgba(var(--acc-rgb), 0.15);
+    text-align: center;
+    font-size: 1.05rem;
+    color: rgba(244, 236, 220, 0.6);
+  }
+
+  .auth-switch a { font-weight: 600; letter-spacing: 0.04em; }
+
+  .auth-legal {
+    margin: 1rem 0 0;
+    text-align: center;
+    font-size: 0.92rem;
+    color: rgba(244, 236, 220, 0.5);
+  }
+
+  .auth-oauth {
+    display: block;
+    width: 100%;
+    margin-bottom: 1.4rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    border-radius: 999px;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+
+  .auth-card .alert { border-radius: 14px; font-family: 'Voyage Serif', Georgia, serif; font-size: 1.02rem; }
+
+  @media (max-width: 767px) {
+    .auth-backdrop { background-position: {{ auth_backdrop_pos_sm | default("40% center") }}; }
+    .auth-backdrop::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.82)); }
+    .auth { justify-content: center; min-height: calc(100vh - 70px); }
+    .auth-card { margin-right: 0; padding: 2rem 1.5rem 1.6rem; }
+  }
+</style>

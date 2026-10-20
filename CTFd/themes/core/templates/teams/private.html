@@ -1,5 +1,68 @@
 {% extends "base.html" %}
 
+{% block stylesheets %}
+  {{ super() }}
+  {% with profile_backdrop="img/odyssey-ship.jpg" %}{% include "components/profile_styles.html" %}{% endwith %}
+  <style>
+    .captain-controls a { color: var(--acc); cursor: pointer; transition: color 0.2s ease; }
+    .captain-controls a:hover { color: var(--acc-light); }
+    .captain-controls .fa-2x { font-size: 1.35rem; padding: 0 0.7rem !important; }
+
+    /* modals */
+    .modal-content {
+      border: 1px solid rgba(var(--acc-rgb), 0.35);
+      border-radius: 16px;
+      background: #0b0a08;
+      color: #f4ecdc;
+      font-family: 'Voyage Serif', Georgia, serif;
+    }
+    .modal-header, .modal-footer { border-color: rgba(var(--acc-rgb), 0.2); }
+    .modal-header h2 {
+      font-family: 'Voyage Title', serif;
+      font-weight: 400;
+      font-size: 1.6rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--acc-light);
+    }
+    .modal-body b, .modal-body .form-label { font-weight: 500; letter-spacing: 0.04em; color: var(--acc); }
+    .modal-body hr { border-color: rgba(var(--acc-rgb), 0.25); opacity: 1; }
+    .modal-body .text-muted { color: rgba(244, 236, 220, 0.5) !important; }
+    .modal .btn-close { filter: invert(1) grayscale(1) brightness(1.4); }
+
+    .modal .form-control, .modal .form-select {
+      border: 1px solid rgba(var(--acc-rgb), 0.3);
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.03);
+      color: #f4ecdc;
+      font-family: 'Voyage Serif', Georgia, serif;
+      font-size: 1.05rem;
+    }
+    .modal .form-control:focus, .modal .form-select:focus {
+      border-color: rgba(var(--acc-rgb), 0.75);
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #f4ecdc;
+      box-shadow: 0 0 0 3px rgba(var(--acc-rgb), 0.15);
+    }
+
+    .modal .btn {
+      border-radius: 999px;
+      font-family: 'Voyage Serif', Georgia, serif;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .modal .btn-primary { border: 0; background: var(--acc-grad); color: var(--acc-ink); }
+    .modal .btn-primary:hover { filter: brightness(1.08); color: var(--acc-ink); }
+    .modal .btn-danger, .modal .btn-outline-secondary {
+      border: 1px solid rgba(var(--acc-rgb), 0.4);
+      background: transparent;
+      color: var(--acc);
+    }
+    .modal .btn-danger:hover, .modal .btn-outline-secondary:hover { background: rgba(var(--acc-rgb), 0.1); color: var(--acc-light); }
+  </style>
+{% endblock %}
+
 {% block content %}
   <div id="team-edit-modal" class="modal fade">
     <div class="modal-dialog modal-lg">
@@ -36,30 +99,6 @@
                 {{ form.confirm(class="form-control") }}
                 <small class="form-text text-muted">
                   {{ form.confirm.description }}
-                </small>
-              </div>
-
-              <div class="mb-2">
-                <b>{{ form.website.label(class="mb-2") }}</b>
-                {{ form.website(class="form-control") }}
-                <small class="form-text text-muted">
-                  {{ form.website.description }}
-                </small>
-              </div>
-
-              <div class="mb-2">
-                <b>{{ form.affiliation.label(class="mb-2") }}</b>
-                {{ form.affiliation(class="form-control") }}
-                <small class="form-text text-muted">
-                  {{ form.affiliation.description }}
-                </small>
-              </div>
-
-              <div class="mb-2">
-                <b>{{ form.country.label(class="mb-2") }}</b>
-                {{ form.country(class="form-select") }}
-                <small class="form-text text-muted">
-                  {{ form.country.description }}
                 </small>
               </div>
 
@@ -210,291 +249,147 @@
     </div>
   </div>
 
-  <div class="jumbotron">
-    <div class="container">
-      <h1 id="team-id" team-id="{{ team.id }}">{{ team.name }}</h1>
-      {% if team.oauth_id %}
-        <a href="https://majorleaguecyber.org/t/{{ team.name }}">
-          <h3><span class="badge bg-primary">{% trans %}Official{% endtrans %}</span></h3>
-        </a>
-      {% endif %}
-
-      {% if team.affiliation %}
-        <h3 class="d-inline-block">
-          <span class="badge bg-primary">{{ team.affiliation }}</span>
-        </h3>
-      {% endif %}
-
-      {% if team.country %}
-        <h3 class="d-inline-block">
-          <span class="badge bg-primary">
-            <i class="flag-{{ team.country.lower() }}"></i>
-            {{ lookup_country_code(team.country) }}
-          </span>
-        </h3>
-      {% endif %}
-
-      {% if team.bracket_id %}
-        <div class="pt-2">
-          <h2>
-            <span class="badge text-bg-light">
-              {{ team.bracket.name }}
-            </span>
-          </h2>
-        </div>
-      {% endif %}
-
-      {% for field in team.fields %}
-        <h3 class="d-block">
-          {{ field.name }}: {{ field.value }}
-        </h3>
-      {% endfor %}
-
-      <h2 id="team-place" class="text-center">
-        {# This intentionally hides the team's place when scores are hidden because this can be their internal profile
-           and we don't want to leak their place in the CTF. #}
-        {# Public page hiding is done at the route level #}
-        {% if scores_visible() %}
-          {% if place %}
-            {{ place }}
-            <small>{% trans %}place{% endtrans %}</small>
-          {% endif %}
-        {% endif %}
-      </h2>
-
-      <h2 id="team-score" class="text-center">
-        {% if score %}
-          {{ score }}
-          <small>{% trans %}points{% endtrans %}</small>
-        {% endif %}
-      </h2>
-
-      <div x-data="CaptainMenu">
-        <a class="edit-team text-white" @click="editTeam()">
-          <i
-              class="cursor-pointer fas fa-cogs fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Edit Team"
-          ></i>
-        </a>
-        <a class="edit-captain text-white" @click="chooseCaptain()">
-          <i
-              class="cursor-pointer fas fa-user-tag fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Choose Captain"
-          ></i>
-        </a>
-
-        <a class="invite-members text-white" @click="inviteMembers()">
-          <i
-              class="cursor-pointer fas fa-ticket-alt fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Invite Users"
-          ></i>
-        </a>
-        <a class="disband-team text-white" @click="disbandTeam()">
-          <i
-              class="cursor-pointer fas fa-trash-alt fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Disband Team"
-          ></i>
-        </a>
-      </div>
-
-      <div class="pt-3">{% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
-          <a href="{{ team.website }}" target="_blank" style="color: inherit;" rel="noopener">
-            <i
-                class="fas fa-external-link-alt fa-2x px-2 pt-2"
-                data-toggle="tooltip" data-placement="top"
-                title="{{ team.website }}"
-            ></i>
-          </a>
-        {% endif %}
-        </div>
-      </div>
-
-  </div>
-
-  <div class="container">
-    {% include "components/errors.html" %}
-
-    <br>
-
-    <div class="row min-vh-25">
-      <div class="col-md-12">
-        <h3>{% trans %}Members{% endtrans %}</h3>
-        <table class="table table-striped align-middle">
-          <thead>
-          <tr>
-            <th>{% trans %}User Name{% endtrans %}</th>
-            <th>{% trans %}Score{% endtrans %}</th>
-          </tr>
-          </thead>
-          <tbody>
-
-          {% for member in team.members %}
-            <tr>
-              <td>
-                <a href="{{ url_for('users.public', user_id=member.id) }}">
-                  {{ member.name }}
+<div class="profile-backdrop" aria-hidden="true"></div>
+<div class="container profile-container">
+    <div class="row">
+        <div class="col-md-4" aria-hidden="true"></div>
+        <div class="col-md-8">
+            <div class="profile-card">
+                <h1 class="profile-title" id="team-id" team-id="{{ team.id }}">{{ team.name }}</h1>
+                {% if team.oauth_id %}
+                <a href="https://majorleaguecyber.org/t/{{ team.name }}">
+                    <h3><span class="badge bg-primary rounded-pill">{% trans %}Official{% endtrans %}</span></h3>
                 </a>
-                {% if member.bracket_id %}
-                  <span class="badge bg-secondary ms-2">{{ member.bracket.name }}</span>
                 {% endif %}
-                {% if team.captain_id == member.id %}
-                  <span class="badge bg-primary ms-2">{% trans %}Captain{% endtrans %}</span>
+                {% if team.affiliation %}
+                <h3 class="d-inline-block"><span class="badge bg-primary rounded-pill">{{ team.affiliation }}</span></h3>
                 {% endif %}
-              </td>
-              <td>{{ member.score }}</td>
-            </tr>
-          {% endfor %}
+                {% if team.country %}
+                <h3 class="d-inline-block"><span class="badge bg-primary rounded-pill"><i class="flag-{{ team.country.lower() }}"></i> {{ lookup_country_code(team.country) }}</span></h3>
+                {% endif %}
+                {% if team.bracket_id %}
+                <div class="pt-2">
+                    <h2><span class="badge text-bg-light">{{ team.bracket.name }}</span></h2>
+                </div>
+                {% endif %}
+                {% for field in team.fields %}
+                <h3 class="d-block">{{ field.name }}: {{ field.value }}</h3>
+                {% endfor %}
+                <div class="text-center">
+                    <h2 id="team-place">
+                        {% if scores_visible() and place %}
+                        {{ place }} <small>{% trans %}place{% endtrans %}</small>
+                        {% endif %}
+                    </h2>
+                    <h2 id="team-score">
+                        {% if score %}
+                        {{ score }} <small>{% trans %}points{% endtrans %}</small>
+                        {% endif %}
+                    </h2>
+                </div>
+                <div x-data="CaptainMenu" class="text-center captain-controls pt-3">
+                    <a class="edit-team" @click="editTeam()" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Team"><i class="fas fa-cogs fa-2x px-2"></i></a>
+                    <a class="edit-captain" @click="chooseCaptain()" data-bs-toggle="tooltip" data-bs-placement="top" title="Choose Captain"><i class="fas fa-user-tag fa-2x px-2"></i></a>
+                    <a class="invite-members" @click="inviteMembers()" data-bs-toggle="tooltip" data-bs-placement="top" title="Invite Users"><i class="fas fa-ticket-alt fa-2x px-2"></i></a>
+                    <a class="disband-team" @click="disbandTeam()" data-bs-toggle="tooltip" data-bs-placement="top" title="Disband Team"><i class="fas fa-trash-alt fa-2x px-2"></i></a>
+                </div>
+                <div class="pt-3 text-center">
+                    {% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
+                    <a href="{{ team.website }}" target="_blank" rel="noopener"><i class="fas fa-external-link-alt fa-2x px-2"></i></a>
+                    {% endif %}
+                </div>
+            </div>
 
-          </tbody>
-        </table>
-      </div>
+            {% include "components/errors.html" %}
+
+            <div class="row pt-4">
+                <div class="col-md-12">
+                    <h3 class="profile-section">{% trans %}Members{% endtrans %}</h3>
+                    <table class="table table-themed align-middle">
+                        <thead>
+                        <tr>
+                            <th>{% trans %}User Name{% endtrans %}</th>
+                            <th>{% trans %}Score{% endtrans %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for member in team.members %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('users.public', user_id=member.id) }}">{{ member.name }}</a>
+                                {% if member.bracket_id %}<span class="badge bg-secondary ms-2">{{ member.bracket.name }}</span>{% endif %}
+                                {% if team.captain_id == member.id %}<span class="badge bg-primary ms-2">{% trans %}Captain{% endtrans %}</span>{% endif %}
+                            </td>
+                            <td>{{ member.score }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if solves or awards %}
+                {% if awards %}
+                <div class="row pt-4">
+                    <div class="col-md-12">
+                        <h3 class="profile-section">{% trans %}Awards{% endtrans %}</h3>
+                        <div class="row awards-row">
+                            {% for award in awards %}
+                            <div class="col-md-3 col-sm-6 text-center">
+                                <p><i class="award-icon award-{{ award.icon }} fa-2x"></i><br><strong>{{ award.name }}</strong></p>
+                                {% if award.category %}<p>{{ award.category }}</p>{% endif %}
+                                {% if award.description %}<p>{{ award.description }}</p>{% endif %}
+                                <p>{{ award.value }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row pt-4">
+                    <div class="col-md-12">
+                        <h3 class="profile-section">{% trans %}Solves{% endtrans %}</h3>
+                        <table class="table table-themed align-middle">
+                            <thead>
+                            <tr>
+                                <th class="text-center">{% trans %}Challenge{% endtrans %}</th>
+                                <th class="d-none d-md-block d-lg-block">{% trans %}Category{% endtrans %}</th>
+                                <th>{% trans %}Value{% endtrans %}</th>
+                                <th>{% trans %}Time{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for solve in solves %}
+                            <tr>
+                                <td class="text-center"><a href="{{ url_for('challenges.listing') }}#{{ solve.challenge.name }}-{{ solve.challenge.id }}">{{ solve.challenge.name }}</a></td>
+                                <td class="d-none d-md-block d-lg-block">{{ solve.challenge.category }}</td>
+                                <td>{{ solve.challenge.value }}</td>
+                                <td class="solve-time"><span data-time="{{ solve.date | isoformat }}"></span></td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row min-vh-25">
+                    <h3 class="profile-empty text-center w-100 justify-content-center align-self-center">{% trans %}No solves yet{% endtrans %}</h3>
+                </div>
+            {% endif %}
+        </div>
     </div>
-
-    {% if solves or awards %}
-      {% if awards %}
-        <div class="row">
-          <div class="col-md-12">
-            <h3>{% trans %}Awards{% endtrans %}</h3>
-          </div>
-
-          {% for award in awards %}
-            <div class="col-md-3 col-sm-6">
-              <p class="text-center">
-                <i class="award-icon award-{{ award.icon }} fa-2x"></i>
-                <br>
-                <strong>{{ award.name }}</strong>
-              </p>
-              {% if award.category %}<p class="text-center">{{ award.category }}</p>{% endif %}
-              {% if award.description %}<p class="text-center">{{ award.description }}</p>{% endif %}
-              <p class="text-center">{{ award.value }}</p>
-            </div>
-          {% endfor %}
-
-        </div>
-
-        <br>
-      {% endif %}
-
-      <div class="row">
-        <div class="col-md-12">
-          <h3>{% trans %}Solves{% endtrans %}</h3>
-          <table class="table table-striped align-middle">
-            <thead>
-            <tr>
-              <th>{% trans %}Challenge{% endtrans %}</th>
-              <th class="d-none d-md-block d-lg-block">{% trans %}Category{% endtrans %}</th>
-              <th>{% trans %}Value{% endtrans %}</th>
-              <th>{% trans %}Time{% endtrans %}</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            {% for solve in solves %}
-              <tr>
-                <td>
-                  <a href="{{ url_for('challenges.listing') }}#{{ solve.challenge.name }}-{{ solve.challenge.id }}">
-                    {{ solve.challenge.name }}
-                  </a>
-                </td>
-                <td class="d-none d-md-block d-lg-block">{{ solve.challenge.category }}</td>
-                <td>{{ solve.challenge.value }}</td>
-                <td class="solve-time">
-                  <span data-time="{{ solve.date | isoformat }}">{{ solve.date }}</span>
-                </td>
-              </tr>
-            {% endfor %}
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="clearfix"></div>
-
-      <div class="row" x-data="TeamGraphs">
-        <div class="col-md-6 d-none d-md-block d-lg-block py-4">
-          <div class="progress">
-            <div 
-              class="progress-bar" 
-              role="progressbar" 
-              :style="{ width: `${getSolvePercentage()}%`, 'background-color': 'rgb(0, 209, 64)' }" 
-            >
-            </div>
-            <div 
-              class="progress-bar" 
-              role="progressbar" 
-              :style="{ width: `${getFailPercentage()}%`, 'background-color': 'rgb(207, 38, 0)' }"
-            >
-            </div>
-          </div>
-          <div class="ps-2 float-start">
-            <svg height="16" width="16">
-              <circle cx="8" cy="8" r="5" fill="rgb(0, 209, 64)" />
-            </svg>
-            <small x-text="`Solves (${getSolvePercentage()}%)`"></small>
-          </div>
-          <div class="ps-2 float-start">
-            <svg height="16" width="16">
-              <circle cx="8" cy="8" r="5" fill="rgb(207, 38, 0)" />
-            </svg>
-            <small x-text="`Fails (${getFailPercentage()}%)`"></small>
-          </div>
-        </div>
-        <div class="col-md-6 d-none d-md-block d-lg-block py-4">
-          <div class="progress">
-            <template x-for="category in getCategoryBreakdown()" :key="category.name">
-              <div 
-                class="progress-bar" 
-                role="progressbar" 
-                :style="{ width: `${category.percent}%`, 'background-color': category.color }"
-              >
-              </div>
-            </template>
-          </div>
-          <template x-for="category in getCategoryBreakdown()" :key="category.name">
-            <div class="ps-2 float-start">
-              <svg height="16" width="16">
-                <circle cx="8" cy="8" r="5" :fill="category.color" />
-              </svg>
-              <small x-text="`${category.name} (${category.percent}%)`"></small>
-            </div>
-          </template>
-        </div>
-
-        <br class="clearfix">
-
-        <div class="col-md-12 d-none d-md-block d-lg-block">
-          <div id="score-graph" x-ref="scoregraph" class="w-100 d-flex align-items-center">
-            <div class="text-center w-100">
-              <i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    {% else %}
-      <div class="row min-vh-25">
-        <h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">
-          {% trans %}No solves yet{% endtrans %}
-        </h3>
-      </div>
-    {% endif %}
-  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
   <script>
-      window.stats_data = {{ {
-        'type': 'team',
-        'id': team.id,
-        'name': team.name,
-        'account_id': 'me',
-      } | tojson }};
-
+      window.stats_data = {{ {'type': 'team', 'id': team.id, 'name': team.name, 'account_id': 'me'} | tojson }};
       window.team_captain = {{ (user.id == team.captain_id) | tojson }};
+      const USER_ID = {{ user.id | tojson }},
+            TEAM_ID = {{ team.id | tojson }},
+            NAME = {{ user.name | tojson }},
+            NONCE = {{ Session.nonce | tojson }};
   </script>
   {{ Assets.js("assets/js/teams/private.js") }}
 {% endblock %}

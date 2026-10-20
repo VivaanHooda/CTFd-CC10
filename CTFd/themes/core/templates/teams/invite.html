@@ -1,38 +1,110 @@
 {% extends "base.html" %}
 
+{% block stylesheets %}
+{{ super() }}
+<style>
+  :root {
+    --onepiece-gold: #ffd700;
+    --onepiece-red: #dc143c;
+    --onepiece-orange: #ff6b35;
+    --onepiece-dark-red: #8b0000;
+  }
+
+  body {
+    background-color: #1a1a1a;
+    color: #fff;
+    font-family: 'Voyage Display', 'Arial', sans-serif;
+  }
+
+  .jumbotron {
+    background-color: transparent !important;
+    border-bottom: 3px solid var(--onepiece-gold);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .container h1 {
+    color: var(--onepiece-gold);
+    text-shadow: 2px 2px 4px var(--onepiece-red);
+    font-weight: bold;
+  }
+
+  .themed-container {
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(220, 20, 60, 0.2) 100%);
+    border: 2px solid var(--onepiece-gold);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, var(--onepiece-gold) 0%, var(--onepiece-orange) 100%);
+    border: 2px solid var(--onepiece-gold);
+    color: #000;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-shadow: none;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, var(--onepiece-red) 0%, var(--onepiece-dark-red) 100%);
+    border-color: var(--onepiece-gold);
+    color: var(--onepiece-gold);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  }
+
+  a {
+    color: var(--onepiece-gold);
+    transition: all 0.3s ease;
+  }
+
+  a:hover {
+    color: var(--onepiece-orange);
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+
+  .text-muted {
+    color: #ccc !important;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
   <div class="jumbotron">
     <div class="container">
-      <h1>{% trans %}Join Team{% endtrans %}</h1>
+      <h1>{% trans %}Join Pirate Crew{% endtrans %}</h1>
     </div>
   </div>
   <div class="container">
     <div class="row">
       <div class="col-md-8 col-lg-6 offset-md-2 offset-lg-3">
-        {% include "components/errors.html" %}
+        <div class="themed-container">
+            {% include "components/errors.html" %}
 
-        <p class="h3 text-center mt-md-4">
-          {% trans %}Welcome to{% endtrans %} <strong>{{ team.name }}</strong>!
-        </p>
+            <p class="h3 text-center mt-md-4">
+              {% trans %}Set Sail with{% endtrans %} <strong>{{ team.name }}</strong>!
+            </p>
 
-        <p class="text-center">
-          {% trans %}Click the button below to join the team!{% endtrans %}
-          <br>
-          <small class="text-muted">
-            Or <a href="{{ url_for('teams.new') }}">click here</a> if you'd prefer to create your own team.
-          </small>
-        </p>
+            <p class="text-center">
+              {% trans %}Click the button below to join the crew!{% endtrans %}
+              <br>
+              <small class="text-muted">
+                Or <a href="{{ url_for('teams.new') }}">click here</a> if you'd prefer to create your own pirate crew.
+              </small>
+            </p>
 
-        {% with form = Forms.teams.TeamInviteJoinForm() %}
-          <form method="POST">
-            <div class="row pt-3 text-center">
-              <div class="col-md-12">
-                {{ form.submit(class="btn btn-success w-100") }}
-              </div>
-            </div>
-            {{ form.nonce() }}
-          </form>
-        {% endwith %}
+            {% with form = Forms.teams.TeamInviteJoinForm() %}
+              <form method="POST">
+                <div class="row pt-3 text-center">
+                  <div class="col-md-12">
+                    {{ form.submit(class="btn btn-success w-100") }}
+                  </div>
+                </div>
+                {{ form.nonce() }}
+              </form>
+            {% endwith %}
+        </div>
       </div>
     </div>
   </div>

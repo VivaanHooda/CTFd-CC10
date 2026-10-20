@@ -1,9 +1,13 @@
-{% extends "base.html" %}
+{% extends ("index.html" if request.path == "/" else "base.html") %}
 
 {% block content %}
+  {% if request.path == "/" %}
+    {{ super() }}
+  {% else %}
   <div class="container">
     {{ content | safe }}
   </div>
+  {% endif %}
 {% endblock %}
 
 {% block scripts %}
