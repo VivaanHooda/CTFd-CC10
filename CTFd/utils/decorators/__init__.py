@@ -1,6 +1,6 @@
 import functools
 
-from flask import abort, jsonify, redirect, request, url_for
+from flask import abort, current_app, jsonify, redirect, request, session, url_for
 from flask_babel import gettext
 
 from CTFd.cache import cache
@@ -163,7 +163,13 @@ def ratelimit(method="POST", limit=50, interval=300, key_prefix="rl"):
     def ratelimit_decorator(f):
         @functools.wraps(f)
         def ratelimit_function(*args, **kwargs):
-            ip_address = current_user.get_ip()
+            if current_app.config.get("CLIENTS_SHARE_IP"):
+                # Everyone shares one IP, so an IP key would throttle the whole event at once
+                if not current_user.authed():
+                    return f(*args, **kwargs)
+                ip_address = "user-{}".format(session["id"])
+            else:
+                ip_address = current_user.get_ip()
             key = "{}:{}:{}".format(key_prefix, ip_address, request.endpoint)
             current = cache.get(key)
 

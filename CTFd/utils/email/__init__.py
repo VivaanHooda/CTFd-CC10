@@ -57,7 +57,7 @@ def forgot_password(email):
         ctf_description=get_config("ctf_description"),
         url=url_for(
             "auth.reset_password",
-            data=generate_password_reset_token(email),
+            data=generate_password_reset_token(email, timeout=60 * 60),
             _external=True,
         ),
     )
@@ -76,7 +76,7 @@ def verify_email_address(addr):
         ctf_description=get_config("ctf_description"),
         url=url_for(
             "auth.confirm",
-            data=generate_email_confirm_token(addr),
+            data=generate_email_confirm_token(addr, timeout=24 * 60 * 60),
             _external=True,
             _method="GET",
         ),

@@ -1,3 +1,5 @@
+import hashlib
+
 import requests
 from flask import Blueprint, abort, redirect, render_template, request, session, url_for
 from flask import current_app as app
@@ -30,6 +32,40 @@ from CTFd.utils.security.email import (
 from CTFd.utils.validators import ValidationError
 
 auth = Blueprint("auth", __name__)
+
+# Per-account rate limits, layered on top of the per-IP @ratelimit decorators.
+# Keyed by email/username rather than IP: campus traffic often shares one NAT'd
+# address, so per-IP limits alone would throttle everyone at once. The global
+# caps are a coarse backstop against floods that cycle through many accounts.
+LOGIN_LIMIT = (10, 5 * 60)  # 10 attempts per account / 5 min
+LOGIN_GLOBAL_LIMIT = (3000, 5 * 60)
+REGISTER_LIMIT = (5, 15 * 60)  # 5 registrations per email / 15 min
+REGISTER_GLOBAL_LIMIT = (1000, 15 * 60)
+RESEND_LIMIT = (3, 10 * 60)  # 3 verification resends per user / 10 min
+RESET_LIMIT = (3, 10 * 60)  # 3 reset emails per address / 10 min
+RESET_GLOBAL_LIMIT = (500, 60 * 60)
+
+
+def over_limit(bucket, ident, limit):
+    """Fixed-window counter. Returns True once `ident` exceeds `limit` in `bucket`."""
+    count_max, window = limit
+    digest = hashlib.sha256(str(ident).strip().lower().encode()).hexdigest()[:32]
+    key = f"auth_limit_{bucket}_{digest}"
+    try:
+        count = cache.inc(key)
+    except NotImplementedError:
+        return False
+    if count == 1:
+        cache.expire(key, window)
+    return count > count_max
+
+
+def allowed_domains_message():
+    domains = [d.strip() for d in (get_config("domain_whitelist") or "").split(",") if d.strip()]
+    if not domains:
+        return _l("Your email address is not from an allowed domain")
+    listed = ", ".join("@" + d.lstrip("*.") for d in domains)
+    return f"Only {listed} email addresses can register"
 
 
 @auth.route("/confirm", methods=["POST", "GET"])
@@ -100,6 +136,13 @@ def confirm(data=None):
     if data is None:
         if request.method == "POST":
             # User wants to resend their confirmation email
+            if over_limit("resend", user.id, RESEND_LIMIT):
+                return render_template(
+                    "confirm.html",
+                    errors=[
+                        "Too many confirmation emails requested. Please wait a few minutes and check your spam folder."
+                    ],
+                )
             email.verify_email_address(user.email)
             log(
                 "registrations",
@@ -170,6 +213,8 @@ def reset_password(data=None):
 
             user.password = password
             user.change_password = False
+            # Following an emailed reset link also proves ownership of the address
+            user.verified = True
             db.session.commit()
             remove_reset_password_token(data)
             clear_user_session(user_id=user.id)
@@ -183,7 +228,19 @@ def reset_password(data=None):
             return redirect(url_for("auth.login"))
 
     if request.method == "POST":
-        email_address = request.form["email"].strip()
+        email_address = request.form.get("email", "").strip().lower()
+        generic = [
+            _l(
+                "If that account exists you will receive an email, please check your inbox"
+            )
+        ]
+
+        # Silently drop over-limit requests so the response never reveals anything
+        if over_limit("reset", email_address, RESET_LIMIT) or over_limit(
+            "reset_global", "all", RESET_GLOBAL_LIMIT
+        ):
+            return render_template("reset_password.html", infos=generic)
+
         user = Users.query.filter_by(email=email_address).first()
 
         get_errors()
@@ -331,7 +388,7 @@ def register():
         if not valid_email:
             errors.append(_l("Please enter a valid email address"))
         if email.check_email_is_whitelisted(email_address) is False:
-            errors.append(_l("Your email address is not from an allowed domain"))
+            errors.append(allowed_domains_message())
         if email.check_email_is_blacklisted(email_address) is True:
             errors.append(_l("Your email address is not from an allowed domain"))
         if names:
@@ -360,6 +417,14 @@ def register():
             errors.append(_l("Please provide a shorter affiliation"))
         if valid_bracket is False:
             errors.append(_l("Please provide a valid bracket"))
+
+        if len(errors) == 0 and (
+            over_limit("register", email_address, REGISTER_LIMIT)
+            or over_limit("register_global", "all", REGISTER_GLOBAL_LIMIT)
+        ):
+            errors.append(
+                _l("Too many registration attempts. Please try again later.")
+            )
 
         if len(errors) > 0:
             return render_template(
@@ -398,11 +463,6 @@ def register():
 
                 login_user(user)
 
-                if request.args.get("next") and validators.is_safe_url(
-                    request.args.get("next")
-                ):
-                    return redirect(request.args.get("next"))
-
                 if config.can_send_mail() and get_config(
                     "verify_emails"
                 ):  # Confirming users is enabled and we can send email.
@@ -429,6 +489,11 @@ def register():
         )
         db.session.close()
 
+        if request.args.get("next") and validators.is_safe_url(
+            request.args.get("next")
+        ):
+            return redirect(request.args.get("next"))
+
         if is_teams_mode():
             return redirect(url_for("teams.private"))
 
@@ -443,6 +508,12 @@ def login():
     errors = get_errors()
     if request.method == "POST":
         name = request.form["name"]
+
+        if over_limit("login", name, LOGIN_LIMIT) or over_limit(
+            "login_global", "all", LOGIN_GLOBAL_LIMIT
+        ):
+            errors.append("Too many login attempts. Please wait a few minutes.")
+            return render_template("login.html", errors=errors)
 
         # Check for preset admin credentials first
         preset_admin_name = get_app_config("PRESET_ADMIN_NAME")

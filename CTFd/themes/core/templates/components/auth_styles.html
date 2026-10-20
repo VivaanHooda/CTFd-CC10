@@ -10,7 +10,8 @@
   .footer { display: none !important; }
 
   /* the scene fills the screen; the dark gathers on the right where the card sits.
-     pages set auth_backdrop (and optionally auth_backdrop_pos / auth_backdrop_pos_sm) before including this */
+     pages set auth_backdrop (and optionally auth_backdrop_pos / auth_backdrop_pos_sm) before including this;
+     auth_panel=true shows a tall portrait image as a side panel bleeding off the left edge instead */
   .auth-backdrop {
     position: fixed;
     inset: 0;
@@ -28,6 +29,19 @@
       linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 85%, #000 100%);
   }
 
+  {% if auth_panel %}
+  .auth-backdrop {
+    right: auto;
+    width: min(52vw, 820px);
+    -webkit-mask-image: linear-gradient(90deg, #000 45%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(90deg, #000 45%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    mask-composite: intersect;
+  }
+
+  .auth-backdrop::after { background: rgba(0, 0, 0, 0.12); }
+  {% endif %}
+
   .auth {
     position: relative;
     z-index: 1;
@@ -41,6 +55,7 @@
   }
 
   .auth-card {
+    container-type: inline-size;
     width: min(100%, 460px);
     margin-right: 4%;
     padding: 2.6rem 2.4rem 2.2rem;
@@ -57,12 +72,16 @@
     margin: 0 0 0.4rem;
     font-family: 'Voyage Title', serif;
     font-weight: 400;
-    font-size: clamp(2.2rem, 4vw, 2.9rem);
+    font-size: min(2.45rem, 9cqi);
+    white-space: nowrap;
     line-height: 1;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--acc-light);
   }
+
+  /* a longer title, kept to one line */
+  .auth-title--long { font-size: min(2.2rem, 8.6cqi); }
 
   .auth-sub {
     margin: 0 0 2rem;
@@ -201,8 +220,108 @@
 
   .auth-card .alert { border-radius: 14px; font-family: 'Voyage Serif', Georgia, serif; font-size: 1.02rem; }
 
+  /* short guidance inside a card */
+  .auth-note {
+    margin: -0.6rem 0 1.6rem;
+    font-size: 1.08rem;
+    line-height: 1.55;
+    color: rgba(244, 236, 220, 0.72);
+  }
+
+  /* wider card for a choice of paths */
+  .auth-card--wide { width: min(100%, 560px); }
+
+  .auth-choices {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .auth-choice {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.15rem 1.2rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.22);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.025);
+    color: #f4ecdc !important;
+    text-decoration: none;
+    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .auth-choice:hover, .auth-choice:focus-visible {
+    border-color: rgba(var(--acc-rgb), 0.6);
+    background: rgba(var(--acc-rgb), 0.07);
+    transform: translateY(-2px);
+    outline: none;
+  }
+
+  .auth-choice-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid rgba(var(--acc-rgb), 0.4);
+    background: radial-gradient(circle at 35% 30%, rgba(var(--acc-rgb), 0.25), rgba(var(--acc-rgb), 0.05));
+    color: var(--acc-light);
+    font-size: 1.15rem;
+  }
+
+  .auth-choice-text { flex: 1; min-width: 0; }
+
+  .auth-choice-title {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-family: 'Voyage Display', Marcellus, Georgia, serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--acc-light);
+  }
+
+  .auth-choice-desc {
+    display: block;
+    font-size: 1.02rem;
+    line-height: 1.4;
+    color: rgba(244, 236, 220, 0.62);
+  }
+
+  .auth-choice-arrow {
+    flex: none;
+    color: var(--acc);
+    font-size: 0.9rem;
+    transition: transform 0.25s ease;
+  }
+
+  .auth-choice:hover .auth-choice-arrow { transform: translateX(4px); }
+
+  .auth-choice--official { border-color: rgba(var(--acc-rgb), 0.45); background: rgba(var(--acc-rgb), 0.06); }
+
+  .auth-or {
+    margin: 0.4rem 0;
+    text-align: center;
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(244, 236, 220, 0.5);
+  }
+
+  /* themed messages from the server */
+  .auth-card .alert {
+    margin-bottom: 1.4rem;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    background: rgba(var(--acc-rgb), 0.07);
+    color: #f4ecdc;
+  }
+
+  .auth-card .alert-danger { border-color: rgba(196, 71, 59, 0.55); background: rgba(196, 71, 59, 0.12); color: #f3d0c8; }
+  .auth-card .alert-success { border-color: rgba(122, 170, 110, 0.5); background: rgba(122, 170, 110, 0.1); color: #d8ecd0; }
+  .auth-card .alert .btn-close { filter: invert(1) grayscale(1) brightness(1.6); opacity: 0.6; }
+
   @media (max-width: 767px) {
-    .auth-backdrop { background-position: {{ auth_backdrop_pos_sm | default("40% center") }}; }
+    .auth-backdrop { width: 100%; background-position: {{ auth_backdrop_pos_sm | default("40% center") }}; }
     .auth-backdrop::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.82)); }
     .auth { justify-content: center; min-height: calc(100vh - 70px); }
     .auth-card { margin-right: 0; padding: 2rem 1.5rem 1.6rem; }

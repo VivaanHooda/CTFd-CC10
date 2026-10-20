@@ -4,7 +4,12 @@ import os
 from distutils.util import strtobool
 from typing import Union
 
+from dotenv import load_dotenv
 from sqlalchemy.engine.url import URL
+
+# Load secrets (mail credentials etc.) from the repo-root .env, if present.
+# Real environment variables take precedence over values in the file.
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
 
 _FORCED_EXTRA_CONFIG_TYPES = {}
 
@@ -198,6 +203,9 @@ class ServerConfig(object):
     MAIL_USERNAME: str = empty_str_cast(config_ini["email"]["MAIL_USERNAME"])
 
     MAIL_PASSWORD: str = empty_str_cast(config_ini["email"]["MAIL_PASSWORD"])
+    if isinstance(MAIL_PASSWORD, str):
+        # Gmail app passwords are displayed with spaces; strip them.
+        MAIL_PASSWORD = "".join(MAIL_PASSWORD.split())
 
     MAIL_TLS: bool = process_boolean_str(config_ini["email"]["MAIL_TLS"])
 
@@ -298,6 +306,19 @@ class ServerConfig(object):
     else:
         PRESET_CONFIGS = {}
 
+    # Registration hardening driven by .env. These take precedence over the admin panel
+    # so the domain lock and verification requirement can't be switched off by accident.
+    ALLOWED_EMAIL_DOMAINS: str = empty_str_cast(os.getenv("ALLOWED_EMAIL_DOMAINS", "").strip())
+    if ALLOWED_EMAIL_DOMAINS:
+        PRESET_CONFIGS["domain_whitelist"] = ALLOWED_EMAIL_DOMAINS
+    if process_boolean_str(empty_str_cast(os.getenv("REQUIRE_EMAIL_VERIFICATION", "").strip(), default=False)):
+        PRESET_CONFIGS["verify_emails"] = True
+
+    # Set when every player reaches CTFd through one shared address (e.g. a campus NAT).
+    # Per-IP rate limits would then throttle everyone together, so they are keyed per user
+    # for logged-in requests and skipped for logged-out ones (auth.py's per-account limits cover those).
+    CLIENTS_SHARE_IP: bool = process_boolean_str(empty_str_cast(os.getenv("CLIENTS_SHARE_IP", "").strip(), default=False))
+
     # === EXTRA ===
     # Since the configurations in section "[extra]" will be loaded later, it is not necessary to declare them here.
     # However, if you want to have some processing or checking on the value, you can still declare it here just like other configurations.
@@ -317,6 +338,9 @@ class TestingConfig(ServerConfig):
     CACHE_TYPE = "simple"
     CACHE_THRESHOLD = 500
     SAFE_MODE = True
+    # Keep the test suite independent of a developer's local .env
+    PRESET_CONFIGS = {}
+    CLIENTS_SHARE_IP = False
 
 
 # Actually initialize ServerConfig to allow us to add more attributes on

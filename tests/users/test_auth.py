@@ -785,7 +785,7 @@ def test_admin_can_set_change_password_via_api():
 @patch("smtplib.SMTP")
 def test_user_reset_password_rate_limit(mock_smtp):
     """
-    Test that a user can only create 5 reset password attempts before they are rate limited
+    Test that a user can only create 3 reset password attempts before they are silently rate limited
     """
     app = create_ctfd()
     with app.app_context():
@@ -800,8 +800,8 @@ def test_user_reset_password_rate_limit(mock_smtp):
         set_config("mail_password", "password")
 
         with app.test_client() as client:
-            # Make 5 password reset requests (which should all succeed)
-            for _ in range(5):
+            # Make 3 password reset requests (which should all succeed)
+            for _ in range(3):
                 client.get("/reset_password")
 
                 # Build reset password data
@@ -818,10 +818,10 @@ def test_user_reset_password_rate_limit(mock_smtp):
                 )
                 assert "Too many password reset attempts" not in resp
 
-            # Verify that the email was sent 5 times
-            assert mock_smtp.return_value.send_message.call_count == 5
+            # Verify that the email was sent 3 times
+            assert mock_smtp.return_value.send_message.call_count == 3
 
-            # 6th attempt should be rate limited
+            # 4th attempt should be rate limited without revealing it
             client.get("/reset_password")
             with client.session_transaction() as sess:
                 data = {"nonce": sess.get("nonce"), "email": "user@user.com"}
@@ -829,9 +829,12 @@ def test_user_reset_password_rate_limit(mock_smtp):
             r = client.post("/reset_password", data=data)
             assert r.status_code == 200
             resp = r.get_data(as_text=True)
-            assert "Too many password reset attempts. Please try again later." in resp
+            assert (
+                "If that account exists you will receive an email, please check your inbox"
+                in resp
+            )
 
             # Verify that no additional email was sent
-            assert mock_smtp.return_value.send_message.call_count == 5
+            assert mock_smtp.return_value.send_message.call_count == 3
 
     destroy_ctfd(app)
