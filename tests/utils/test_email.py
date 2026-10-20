@@ -291,17 +291,19 @@ def test_verify_email(mock_smtp):
         )
 
         ctf_name = get_config("ctf_name")
-        email_msg = EmailMessage()
-        email_msg.set_content(msg)
-        email_msg["Subject"] = "Confirm your account for {ctf_name}".format(
-            ctf_name=ctf_name
-        )
-        email_msg["From"] = from_addr
-        email_msg["To"] = to_addr
-
         mock_smtp.return_value.send_message.assert_called()
-        assert str(mock_smtp.return_value.send_message.call_args[0][0]) == str(
-            email_msg
+        sent = mock_smtp.return_value.send_message.call_args[0][0]
+        assert sent["Subject"] == f"Confirm your account for {ctf_name}"
+        assert sent["From"] == from_addr
+        assert sent["To"] == to_addr
+
+        # Plain text fallback plus the designed HTML version
+        assert sent.get_content_type() == "multipart/alternative"
+        assert sent.get_body(("plain",)).get_content().strip() == msg
+        html = sent.get_body(("html",)).get_content()
+        assert (
+            "http://localhost/confirm/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+            in html
         )
     destroy_ctfd(app)
 

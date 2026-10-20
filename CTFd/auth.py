@@ -117,9 +117,6 @@ def confirm(data=None):
         db.session.commit()
         remove_email_confirm_token(data)
         clear_user_session(user_id=user.id)
-        # Only send this registration notification if we are preventing access to registered users only
-        if get_config("verify_emails"):
-            email.successful_registration_notification(user.email)
         db.session.close()
         if current_user.authed():
             return redirect(url_for("challenges.listing"))
@@ -475,11 +472,7 @@ def register():
                     email.verify_email_address(user.email)
                     db.session.close()
                     return redirect(url_for("auth.confirm"))
-                else:  # Don't care about confirming users
-                    if (
-                        config.can_send_mail()
-                    ):  # We want to notify the user that they have registered.
-                        email.successful_registration_notification(user.email)
+                # No "successfully registered" email: it only spends the daily mail quota
 
         log(
             "registrations",

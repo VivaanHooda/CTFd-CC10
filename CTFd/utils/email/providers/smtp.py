@@ -9,7 +9,7 @@ from CTFd.utils.email.providers import EmailProvider
 
 class SMTPEmailProvider(EmailProvider):
     @staticmethod
-    def sendmail(addr, text, subject):
+    def sendmail(addr, text, subject, html=None):
         ctf_name = get_config("ctf_name")
         mailfrom_addr = get_config("mailfrom_addr") or get_app_config("MAILFROM_ADDR")
         mailfrom_addr = formataddr((ctf_name, mailfrom_addr))
@@ -53,6 +53,9 @@ class SMTPEmailProvider(EmailProvider):
 
             msg = EmailMessage()
             msg.set_content(text)
+            if html:
+                # Plain text stays as the fallback part for clients that don't render HTML
+                msg.add_alternative(html, subtype="html")
 
             msg["Subject"] = subject
             msg["From"] = mailfrom_addr

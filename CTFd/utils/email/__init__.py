@@ -14,6 +14,7 @@ from CTFd.constants.email import (
 )
 from CTFd.utils import get_config
 from CTFd.utils.config import get_mail_provider
+from CTFd.utils.email.html import verification_email_html
 from CTFd.utils.email.providers.mailgun import MailgunEmailProvider
 from CTFd.utils.email.providers.smtp import SMTPEmailProvider
 from CTFd.utils.formatters import safe_format
@@ -25,12 +26,14 @@ from CTFd.utils.security.email import (
 PROVIDERS = {"smtp": SMTPEmailProvider, "mailgun": MailgunEmailProvider}
 
 
-def sendmail(addr, text, subject="Message from {ctf_name}"):
+def sendmail(addr, text, subject="Message from {ctf_name}", html=None):
     subject = safe_format(subject, ctf_name=get_config("ctf_name"))
     provider = get_mail_provider()
     EmailProvider = PROVIDERS.get(provider)
     if EmailProvider is None:
         return False, "No mail settings configured"
+    if html:
+        return EmailProvider.sendmail(addr, text, subject, html=html)
     return EmailProvider.sendmail(addr, text, subject)
 
 
@@ -70,23 +73,27 @@ def forgot_password(email):
 
 
 def verify_email_address(addr):
+    url = url_for(
+        "auth.confirm",
+        data=generate_email_confirm_token(addr, timeout=24 * 60 * 60),
+        _external=True,
+        _method="GET",
+    )
+    custom_body = get_config("verification_email_body")
     text = safe_format(
-        get_config("verification_email_body") or DEFAULT_VERIFICATION_EMAIL_BODY,
+        custom_body or DEFAULT_VERIFICATION_EMAIL_BODY,
         ctf_name=get_config("ctf_name"),
         ctf_description=get_config("ctf_description"),
-        url=url_for(
-            "auth.confirm",
-            data=generate_email_confirm_token(addr, timeout=24 * 60 * 60),
-            _external=True,
-            _method="GET",
-        ),
+        url=url,
     )
 
     subject = safe_format(
         get_config("verification_email_subject") or DEFAULT_VERIFICATION_EMAIL_SUBJECT,
         ctf_name=get_config("ctf_name"),
     )
-    return sendmail(addr=addr, text=text, subject=subject)
+    # A body customised in the admin panel is sent as-is; otherwise use the designed HTML version
+    html = None if custom_body else verification_email_html(get_config("ctf_name"), url)
+    return sendmail(addr=addr, text=text, subject=subject, html=html)
 
 
 def successful_registration_notification(addr):

@@ -8,7 +8,7 @@ from CTFd.utils.email.providers import EmailProvider
 
 class MailgunEmailProvider(EmailProvider):
     @staticmethod
-    def sendmail(addr, text, subject):
+    def sendmail(addr, text, subject, html=None):
         ctf_name = get_config("ctf_name")
         mailfrom_addr = get_config("mailfrom_addr") or get_app_config("MAILFROM_ADDR")
         mailfrom_addr = formataddr((ctf_name, mailfrom_addr))
@@ -22,16 +22,19 @@ class MailgunEmailProvider(EmailProvider):
         else:
             mailgun_base_url = get_app_config("MAILGUN_BASE_URL")
             mailgun_api_key = get_app_config("MAILGUN_API_KEY")
+        data = {
+            "from": mailfrom_addr,
+            "to": [addr],
+            "subject": subject,
+            "text": text,
+        }
+        if html:
+            data["html"] = html
         try:
             r = requests.post(
                 mailgun_base_url + "/messages",
                 auth=("api", mailgun_api_key),
-                data={
-                    "from": mailfrom_addr,
-                    "to": [addr],
-                    "subject": subject,
-                    "text": text,
-                },
+                data=data,
                 timeout=1.0,
             )
         except requests.RequestException as e:
