@@ -52,7 +52,7 @@
         {% endif %}
       </ul>
 
-      <ul class="navbar-nav nav-side">
+      <ul class="navbar-nav nav-side{% if not authed() %} nav-auth{% endif %}">
         {% if authed() %}
           {% if is_admin() %}
             <li class="nav-item">
@@ -96,12 +96,13 @@
             </a>
           </li>
         {% else %}
+          <li class="nav-pill nav-pill-solid" aria-hidden="true"></li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('auth.login') }}">{% trans %}Login{% endtrans %}</a>
           </li>
           {% if registration_visible() %}
             <li class="nav-item">
-              <a class="nav-cta" href="{{ url_for('auth.register') }}">{% trans %}Register{% endtrans %}</a>
+              <a class="nav-link" data-pill-default href="{{ url_for('auth.register') }}">{% trans %}Register{% endtrans %}</a>
             </li>
           {% endif %}
         {% endif %}
@@ -112,57 +113,62 @@
 <script>
   (function () {
     var nav = document.querySelector('.voyage-nav');
-    var list = nav && nav.querySelector('.nav-main');
-    var pill = list && list.querySelector('.nav-pill');
-    if (nav) {
-      var onScroll = function () { nav.classList.toggle('is-scrolled', window.scrollY > 20); };
-      window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
-    }
-    if (!list || !pill) return;
-    var links = Array.prototype.slice.call(list.querySelectorAll('.nav-link'));
-    var path = window.location.pathname;
-    var active = null;
-    links.forEach(function (a) {
-      var href = a.getAttribute('href');
-      if (href && href !== '/' && (path === href || path.indexOf(href + '/') === 0)) {
-        active = a; a.classList.add('active'); a.setAttribute('aria-current', 'page');
-      }
-    });
-
-    // spring, after the cc-website pill (stiffness 380, damping 30)
-    var x = 0, w = 0, vx = 0, vw = 0, tx = 0, tw = 0, op = 0, top = 0, raf = 0, last = 0, placed = false;
+    if (!nav) return;
+    var onScroll = function () { nav.classList.toggle('is-scrolled', window.scrollY > 20); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function render() {
-      pill.style.transform = 'translateX(' + x.toFixed(2) + 'px)';
-      pill.style.width = Math.max(0, w).toFixed(2) + 'px';
-      pill.style.opacity = op.toFixed(3);
-    }
-    function step(t) {
-      var dt = Math.min(0.032, (t - (last || t)) / 1000); last = t;
-      var k = 380, c = 30;
-      vx += (-k * (x - tx) - c * vx) * dt; x += vx * dt;
-      vw += (-k * (w - tw) - c * vw) * dt; w += vw * dt;
-      op += (top - op) * Math.min(1, dt * 14);
-      render();
-      if (Math.abs(x - tx) + Math.abs(w - tw) + Math.abs(vx) + Math.abs(vw) + Math.abs(op - top) > 0.05) raf = requestAnimationFrame(step);
-      else { x = tx; w = tw; op = top; render(); raf = 0; last = 0; }
-    }
-    function moveTo(el) {
-      links.forEach(function (l) { l.classList.toggle('is-under-pill', l === el); });
-      if (!el) { top = 0; } else {
-        tx = el.offsetLeft; tw = el.offsetWidth; top = 1;
-        if (!placed || reduce) { x = tx; w = tw; placed = true; }
+    var path = window.location.pathname;
+    initPill(nav.querySelector('.nav-main'));
+    initPill(nav.querySelector('.nav-auth'));
+
+    function initPill(list) {
+      var pill = list && list.querySelector('.nav-pill');
+      if (!pill) return;
+      var links = Array.prototype.slice.call(list.querySelectorAll('.nav-link'));
+      var active = null;
+      links.forEach(function (a) {
+        var href = a.getAttribute('href');
+        if (href && href !== '/' && (path === href || path.indexOf(href + '/') === 0)) {
+          active = a; a.classList.add('active'); a.setAttribute('aria-current', 'page');
+        }
+      });
+      // the pill rests here when no link in this capsule is the current page
+      if (!active) active = list.querySelector('[data-pill-default]');
+
+      // spring, after the cc-website pill (stiffness 380, damping 30)
+      var x = 0, w = 0, vx = 0, vw = 0, tx = 0, tw = 0, op = 0, top = 0, raf = 0, last = 0, placed = false;
+      function render() {
+        pill.style.transform = 'translateX(' + x.toFixed(2) + 'px)';
+        pill.style.width = Math.max(0, w).toFixed(2) + 'px';
+        pill.style.opacity = op.toFixed(3);
       }
-      if (reduce) { x = tx; w = tw; op = top; render(); return; }
-      if (!raf) raf = requestAnimationFrame(step);
+      function step(t) {
+        var dt = Math.min(0.032, (t - (last || t)) / 1000); last = t;
+        var k = 380, c = 30;
+        vx += (-k * (x - tx) - c * vx) * dt; x += vx * dt;
+        vw += (-k * (w - tw) - c * vw) * dt; w += vw * dt;
+        op += (top - op) * Math.min(1, dt * 14);
+        render();
+        if (Math.abs(x - tx) + Math.abs(w - tw) + Math.abs(vx) + Math.abs(vw) + Math.abs(op - top) > 0.05) raf = requestAnimationFrame(step);
+        else { x = tx; w = tw; op = top; render(); raf = 0; last = 0; }
+      }
+      function moveTo(el) {
+        links.forEach(function (l) { l.classList.toggle('is-under-pill', l === el); });
+        if (!el) { top = 0; } else {
+          tx = el.offsetLeft; tw = el.offsetWidth; top = 1;
+          if (!placed || reduce) { x = tx; w = tw; placed = true; }
+        }
+        if (reduce) { x = tx; w = tw; op = top; render(); return; }
+        if (!raf) raf = requestAnimationFrame(step);
+      }
+      links.forEach(function (l) {
+        l.addEventListener('mouseenter', function () { moveTo(l); });
+        l.addEventListener('focus', function () { moveTo(l); });
+      });
+      list.addEventListener('mouseleave', function () { moveTo(active); });
+      list.addEventListener('focusout', function (e) { if (!list.contains(e.relatedTarget)) moveTo(active); });
+      window.addEventListener('resize', function () { placed = false; moveTo(active); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { moveTo(active); }); else moveTo(active);
     }
-    links.forEach(function (l) {
-      l.addEventListener('mouseenter', function () { moveTo(l); });
-      l.addEventListener('focus', function () { moveTo(l); });
-    });
-    list.addEventListener('mouseleave', function () { moveTo(active); });
-    list.addEventListener('focusout', function (e) { if (!list.contains(e.relatedTarget)) moveTo(active); });
-    window.addEventListener('resize', function () { placed = false; moveTo(active); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { moveTo(active); }); else moveTo(active);
   })();
 </script>

@@ -167,6 +167,7 @@
     .voyage-nav .nav-link.active { color: #f4ecdc !important; }
     .voyage-nav .nav-link:focus-visible { outline: none; }
     .voyage-nav .nav-main .nav-link.is-under-pill { color: var(--acc-light) !important; }
+    .voyage-nav .nav-auth .nav-link.is-under-pill { color: var(--acc-ink) !important; }
 
     /* the pill: translucent gold glass */
     .voyage-nav .nav-pill {
@@ -187,6 +188,14 @@
         box-shadow:
             inset 0 1px 0 rgba(255, 246, 220, 0.22),
             0 0 16px rgba(var(--acc-rgb), 0.18);
+    }
+    /* Login / Register: the pill is solid gold, like a button */
+    .voyage-nav .nav-pill-solid {
+        border: 0;
+        background: var(--acc-grad);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.6), 0 0 18px rgba(var(--acc-rgb), 0.3);
     }
 
     /* right capsule: icons, or Login + Register */
@@ -217,30 +226,6 @@
         text-align: center;
         letter-spacing: 0;
     }
-    .voyage-nav .nav-cta {
-        display: inline-flex;
-        align-items: center;
-        height: 36px;
-        padding: 0 1.15rem 0 calc(1.15rem + 0.22em);
-        border-radius: 999px;
-        background: var(--acc-grad);
-        box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.6);
-        font-family: 'Voyage Serif', Georgia, serif;
-        font-weight: 500;
-        font-size: 0.86rem;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--acc-ink);
-        text-decoration: none;
-        transition: filter 0.25s ease, box-shadow 0.25s ease;
-    }
-    .voyage-nav .nav-cta:hover,
-    .voyage-nav .nav-cta:focus-visible {
-        color: var(--acc-ink);
-        filter: brightness(1.08);
-        box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.7), 0 0 18px rgba(var(--acc-rgb), 0.45);
-    }
-
     /* mobile */
     .voyage-nav .navbar-toggler {
         width: 46px;
@@ -292,13 +277,13 @@
             border-radius: 0;
             border-bottom: 1px solid rgba(var(--acc-rgb), 0.12);
         }
-        .voyage-nav .nav-main .nav-link.is-under-pill { color: #f4ecdc !important; }
+        .voyage-nav .nav-main .nav-link.is-under-pill,
+        .voyage-nav .nav-auth .nav-link.is-under-pill { color: #f4ecdc !important; }
         .voyage-nav .nav-link.active { color: var(--acc-light) !important; }
         .voyage-nav .nav-icon { width: 100%; justify-content: flex-start; gap: 0.7rem; font-size: 0.88rem; letter-spacing: 0.22em; }
         .voyage-nav .nav-icon i { width: 1.2rem; color: var(--acc); }
         .voyage-nav .nav-icon-label { display: inline; }
         .voyage-nav .nav-count { position: static; }
-        .voyage-nav .nav-cta { margin-top: 1rem; }
         .voyage-nav .navbar-brand { height: 46px; padding: 0 1rem; }
         .navwordmark { font-size: 1rem; }
     }
