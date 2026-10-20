@@ -83,6 +83,12 @@ class TokenList(Resource):
         },
     )
     def post(self):
+        # Player access tokens are disabled so the API can't be driven by scripts/MCP servers
+        if is_admin() is False:
+            return {
+                "success": False,
+                "errors": {"": ["Access tokens are disabled for this CTF"]},
+            }, 403
         req = request.get_json()
         expiration = req.get("expiration")
         description = req.get("description")

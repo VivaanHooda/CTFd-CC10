@@ -10,12 +10,16 @@ from tests.helpers import create_ctfd, destroy_ctfd, gen_user, login_as_user
 
 
 def test_api_tag_list_post():
-    """Can a user create a token"""
+    """Players can't create tokens; admins can"""
     app = create_ctfd()
     with app.app_context():
-        user = gen_user(app.db, name="user")
-        user_id = user.id
+        gen_user(app.db, name="user")
         with login_as_user(app) as client:
+            r = client.post("/api/v1/tokens", json={})
+            assert r.status_code == 403
+
+        user_id = Users.query.filter_by(type="admin").first().id
+        with login_as_user(app, name="admin", password="password") as client:
             r = client.post("/api/v1/tokens", json={})
             assert r.status_code == 200
             resp = r.get_json()

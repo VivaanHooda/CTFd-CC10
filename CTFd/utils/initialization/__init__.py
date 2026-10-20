@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import re
 import sys
 
 from flask import abort, redirect, render_template, request, session, url_for
@@ -116,6 +117,7 @@ def init_template_globals(app):
     app.jinja_env.globals.update(integrations=integrations)
     app.jinja_env.globals.update(authed=authed)
     app.jinja_env.globals.update(is_admin=is_admin)
+    app.jinja_env.globals.update(block_automation=lambda: app.config.get("BLOCK_AUTOMATION"))
     app.jinja_env.globals.update(get_current_user_attrs=get_current_user_attrs)
     app.jinja_env.globals.update(get_current_team_attrs=get_current_team_attrs)
     app.jinja_env.globals.update(get_ip=get_ip)
@@ -376,11 +378,35 @@ def init_request_processors(app):
             except Exception:
                 abort(401, description="Invalid authorization header")
             else:
+                if user.type != "admin":
+                    abort(403, description="Access tokens are disabled for this CTF")
                 if user.banned:
                     abort(403, description="You have been banned from this CTF")
                 if user.team and user.team.banned:
                     abort(403, description="Your team has been banned from this CTF")
                 login_user(user)
+
+    automation_agents = re.compile(
+        r"curl|wget|python|httpx|aiohttp|go-http-client|node-fetch|undici|axios|okhttp|"
+        r"java/|libwww|scrapy|headless|phantomjs|playwright|puppeteer|selenium|"
+        r"claude|anthropic|gptbot|chatgpt|openai|oai-searchbot|perplexity|bytespider|ccbot",
+        re.IGNORECASE,
+    )
+
+    @app.before_request
+    def block_automation():
+        if not app.config.get("BLOCK_AUTOMATION"):
+            return
+        if request.endpoint == "views.healthcheck" or is_admin():
+            return
+        user_agent = request.headers.get("User-Agent", "")
+        if not user_agent or automation_agents.search(user_agent):
+            abort(403, description="Automated clients are not allowed on this CTF")
+        # Real browsers always send Fetch Metadata on API calls; bare HTTP clients don't
+        if request.path.startswith("/api/") and not request.headers.get(
+            "Sec-Fetch-Site"
+        ):
+            abort(403, description="Automated clients are not allowed on this CTF")
 
     @app.before_request
     def csrf():

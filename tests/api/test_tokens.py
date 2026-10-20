@@ -73,10 +73,17 @@ def test_user_token_access():
             token = generate_user_token(user, expiration=None)
             headers = {"Authorization": "token " + token.value}
             r = client.get("/api/v1/users/me", headers=headers, json="")
+            # Player access tokens are disabled for this CTF
+            assert r.status_code == 403
+
+        with app.test_client() as client:
+            admin = Users.query.filter_by(type="admin").first()
+            token = generate_user_token(admin, expiration=None)
+            headers = {"Authorization": "token " + token.value}
+            r = client.get("/api/v1/users/me", headers=headers, json="")
             assert r.status_code == 200
             resp = r.get_json()
-            assert resp["data"]["email"] == "user1@examplectf.com"
-            assert resp["data"]["name"] == "user1"
+            assert resp["data"]["name"] == admin.name
     destroy_ctfd(app)
 
 
@@ -115,7 +122,7 @@ def test_banned_user_token_access():
 
         with app.test_client() as client:
             r = client.get("/api/v1/users/me", headers=headers, json="")
-            assert r.status_code == 200
+            assert r.status_code == 403  # player tokens are disabled outright
 
         Users.query.filter_by(id=user.id).first().banned = True
         app.db.session.commit()
@@ -137,7 +144,7 @@ def test_banned_team_token_access():
 
         with app.test_client() as client:
             r = client.get("/api/v1/users/me", headers=headers, json="")
-            assert r.status_code == 200
+            assert r.status_code == 403  # player tokens are disabled outright
 
         Teams.query.filter_by(id=team.id).first().banned = True
         app.db.session.commit()

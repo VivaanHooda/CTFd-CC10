@@ -1,19 +1,54 @@
 {% extends "base.html" %}
 
+{% block stylesheets %}
+  {{ super() }}
+  {% with auth_backdrop="img/turner-ulysses.jpg", auth_backdrop_pos="28% 70%", auth_backdrop_pos_sm="30% 70%" %}{% include "components/auth_styles.html" %}{% endwith %}
+  <style>
+    .lost-code {
+      margin: 0 0 0.6rem;
+      font-family: 'Voyage Display', Marcellus, Georgia, serif;
+      font-size: min(5.6rem, 24cqi);
+      line-height: 0.9;
+      letter-spacing: 0.06em;
+      background: linear-gradient(180deg, #fbe7b8 0%, #d9b56b 60%, #a8823e 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-variant-numeric: lining-nums;
+    }
+
+    .lost-actions { display: grid; gap: 0.9rem; margin-top: 0.4rem; }
+
+    a.auth-submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0;
+      text-decoration: none;
+    }
+
+    .lost-alt {
+      text-align: center;
+      font-size: 1.05rem;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
+{# "Ulysses Deriding Polyphemus", J. M. W. Turner, 1829 (public domain) #}
+<div class="auth-backdrop" aria-hidden="true"></div>
+<div class="container auth">
+  <div class="auth-card">
+    <p class="lost-code" aria-hidden="true">404</p>
+    <h1 class="auth-title">{% trans %}Lost at Sea{% endtrans %}</h1>
+    <p class="auth-sub">{% trans %}This page has drifted beyond the edge of the map.{% endtrans %}</p>
 
-<div class="container">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="pt-5 mt-5 text-center">
-				<h1>{% trans %}File not found{% endtrans %}</h1>
-				<hr class="w-50 m-auto">
-				<br/>
-				<h2>{% trans %}404 Not Found{% endtrans %}</h2>
-			</div>
-		</div>
-	</div>
+    <p class="auth-note">{% trans %}The link may be broken, or the page may have moved. Let the winds carry you back.{% endtrans %}</p>
+
+    <div class="lost-actions">
+      <a class="auth-submit" href="{{ url_for('views.static_html') }}">{% trans %}Return to Port{% endtrans %}</a>
+      <a class="lost-alt" href="{{ url_for('challenges.listing') }}">{% trans %}Or head to the challenges{% endtrans %}</a>
+    </div>
+  </div>
 </div>
-
-
 {% endblock %}

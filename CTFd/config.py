@@ -319,6 +319,10 @@ class ServerConfig(object):
     # for logged-in requests and skipped for logged-out ones (auth.py's per-account limits cover those).
     CLIENTS_SHARE_IP: bool = process_boolean_str(empty_str_cast(os.getenv("CLIENTS_SHARE_IP", "").strip(), default=False))
 
+    # Turn players away from scripted clients (curl, python, MCP servers) and automation-driven
+    # browsers (Playwright/Puppeteer/Selenium). Admins are always exempt so ctfcli keeps working.
+    BLOCK_AUTOMATION: bool = process_boolean_str(empty_str_cast(os.getenv("BLOCK_AUTOMATION", "").strip(), default=False))
+
     # === EXTRA ===
     # Since the configurations in section "[extra]" will be loaded later, it is not necessary to declare them here.
     # However, if you want to have some processing or checking on the value, you can still declare it here just like other configurations.
@@ -341,6 +345,14 @@ class TestingConfig(ServerConfig):
     # Keep the test suite independent of a developer's local .env
     PRESET_CONFIGS = {}
     CLIENTS_SHARE_IP = False
+    BLOCK_AUTOMATION = False
+    MAILFROM_ADDR = "noreply@examplectf.com"
+    MAIL_PORT = None
+    MAIL_USEAUTH = None
+    MAIL_USERNAME = None
+    MAIL_PASSWORD = None
+    MAIL_TLS = None
+    MAIL_SSL = None
 
 
 # Actually initialize ServerConfig to allow us to add more attributes on

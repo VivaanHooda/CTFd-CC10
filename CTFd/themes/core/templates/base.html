@@ -16,6 +16,15 @@
 
   {{ Assets.js("assets/js/color_mode_switcher.js", type=None) }}
 
+  {% if block_automation() and not is_admin() %}
+  <script type="text/javascript">
+      if (navigator.webdriver) {
+          // Stop parsing so none of the page (or its API calls) loads, then show a notice
+          window.stop();
+          document.documentElement.innerHTML = '<body style="margin:0;background:#000"><p style="margin:40vh auto;text-align:center;font-family:Georgia,serif;color:#f4ecdc">Automated browsers are not allowed on this CTF.</p></body>';
+      }
+  </script>
+  {% endif %}
   <script type="text/javascript">
       window.init = {
           'urlRoot': "{{ request.script_root }}",
