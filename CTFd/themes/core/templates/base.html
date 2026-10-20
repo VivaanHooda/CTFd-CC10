@@ -10,6 +10,7 @@
 
   {% block stylesheets %}
     {{ Assets.css("assets/scss/main.scss") }}
+    {% include "components/popup_styles.html" %}
   {% endblock %}
 
   {{ Plugins.styles }}

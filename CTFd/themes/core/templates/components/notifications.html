@@ -1,32 +1,27 @@
+{% macro quill() -%}
+<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.2 2.4c-6.1.3-11.1 3.7-13.6 9.3l-1.2 2.8-2.9 6.4a.65.65 0 1 0 1.18.54l2.75-6.06 3.3-1.2c5.5-2.05 9.1-6.5 10.47-11.78ZM9.1 12.6c1.9-3.6 4.6-6.1 8.2-7.6-2.7 2-4.9 4.6-6.6 7.9Z"/></svg>
+{%- endmacro %}
+
 <div x-data>
   <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div x-ref="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
-      <div class="toast-header">
-        <strong class="me-auto" x-text="$store.toast.title"></strong>
-        <small>just now</small>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body" x-html="$store.toast.html">
-      </div>
+    <div x-ref="toast" class="toast hide notice-card notice-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      <div class="notice-eyebrow">{{ quill() }}<span>{% trans %}Hermes brings word{% endtrans %}</span></div>
+      <strong class="notice-title d-block" x-text="$store.toast.title"></strong>
+      <div class="notice-text" x-html="$store.toast.html"></div>
     </div>
   </div>
 </div>
 
 
 <div x-data>
-  <div class="modal fade" x-ref="modal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" x-text="$store.modal.title"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p x-html="$store.modal.html"></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
-        </div>
+  <div class="modal fade notice-modal" x-ref="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content notice-card">
+        <div class="notice-eyebrow">{{ quill() }}<span>{% trans %}Hermes brings word{% endtrans %}</span></div>
+        <h5 class="modal-title notice-title" x-text="$store.modal.title"></h5>
+        <div class="notice-text" x-html="$store.modal.html"></div>
+        <button type="button" class="btn notice-btn" data-bs-dismiss="modal">{% trans %}Onward{% endtrans %}</button>
       </div>
     </div>
   </div>
