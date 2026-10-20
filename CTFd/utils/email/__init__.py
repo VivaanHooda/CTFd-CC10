@@ -80,6 +80,12 @@ def verify_email_address(addr):
         _method="GET",
     )
     custom_body = get_config("verification_email_body")
+    # The admin email page pre-fills the default text, so saving that page stores it verbatim.
+    # Only treat the body as custom when it actually differs from the default.
+    if custom_body and " ".join(str(custom_body).split()) == " ".join(
+        DEFAULT_VERIFICATION_EMAIL_BODY.split()
+    ):
+        custom_body = None
     text = safe_format(
         custom_body or DEFAULT_VERIFICATION_EMAIL_BODY,
         ctf_name=get_config("ctf_name"),

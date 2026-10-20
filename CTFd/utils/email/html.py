@@ -9,7 +9,6 @@ INK = "#e8dfcc"
 MUTED = "#8c826f"
 CARD = "#0d0b08"
 PAGE = "#000000"
-SERIF = "Georgia, 'Times New Roman', serif"
 SANS = "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
 
 
@@ -34,6 +33,8 @@ def _shell(preheader, eyebrow, heading, paragraphs, button_label, url, note, foo
     .heading {{ font-size: 26px !important; }}
     .btn a {{ display: block !important; }}
   }}
+  /* Outlook.com dark mode: keep the gold text instead of letting it be recoloured */
+  [data-ogsc] .btn-text {{ color: {GOLD_LIGHT} !important; }}
 </style>
 </head>
 <body style="margin:0;padding:0;background:{PAGE};">
@@ -49,13 +50,13 @@ def _shell(preheader, eyebrow, heading, paragraphs, button_label, url, note, foo
         </tr>
         <tr>
           <td class="card-pad" bgcolor="{CARD}" style="background:{CARD};border:1px solid #3a3022;border-radius:18px;padding:44px 40px;">
-            <p style="margin:0 0 12px;font-family:{SANS};font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:{GOLD};">{eyebrow}</p>
-            <h1 class="heading" style="margin:0 0 20px;font-family:{SERIF};font-size:32px;font-weight:normal;line-height:1.2;color:{GOLD_LIGHT};">{escape(heading)}</h1>
+            <p style="margin:0 0 12px;font-family:{SANS};font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:{GOLD};">{eyebrow}</p>
+            <h1 class="heading" style="margin:0 0 20px;font-family:{SANS};font-size:28px;font-weight:700;line-height:1.25;color:{GOLD_LIGHT};">{escape(heading)}</h1>
             {body}
             <table role="presentation" class="btn" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 24px;">
               <tr>
-                <td align="center" bgcolor="{GOLD}" style="border-radius:999px;background:{GOLD};">
-                  <a href="{url}" target="_blank" style="display:inline-block;padding:15px 34px;font-family:{SANS};font-size:15px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#120e07;text-decoration:none;border-radius:999px;">{escape(button_label)}</a>
+                <td align="center" bgcolor="#1a150d" style="border-radius:12px;background:#1a150d;border:1.5px solid {GOLD};">
+                  <a class="btn-text" href="{url}" target="_blank" style="display:inline-block;padding:14px 32px;font-family:{SANS};font-size:16px;font-weight:600;color:{GOLD_LIGHT};text-decoration:none;border-radius:12px;">{escape(button_label)} &rarr;</a>
                 </td>
               </tr>
             </table>
@@ -89,7 +90,7 @@ def verification_email_html(ctf_name, url):
             f"Welcome aboard, sailor. One trial stands between you and <strong style=\"color:{GOLD_LIGHT};\">{name}</strong>.",
             "Confirm this address to unlock the challenges and take your place on the scoreboard.",
         ],
-        button_label="Confirm my account",
+        button_label="Confirm my email",
         url=url,
         note="This link expires in 24 hours. You can request a new one from the confirm page after logging in.",
         footer=f"You're receiving this because this address was used to sign up for {name}.<br>"
