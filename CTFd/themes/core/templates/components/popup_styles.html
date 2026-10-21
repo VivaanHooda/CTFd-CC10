@@ -104,19 +104,20 @@
     width: 100%;
     height: 52px;
     padding: 0 1.6rem;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    background: var(--acc-grad);
-    box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.45);
+    border: 0;
+    border-radius: var(--btn-radius);
+    background: var(--btn-primary-bg);
+    box-shadow: var(--btn-primary-shadow);
+    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.35);
     font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
     letter-spacing: 0;
     color: var(--acc-ink);
-    transition: filter 0.15s ease;
+    transition: background 0.25s var(--btn-ease), box-shadow 0.3s var(--btn-ease), transform 0.25s var(--btn-ease);
   }
   .notice-btn:hover,
-  .notice-btn:focus-visible { color: var(--acc-ink); filter: brightness(1.07); }
+  .notice-btn:focus-visible { color: var(--acc-ink); background: var(--btn-primary-bg-hover); box-shadow: var(--btn-primary-shadow-hover); transform: translateY(-1px); }
   .notice-btn:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
 
   /* ----- alert modal: notifications sent as alerts ----- */

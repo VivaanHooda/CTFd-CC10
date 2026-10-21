@@ -178,13 +178,6 @@
     pointer-events: auto;
   }
 
-  /* the secondary button sits on the hero image, so it gets a touch of glass */
-  .hero-actions .btn-secondary {
-    background: rgba(18, 15, 10, 0.6);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  }
-
   .hero-actions .btn svg {
     width: 18px;
     height: 18px;
@@ -193,10 +186,7 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-    transition: transform 0.2s ease;
   }
-
-  .hero-actions .btn:hover svg { transform: translateX(3px); }
 
   @media (max-width: 768px) {
     .hero-logo-bar {

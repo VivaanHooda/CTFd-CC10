@@ -81,7 +81,9 @@
       padding: 0 1.1rem;
       border: 0;
       border-radius: 8px;
-      background: var(--acc-grad);
+      background: var(--btn-primary-bg);
+      box-shadow: var(--btn-primary-shadow);
+      transition: background 0.25s var(--btn-ease), box-shadow 0.3s var(--btn-ease);
       font-family: 'Voyage Serif', system-ui, sans-serif;
       font-weight: 600;
       font-size: 0.875rem;
@@ -89,7 +91,7 @@
       color: var(--acc-ink);
     }
 
-    .teams-search button:hover { filter: brightness(1.08); }
+    .teams-search button:hover { background: var(--btn-primary-bg-hover); box-shadow: var(--btn-primary-shadow-hover); }
 
     .search-note {
       margin: -0.6rem 0 1.2rem 0.4rem;
