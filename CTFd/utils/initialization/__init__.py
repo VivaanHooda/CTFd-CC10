@@ -402,9 +402,12 @@ def init_request_processors(app):
         user_agent = request.headers.get("User-Agent", "")
         if not user_agent or automation_agents.search(user_agent):
             abort(403, description="Automated clients are not allowed on this CTF")
-        # Real browsers always send Fetch Metadata on API calls; bare HTTP clients don't
-        if request.path.startswith("/api/") and not request.headers.get(
-            "Sec-Fetch-Site"
+        # Real browsers always send Fetch Metadata on API calls; bare HTTP clients don't.
+        # Browsers only send it to HTTPS origins, so the check is skipped on plain HTTP.
+        if (
+            request.is_secure
+            and request.path.startswith("/api/")
+            and not request.headers.get("Sec-Fetch-Site")
         ):
             abort(403, description="Automated clients are not allowed on this CTF")
 

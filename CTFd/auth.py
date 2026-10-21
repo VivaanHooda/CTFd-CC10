@@ -55,7 +55,8 @@ def over_limit(bucket, ident, limit):
         count = cache.inc(key)
     except NotImplementedError:
         return False
-    if count == 1:
+    # Redis INCR keeps the TTL; other cache backends reset it on every write, so re-apply it
+    if count == 1 or app.config.get("CACHE_TYPE") != "redis":
         cache.expire(key, window)
     return count > count_max
 
