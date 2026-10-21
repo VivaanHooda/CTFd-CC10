@@ -87,41 +87,23 @@
 
   {{ Configs.theme_header }}
   <style>
-    /* ===== Type: Fraunces for titles, Ubuntu (as on TryHackMe) for UI and copy, JetBrains Mono for code ===== */
+    /* ===== Type (as on tryhackme.codingclub): Syne for titles and names, Space Grotesk for UI and copy, JetBrains Mono for code ===== */
     @font-face {
         font-family: 'Voyage Serif';
-        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-300.woff2") }}') format('woff2');
-        font-weight: 300;
+        src: url('{{ url_for("views.themes", path="webfonts/space-grotesk.woff2") }}') format('woff2');
+        font-weight: 300 700;
         font-display: swap;
     }
     @font-face {
-        font-family: 'Voyage Serif';
-        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-400.woff2") }}') format('woff2');
-        font-weight: 400;
-        font-display: swap;
-    }
-    @font-face {
-        font-family: 'Voyage Serif';
-        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-500.woff2") }}') format('woff2');
-        font-weight: 500;
-        font-display: swap;
-    }
-    @font-face {
-        font-family: 'Voyage Serif';
-        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-700.woff2") }}') format('woff2');
+        font-family: 'Voyage Display';
+        src: url('{{ url_for("views.themes", path="webfonts/syne-700.woff2") }}') format('woff2');
         font-weight: 700;
         font-display: swap;
     }
     @font-face {
-        font-family: 'Voyage Serif';
-        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-400-italic.woff2") }}') format('woff2');
-        font-weight: 400; font-style: italic;
-        font-display: swap;
-    }
-    @font-face {
-        font-family: 'Voyage Title';
-        src: url('{{ url_for("views.themes", path="webfonts/fraunces.woff2") }}') format('woff2');
-        font-weight: 100 900;
+        font-family: 'Voyage Display';
+        src: url('{{ url_for("views.themes", path="webfonts/syne-800.woff2") }}') format('woff2');
+        font-weight: 800;
         font-display: swap;
     }
     /* the event wordmark (navbar and landing title) keeps the original Uncial Antiqua */
@@ -143,10 +125,12 @@
         -moz-osx-font-smoothing: grayscale;
     }
     h1, h2, h3, .h1, .h2, .h3 {
-        font-family: 'Voyage Title', serif;
-        font-weight: 600;
-        letter-spacing: -0.01em;
+        font-family: 'Voyage Serif', system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
     }
+    h1, .h1 { font-family: 'Voyage Display', 'Voyage Serif', sans-serif; letter-spacing: -0.015em; }
     h4, h5, h6, .h4, .h5, .h6 { font-family: 'Voyage Serif', system-ui, sans-serif; font-weight: 600; letter-spacing: -0.005em; }
     code, pre, kbd, samp { font-family: 'Voyage Mono', ui-monospace, monospace; }
 
@@ -396,10 +380,10 @@
     .voyage-nav .nav-link:focus-visible,
     .voyage-nav .nav-link.active { color: #f4ecdc !important; }
     .voyage-nav .nav-link:focus-visible { outline: none; }
-    .voyage-nav .nav-main .nav-link.is-under-pill { color: var(--acc-light) !important; }
+    .voyage-nav .nav-main .nav-link.is-under-pill { color: #14100a !important; }
     .voyage-nav .nav-auth .nav-link.is-under-pill { color: var(--acc-ink) !important; }
 
-    /* the pill: translucent gold glass */
+    /* the pill: solid bright yellow, dark text on top */
     .voyage-nav .nav-pill {
         position: absolute;
         left: 0;
@@ -412,12 +396,8 @@
         pointer-events: none;
         list-style: none;
         border: 0;
-        background: linear-gradient(180deg, rgba(var(--acc-rgb), 0.24), rgba(var(--acc-rgb), 0.1));
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        box-shadow:
-            inset 0 1px 0 rgba(255, 246, 220, 0.22),
-            0 0 16px rgba(var(--acc-rgb), 0.18);
+        background: #ffd23f;
+        box-shadow: 0 0 18px rgba(255, 210, 63, 0.35);
     }
     /* Login / Register: the pill is solid gold, like a button */
     .voyage-nav .nav-pill-solid {

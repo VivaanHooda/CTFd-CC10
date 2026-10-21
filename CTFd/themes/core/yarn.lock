@@ -17,20 +17,15 @@
     howler "^2.2.1"
     whatwg-fetch "^3.6.2"
 
-"@fontsource-variable/fraunces@^5.3.0":
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/@fontsource-variable/fraunces/-/fraunces-5.3.0.tgz"
-  integrity sha512-9BYGySn4AHEJdgp9Z28tQ3X+laJMEOITXkQarZXeloWQZDq5oOvXJ3kDA8c7MGIfpogIaZfjrQBqmda8POOCKA==
-
-"@fontsource-variable/inter@^5.3.0":
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/@fontsource-variable/inter/-/inter-5.3.0.tgz"
-  integrity sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==
-
 "@fontsource-variable/jetbrains-mono@^5.3.0":
   version "5.3.0"
   resolved "https://registry.npmjs.org/@fontsource-variable/jetbrains-mono/-/jetbrains-mono-5.3.0.tgz"
   integrity sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==
+
+"@fontsource-variable/space-grotesk@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.npmjs.org/@fontsource-variable/space-grotesk/-/space-grotesk-5.3.0.tgz"
+  integrity sha512-2IxmvfB08i9vnGB3Ym/AXvhRE+8XOjWMXIyDum03c+tPwH0FUoMNQfGpU8NXPxjbws0Vvss3AH0Zqt4oJBBAdw==
 
 "@fontsource/lato@^4.5.3":
   version "4.5.5"
@@ -42,10 +37,10 @@
   resolved "https://registry.npmjs.org/@fontsource/raleway/-/raleway-4.5.5.tgz"
   integrity sha512-T2zIJ/6/2x+T9+tLtw/qSiJ68ahcceDMUOU3zrzEyNGYXUvlQyU4Cv9wyTmS+TU9IFHHChjMToV6izRL9mqDqg==
 
-"@fontsource/ubuntu@^5.3.0":
+"@fontsource/syne@^5.3.0":
   version "5.3.0"
-  resolved "https://registry.npmjs.org/@fontsource/ubuntu/-/ubuntu-5.3.0.tgz"
-  integrity sha512-LsjJXgE430QLs8LKfn1RIFbbdGAiZBU1gao8ASa4Z2kGNGh7lMb7Rzx09v3bLLuuK+3XA/JSLgPWTAbLD6r1fg==
+  resolved "https://registry.npmjs.org/@fontsource/syne/-/syne-5.3.0.tgz"
+  integrity sha512-kRWNVsrdYw+08I4EM1SYPe2JovdTzUI0kMVALVRsKmjRdkrVoun1qddSlDAglz5J9LbgUpJSkWmw6BYnmKdGuw==
 
 "@fortawesome/fontawesome-free@6.5.1":
   version "6.5.1"
