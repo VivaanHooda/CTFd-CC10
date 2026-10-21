@@ -1,5 +1,5 @@
 {#
-  "Join the crew" popup: points participants to the Discord server and the WhatsApp group.
+  "Sail with Us" popup: points participants to the Discord server and the WhatsApp group.
   A port of the cc-website Codewars recruitment popup (ASCII sea, cartoon title entrance,
   pointer and scroll parallax, scan beam), in the Voyage to Ithaca palette.
   It lives in the "Join Us" navbar button: on arrival it unfolds out of that button, and closing it
@@ -104,6 +104,19 @@
   .crew-dialog .crew-replay:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
   .crew-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
+  /* genie slices: frozen copies of the window, one band each */
+  .crew-genie { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+  .crew-slice { position: fixed; margin: 0; will-change: transform, opacity; }
+  .crew-slice, .crew-slice * { animation: none !important; transition: none !important; }
+  /* while it unfolds, the title and copy wait, then make their entrance */
+  .crew-hold :is(.crew-fly-left, .crew-fly-right, .crew-tagline, .crew-description, .crew-links, .crew-later) { animation: none !important; opacity: 0; }
+  .crew-dialog[open] .crew-fly-left { animation-delay: 150ms; }
+  .crew-dialog[open] .crew-fly-right { animation-delay: 400ms; }
+  .crew-dialog[open] .crew-tagline { animation-delay: 1000ms; }
+  .crew-dialog[open] .crew-description { animation-delay: 1100ms; }
+  .crew-dialog[open] .crew-links { animation-delay: 1200ms; }
+  .crew-dialog[open] .crew-later { animation-delay: 1300ms; }
+
   /* the "Join Us" navbar button the popup docks into */
   .voyage-nav .nav-crew { position: relative; cursor: pointer; }
   .nav-crew-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 8px rgba(var(--acc-rgb), .9); animation: crew-pulse 2.2s ease-in-out infinite; }
@@ -168,9 +181,9 @@
         <div class="crew-scanbeam"></div>
       </div>
       <div class="crew-content">
-        <h2 id="crew-title" class="crew-heading" aria-label="Join the crew">
-          <span class="crew-word crew-fly-left" aria-hidden="true">Join the</span>
-          <span class="crew-word crew-word--big crew-fly-right" aria-hidden="true">Crew</span>
+        <h2 id="crew-title" class="crew-heading" aria-label="Sail with us">
+          <span class="crew-word crew-fly-left" aria-hidden="true">Sail with</span>
+          <span class="crew-word crew-word--big crew-fly-right" aria-hidden="true">Us</span>
         </h2>
         <p id="crew-description" class="crew-tagline">
           <span aria-hidden="true">$</span> announcements, updates and support. one harbour.<span class="crew-cursor" aria-hidden="true">_</span>
@@ -309,45 +322,63 @@
       return null;
     }
 
-    // the genie, after macOS: the window's sides pinch in along S-curves towards the button,
-    // starting at the edge nearest it, while the window is squeezed and drawn into the button
+    // The genie, after macOS. The window is cut into thin horizontal slices (copies, each clipped to its band).
+    // A funnel opens between the window and the button: wide at the window's far edge, button-wide at the button,
+    // with S-curved sides. First the funnel bends (the edge nearest the button pinches in), then the window pours
+    // up through it into the button. Opening plays the same thing backwards.
     function genie(target, opening) {
-      var w = fly.getBoundingClientRect(), b = target.rect;
-      var W = w.width, dx = b.left - w.left, dy = b.top - w.top;
-      var sx = Math.max(0.02, b.width / W), sy = Math.max(0.02, b.height / w.height);
+      var w = win.getBoundingClientRect(), b = target.rect;
+      var W = w.width, H = w.height;
+      var Cw = w.left + W / 2, Cb = b.left + b.width / 2, Wb = Math.max(8, b.width);
+      var Yt = b.top + b.height / 2, far = w.bottom;
+      var D = far - Yt;                                   // how far the window travels to vanish into the button
       var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
       var smooth = function (v) { v = clamp(v); return v * v * (3 - 2 * v); };
-      var inCubic = function (v) { v = clamp(v); return v * v * v; };
+      var ease = function (v) { v = clamp(v); return v < 0.5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2; };
       var lerp = function (a, c, t) { return a + (c - a) * t; };
-      var FRAMES = 14, ROWS = 12;
-      var flyFrames = [], winFrames = [], backdropFrames = [];
-      for (var i = 0; i <= FRAMES; i++) {
-        var t = i / FRAMES;
-        var pinch = smooth(t / 0.6);                 // the S-curve funnel forms first
-        var py = inCubic((t - 0.12) / 0.88);          // then the window is drawn up into the button
-        var px = inCubic((t - 0.3) / 0.7);            // and narrowed to its width
-        var scaleX = lerp(1, sx, px), shiftX = dx * px;
-        // the button's span in the window's own (pre-transform) coordinates at this moment
-        var bl = (b.left - (w.left + shiftX)) / scaleX / W * 100;
-        var br = bl + b.width / scaleX / W * 100;
-        var left = [], right = [];
-        for (var r = 0; r <= ROWS; r++) {
-          var y = r / ROWS;
-          var f = smooth(pinch * 1.5 - y * 0.5);       // the top (nearest the navbar) pinches first
-          left.push(lerp(0, bl, f).toFixed(2) + "% " + (y * 100).toFixed(2) + "%");
-          right.unshift(lerp(100, br, f).toFixed(2) + "% " + (y * 100).toFixed(2) + "%");
+      var SLICES = 64, FRAMES = 30;
+      var h = H / SLICES;
+
+      var overlay = document.createElement("div");
+      overlay.className = "crew-genie";
+      overlay.setAttribute("aria-hidden", "true");
+      var anims = [];
+      var timing = { duration: opening ? 640 : 680, fill: "both", easing: "linear", direction: opening ? "reverse" : "normal" };
+
+      for (var i = 0; i < SLICES; i++) {
+        var slice = win.cloneNode(true);
+        slice.removeAttribute("id");
+        slice.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });
+        slice.classList.add("crew-slice");
+        var top = i * h, Yc = w.top + top + h / 2;
+        slice.style.cssText = "left:" + w.left + "px;top:" + w.top + "px;width:" + W + "px;height:" + H + "px;" +
+          "clip-path:inset(" + Math.max(0, top - 0.6) + "px 0 " + Math.max(0, H - top - h - 0.6) + "px 0);" +
+          "transform-origin:" + (W / 2) + "px " + (top + h / 2) + "px;";
+        var frames = [];
+        for (var k = 0; k <= FRAMES; k++) {
+          var t = k / FRAMES;
+          var bend = smooth(t / 0.42);                    // the funnel forms
+          var pour = ease((t - 0.18) / 0.82);             // and the window pours through it
+          var Y = Yc - D * pour;                          // where this band is on screen now
+          var u = clamp((far - Y) / (far - Yt));          // 0 at the window's far edge, 1 at the button
+          var f = smooth(u) * bend;
+          var width = lerp(W, Wb, f), centre = lerp(Cw, Cb, f);
+          var fade = clamp((Y - (Yt - h)) / (b.height * 0.6 + h));   // gone once it is inside the button
+          frames.push({ offset: t, opacity: fade,
+            transform: "translate(" + (centre - Cw).toFixed(2) + "px," + (Y - Yc).toFixed(2) + "px) scaleX(" + (width / W).toFixed(4) + ")" });
         }
-        flyFrames.push({ offset: t, transform: "translateY(" + (dy * py).toFixed(2) + "px) scaleY(" + lerp(1, sy, py).toFixed(4) + ")" });
-        winFrames.push({ offset: t,
-          transform: "translateX(" + shiftX.toFixed(2) + "px) scaleX(" + scaleX.toFixed(4) + ")",
-          clipPath: "polygon(" + left.concat(right).join(", ") + ")",
-          opacity: t < 0.85 ? 1 : lerp(1, 0, (t - 0.85) / 0.15) });
-        backdropFrames.push({ offset: t, opacity: 1 - smooth(t / 0.9) });
+        overlay.appendChild(slice);
+        anims.push(slice.animate(frames, timing));
       }
-      var timing = { duration: opening ? 600 : 620, fill: "both", easing: "linear", direction: opening ? "reverse" : "normal" };
-      var anims = [fly.animate(flyFrames, timing), win.animate(winFrames, timing)];
-      try { anims.push(dialog.animate(backdropFrames, Object.assign({ pseudoElement: "::backdrop" }, timing))); } catch (e) {}
-      return Promise.all(anims.map(function (a) { return a.finished; })).then(function () { return anims; });
+
+      dialog.appendChild(overlay);
+      win.style.visibility = "hidden";
+      try {
+        anims.push(dialog.animate([{ offset: 0, opacity: 1 }, { offset: 0.85, opacity: 0 }, { offset: 1, opacity: 0 }],
+          Object.assign({}, timing, { pseudoElement: "::backdrop", easing: "ease-in" })));
+      } catch (e) {}
+      var cleanup = { cancel: function () { overlay.remove(); win.style.visibility = ""; } };
+      return Promise.all(anims.map(function (a) { return a.finished; })).then(function () { return anims.concat([cleanup]); });
     }
 
     // the button bounces a little as the window lands in it, like a dock icon
@@ -373,8 +404,10 @@
       };
       if (!target) { focusFirst(); return; }
       busy = true;
+      dialog.classList.add("crew-hold");
       genie(target, true).then(function (anims) {
         anims.forEach(function (a) { a.cancel(); });
+        dialog.classList.remove("crew-hold");
         busy = false;
         focusFirst();
       });

@@ -129,6 +129,21 @@
     .voyage-nav .navbar-brand,
     .voyage-nav .navbar-toggler,
     .voyage-nav .navbar-collapse { pointer-events: auto; }
+    /* the three capsules always keep clear water between them */
+    @media (min-width: 992px) {
+        .voyage-nav > .container { gap: 14px; }
+        .voyage-nav .navbar-collapse { gap: 14px; }
+    }
+    @media (min-width: 992px) { .voyage-nav .nav-link { white-space: nowrap; } }
+    @media (min-width: 992px) and (max-width: 1499.98px) {
+        .voyage-nav .nav-link { padding: 0 0.8rem 0 calc(0.8rem + 0.16em) !important; letter-spacing: 0.16em; }
+        .voyage-nav .navbar-brand { padding: 0 1rem; }
+    }
+    @media (min-width: 992px) and (max-width: 1199.98px) {
+        .voyage-nav .nav-link { padding: 0 0.55rem 0 calc(0.55rem + 0.1em) !important; letter-spacing: 0.1em; font-size: 0.8rem; }
+        .voyage-nav .navbar-brand { padding: 0 0.8rem; }
+        .navwordmark { font-size: 1rem; }
+    }
 
     /* each part sits in its own black capsule with a fine gold edge */
     .voyage-nav .navbar-brand,
