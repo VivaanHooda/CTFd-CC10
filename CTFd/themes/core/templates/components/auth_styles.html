@@ -1,10 +1,4 @@
 <style>
-  @property --auth-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-  }
-
   html, body { background: #000; }
   body { color: #f4ecdc; }
   .footer { display: none !important; }
@@ -65,7 +59,7 @@
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
   }
 
   .auth-title {
@@ -75,8 +69,7 @@
     font-size: min(2.45rem, 9cqi);
     white-space: nowrap;
     line-height: 1;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
     color: var(--acc-light);
   }
 
@@ -85,7 +78,6 @@
 
   .auth-sub {
     margin: 0 0 2rem;
-    font-style: italic;
     font-weight: 500;
     font-size: 1.15rem;
     color: rgba(244, 236, 220, 0.65);
@@ -98,8 +90,7 @@
     margin-bottom: 0.5rem;
     font-weight: 600;
     font-size: 0.74rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+    letter-spacing: 0;
     color: var(--acc);
   }
 
@@ -110,9 +101,9 @@
     border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.035);
     color: #f4ecdc;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-variant-numeric: lining-nums;
     transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
   }
@@ -135,46 +126,29 @@
     display: block;
     margin-top: 0.4rem;
     font-size: 0.92rem;
-    font-style: italic;
     color: rgba(244, 236, 220, 0.45) !important;
   }
 
-  /* the submit: dark glass pill with gold light travelling round its rim */
+  /* the submit: the site's primary button */
   .auth-submit {
     width: 100%;
-    height: 56px;
+    height: 48px;
     margin-top: 0.6rem;
     border: 1px solid transparent;
-    border-radius: 999px;
-    background:
-      linear-gradient(180deg, #19140c, #0c0a06) padding-box,
-      conic-gradient(from var(--auth-angle), rgba(var(--acc-rgb), 0.3) 0%, rgba(var(--acc-rgb), 0.3) 58%, #fff3d1 72%, var(--acc) 78%, rgba(var(--acc-rgb), 0.3) 92%) border-box;
-    color: var(--acc-light);
-    font-family: 'Voyage Serif', Georgia, serif;
+    border-radius: 10px;
+    background: var(--acc-grad);
+    color: var(--acc-ink);
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
-    letter-spacing: 0.26em;
-    text-indent: 0.26em;
-    text-transform: uppercase;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 22px rgba(var(--acc-rgb), 0.1);
-    animation: auth-orbit 4.5s linear infinite;
-    transition: box-shadow 0.35s ease, transform 0.25s ease, color 0.25s ease;
+    letter-spacing: 0;
+    box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.45);
+    transition: filter 0.15s ease, transform 0.15s ease;
   }
 
-  .auth-submit:hover, .auth-submit:focus-visible {
-    color: #fff3d1;
-    transform: translateY(-1px);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55), 0 0 32px rgba(var(--acc-rgb), 0.3);
-    outline: none;
-  }
-
+  .auth-submit:hover { filter: brightness(1.07); }
+  .auth-submit:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
   .auth-submit:active { transform: translateY(1px); }
-
-  @keyframes auth-orbit { to { --auth-angle: 360deg; } }
-
-  @media (prefers-reduced-motion: reduce) {
-    .auth-submit { animation: none; --auth-angle: 200deg; }
-  }
 
   .auth-row {
     display: flex;
@@ -187,7 +161,7 @@
   .auth-card a { color: var(--acc); text-decoration: none; transition: color 0.2s ease; }
   .auth-card a:hover { color: var(--acc-light); }
 
-  .auth-forgot { font-style: italic; font-size: 1rem; }
+  .auth-forgot { font-size: 1rem; }
 
   .auth-switch {
     margin: 1.8rem 0 0;
@@ -213,17 +187,17 @@
     margin-bottom: 1.4rem;
     padding: 0.85rem;
     border: 1px solid rgba(var(--acc-rgb), 0.3);
-    border-radius: 999px;
+    border-radius: 10px;
     text-align: center;
-    letter-spacing: 0.08em;
+    font-weight: 600;
   }
 
-  .auth-card .alert { border-radius: 14px; font-family: 'Voyage Serif', Georgia, serif; font-size: 1.02rem; }
+  .auth-card .alert { border-radius: 14px; font-family: 'Voyage Serif', system-ui, sans-serif; font-size: 0.95rem; }
 
   /* short guidance inside a card */
   .auth-note {
     margin: -0.6rem 0 1.6rem;
-    font-size: 1.08rem;
+    font-size: 0.95rem;
     line-height: 1.55;
     color: rgba(244, 236, 220, 0.72);
   }
@@ -274,16 +248,15 @@
   .auth-choice-title {
     display: block;
     margin-bottom: 0.15rem;
-    font-family: 'Voyage Display', Marcellus, Georgia, serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0;
     color: var(--acc-light);
   }
 
   .auth-choice-desc {
     display: block;
-    font-size: 1.02rem;
+    font-size: 0.95rem;
     line-height: 1.4;
     color: rgba(244, 236, 220, 0.62);
   }
@@ -302,7 +275,6 @@
   .auth-or {
     margin: 0.4rem 0;
     text-align: center;
-    font-style: italic;
     font-size: 1rem;
     color: rgba(244, 236, 220, 0.5);
   }

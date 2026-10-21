@@ -38,8 +38,7 @@
       font-weight: 400;
       font-size: clamp(2.2rem, 5vw, 3.4rem);
       line-height: 1;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      letter-spacing: -0.01em;
       color: var(--acc-light);
     }
 
@@ -52,7 +51,7 @@
       margin-bottom: 1.4rem;
       padding: 0 0.4rem 0 1.1rem;
       border: 1px solid rgba(var(--acc-rgb), 0.32);
-      border-radius: 999px;
+      border-radius: 12px;
       background: rgba(10, 9, 7, 0.9);
       transition: border-color 0.25s ease;
     }
@@ -68,26 +67,25 @@
       border: 0;
       background: transparent;
       color: #f4ecdc;
-      font-family: 'Voyage Serif', Georgia, serif;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
       font-weight: 500;
-      font-size: 1.08rem;
+      font-size: 0.95rem;
       box-shadow: none !important;
       outline: none;
     }
 
-    .teams-search input::placeholder { color: rgba(244, 236, 220, 0.4); font-style: italic; }
+    .teams-search input::placeholder { color: rgba(244, 236, 220, 0.4); }
 
     .teams-search button {
       height: 38px;
-      padding: 0 1.1rem 0 calc(1.1rem + 0.2em);
+      padding: 0 1.1rem;
       border: 0;
-      border-radius: 999px;
+      border-radius: 8px;
       background: var(--acc-grad);
-      font-family: 'Voyage Serif', Georgia, serif;
-      font-weight: 500;
-      font-size: 0.8rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0;
       color: var(--acc-ink);
     }
 
@@ -95,9 +93,8 @@
 
     .search-note {
       margin: -0.6rem 0 1.2rem 0.4rem;
-      font-family: 'Voyage Serif', Georgia, serif;
-      font-style: italic;
-      font-size: 1rem;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
+      font-size: 0.95rem;
       color: rgba(244, 236, 220, 0.6);
     }
 
@@ -122,10 +119,10 @@
       text-align: left !important;
       border-bottom: 1px solid rgba(var(--acc-rgb), 0.4);
       background: rgba(var(--acc-rgb), 0.05);
-      font-family: 'Voyage Serif', Georgia, serif;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
       font-weight: 500;
       font-size: 0.78rem;
-      letter-spacing: 0.26em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--acc);
     }
@@ -150,7 +147,7 @@
     }
 
     .teams-table .num {
-      font-family: 'Voyage Serif', Georgia, serif;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
       font-size: 0.95rem;
       color: rgba(var(--acc-rgb), 0.7);
       font-variant-numeric: lining-nums tabular-nums;
@@ -163,9 +160,9 @@
       padding: 0.8rem 1.2rem 0.8rem 0;
       color: #f4ecdc;
       text-decoration: none;
-      font-family: 'Voyage Serif', Georgia, serif;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
       font-weight: 500;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       letter-spacing: 0.02em;
       font-variant-numeric: lining-nums;
     }
@@ -189,7 +186,7 @@
       border: 1px solid rgba(var(--acc-rgb), 0.45);
       border-radius: 999px;
       font-size: 0.64rem;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--acc);
     }
@@ -197,9 +194,8 @@
     .teams-empty td {
       padding: 2rem 1rem !important;
       text-align: center;
-      font-family: 'Voyage Serif', Georgia, serif;
-      font-style: italic;
-      font-size: 1.15rem;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
+      font-size: 1.05rem;
       color: rgba(244, 236, 220, 0.6);
     }
 
@@ -210,10 +206,9 @@
       justify-content: center;
       gap: 0.8rem;
       margin-top: 1.8rem;
-      font-family: 'Voyage Serif', Georgia, serif;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
       font-size: 0.82rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
+      letter-spacing: 0;
       color: rgba(244, 236, 220, 0.6);
     }
 
@@ -224,10 +219,10 @@
       height: auto !important;
       padding: 0.15rem 1.8rem 0.15rem 0.8rem !important;
       border: 1px solid rgba(var(--acc-rgb), 0.4);
-      border-radius: 999px;
+      border-radius: 8px;
       background: #0b0a08 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23d9b56b' stroke-width='1.5' d='m3 6 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 0.6rem center / 10px;
       color: #f4ecdc;
-      font-family: 'Voyage Serif', Georgia, serif;
+      font-family: 'Voyage Serif', system-ui, sans-serif;
       appearance: none;
       -webkit-appearance: none;
     }

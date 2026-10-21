@@ -38,7 +38,7 @@
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     color: #f4ecdc;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-variant-numeric: lining-nums;
   }
 
@@ -48,14 +48,13 @@
     font-weight: 400;
     font-size: clamp(2rem, 4.5vw, 3rem);
     line-height: 1.05;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
     color: var(--acc-light);
     overflow-wrap: anywhere;
   }
 
   .profile-card h2, .profile-card h3 {
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     color: #f4ecdc;
   }
@@ -68,10 +67,10 @@
     border: 1px solid rgba(var(--acc-rgb), 0.45);
     border-radius: 999px;
     background: transparent !important;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     font-size: 0.7rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--acc) !important;
     vertical-align: middle;
@@ -85,27 +84,26 @@
   /* place and points */
   #team-place, #team-score, .profile-card .profile-stat {
     margin: 0.2rem 0;
-    font-family: 'Voyage Display', Georgia, serif;
+    font-family: 'Voyage Title', serif;
     font-size: 2rem;
     color: var(--acc-light);
     font-variant-numeric: lining-nums;
   }
 
   #team-place small, #team-score small, .profile-card .profile-stat small {
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-size: 0.8rem;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: rgba(244, 236, 220, 0.6);
   }
 
   .profile-section {
     margin: 0 0 0.9rem;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     font-size: 0.85rem;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
+    letter-spacing: 0;
     color: var(--acc);
   }
 
@@ -121,7 +119,7 @@
     background: rgba(10, 9, 7, 0.72);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-variant-numeric: lining-nums tabular-nums;
     --bs-table-bg: transparent;
     --bs-table-color: #f4ecdc;
@@ -133,7 +131,7 @@
     background: rgba(var(--acc-rgb), 0.05);
     font-weight: 500;
     font-size: 0.78rem;
-    letter-spacing: 0.26em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--acc);
   }
@@ -151,14 +149,13 @@
   .table-themed a { color: #f4ecdc; font-weight: 500; text-decoration: none; }
   .table-themed a:hover { color: var(--acc-light); }
 
-  .awards-row p { color: rgba(244, 236, 220, 0.8); font-family: 'Voyage Serif', Georgia, serif; }
+  .awards-row p { color: rgba(244, 236, 220, 0.8); font-family: 'Voyage Serif', system-ui, sans-serif; }
   .awards-row i { color: var(--acc); }
 
   .profile-empty {
-    font-family: 'Voyage Serif', Georgia, serif;
-    font-style: italic;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: rgba(244, 236, 220, 0.6) !important;
     opacity: 1 !important;
   }
@@ -167,7 +164,7 @@
     .profile-backdrop { background-position: {{ profile_backdrop_pos_sm | default('42% center') }}; }
     .profile-backdrop::after { background: rgba(0, 0, 0, 0.62); }
     .profile-card { padding: 1.5rem; text-align: center; }
-    .table-themed thead th { padding: 0.75rem 0.6rem; letter-spacing: 0.16em; }
+    .table-themed thead th { padding: 0.75rem 0.6rem; letter-spacing: 0; }
     .table-themed tbody td { padding: 0.65rem 0.6rem; font-size: 1rem; }
   }
 </style>

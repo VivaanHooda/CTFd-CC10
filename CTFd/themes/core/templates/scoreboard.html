@@ -3,14 +3,6 @@
 {% block stylesheets %}
 {{ super() }}
 <style>
-  @font-face {
-    font-family: 'Voyage Serif';
-    src: url('{{ url_for("views.themes", path="webfonts/cormorant-italic.woff2") }}') format('woff2');
-    font-weight: 500;
-    font-style: italic;
-    font-display: swap;
-  }
-
   :root {
     --v-gold: var(--acc);
     --v-gold-light: var(--acc-light);
@@ -50,16 +42,14 @@
     font-weight: 400;
     font-size: clamp(2.4rem, 6vw, 4.6rem);
     line-height: 1;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
     color: var(--v-gold-light);
     text-shadow: 0 6px 30px rgba(0, 0, 0, 0.8);
   }
 
   .hall-sub {
     margin: 0;
-    font-family: 'Voyage Serif', Georgia, serif;
-    font-style: italic;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     font-size: clamp(1.1rem, 2vw, 1.4rem);
     color: rgba(244, 236, 220, 0.75);
@@ -104,11 +94,10 @@
     border: 0;
     border-radius: 999px;
     background: none;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     font-size: 0.85rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+    letter-spacing: 0;
     color: rgba(244, 236, 220, 0.6);
     transition: color 0.25s ease, background 0.25s ease;
   }
@@ -133,10 +122,10 @@
 
   .hall-panel-label {
     margin: 0 0 0.4rem 0.4rem;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     font-size: 0.82rem;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--v-gold);
   }
@@ -166,10 +155,10 @@
   .voyage-head {
     padding: 0 0.6rem 0.6rem;
     opacity: 0.7;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     font-size: 0.78rem;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--v-gold);
   }
@@ -219,9 +208,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
-    font-size: 1.12rem;
+    font-size: 1rem;
   }
 
   .lane-name a {
@@ -234,9 +223,9 @@
   .lane-name a:hover { color: var(--v-gold-light); }
 
   .lane-score {
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
-    font-size: 1.12rem;
+    font-size: 1rem;
     text-align: right;
     font-variant-numeric: lining-nums tabular-nums;
     color: var(--v-gold-light);
@@ -348,7 +337,7 @@
     border: 1px solid rgba(var(--acc-rgb), 0.5);
     border-radius: 999px;
     font-size: 0.7rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--v-gold);
     vertical-align: middle;
@@ -357,7 +346,7 @@
   .hall-bracket-tag {
     margin-left: 0.6rem;
     font-size: 0.72rem;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: rgba(244, 236, 220, 0.5);
   }
@@ -378,8 +367,7 @@
   }
 
   .hall-empty p {
-    font-family: 'Voyage Serif', Georgia, serif;
-    font-style: italic;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-size: 1.4rem;
     color: rgba(244, 236, 220, 0.6);
   }

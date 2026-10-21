@@ -3,14 +3,6 @@
 {% block stylesheets %}
 {{ super() }}
 <style>
-  @font-face {
-    font-family: 'Voyage Serif';
-    src: url('{{ url_for("views.themes", path="webfonts/cormorant-italic.woff2") }}') format('woff2');
-    font-weight: 500;
-    font-style: italic;
-    font-display: swap;
-  }
-
   html, body { background: #000; }
   body {
     color: #f4ecdc;
@@ -31,15 +23,13 @@
     font-weight: 400;
     font-size: clamp(2.4rem, 6vw, 4.6rem);
     line-height: 1;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
     color: var(--acc-light);
   }
 
   .page-sub {
     margin: 0;
-    font-family: 'Voyage Serif', Georgia, serif;
-    font-style: italic;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
     font-size: clamp(1.1rem, 2vw, 1.4rem);
     color: rgba(244, 236, 220, 0.72);
@@ -88,8 +78,7 @@
     font-family: 'Voyage Title', serif;
     font-weight: 400;
     font-size: clamp(1.3rem, 2.4vw, 1.7rem);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
     color: #f4ecdc;
   }
 
@@ -102,7 +91,7 @@
   }
 
   .category-count {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: 'Voyage Mono', ui-monospace, monospace;
     font-size: 0.75rem;
     letter-spacing: 0;
     color: rgba(244, 236, 220, 0.5);
@@ -184,7 +173,7 @@
     top: 10px;
     left: 0;
     right: 0;
-    font-family: 'Voyage Display', Marcellus, Georgia, serif;
+    font-family: 'Voyage Title', serif;
     font-size: 22px;
     line-height: 1.2;
     color: rgba(244, 236, 220, 0.9);
@@ -197,17 +186,17 @@
     left: 0;
     right: 0;
     padding-left: 0.3em;
-    font-family: 'Voyage Display', Marcellus, Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-size: 8px;
     line-height: 1.2;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: rgba(244, 236, 220, 0.5);
   }
 
   .chal-name {
     margin: 16px 0 0;
-    font-family: 'Voyage Uncial', 'Voyage Display', serif;
+    font-family: 'Voyage Title', serif;
     font-size: 28px;
     line-height: 1.25;
     color: #f4ecdc;
@@ -268,9 +257,9 @@
     height: 34px;
     padding-left: 0.34em;
     background: linear-gradient(90deg, #b98f4c, #f2d9a2 50%, #b98f4c);
-    font-family: 'Voyage Display', Marcellus, Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-size: 10px;
-    letter-spacing: 0.34em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--acc-ink);
   }
@@ -343,8 +332,7 @@
   .board-empty {
     padding: 3rem 1rem;
     text-align: center;
-    font-family: 'Voyage Serif', Georgia, serif;
-    font-style: italic;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-size: 1.35rem;
     color: rgba(244, 236, 220, 0.6);
   }

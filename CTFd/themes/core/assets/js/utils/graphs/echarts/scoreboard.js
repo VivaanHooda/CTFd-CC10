@@ -10,9 +10,9 @@ const css = (name, fallback) =>
   (typeof document !== "undefined" &&
     getComputedStyle(document.documentElement).getPropertyValue(name).trim()) ||
   fallback;
-const SERIF = "'Voyage Serif', 'Cormorant Garamond', Georgia, serif";
-// Marcellus has lining figures, so numbers read evenly on the canvas
-const NUM = "'Voyage Display', Marcellus, Georgia, serif";
+const SERIF = "'Voyage Serif', system-ui, sans-serif";
+// Inter's tabular figures keep numbers aligned on the canvas
+const NUM = "'Voyage Serif', system-ui, sans-serif";
 
 function scoreAt(points, t) {
   let s = 0;
@@ -65,7 +65,7 @@ export function getOption(mode, places, optionMerge) {
           }))
           .sort((a, b) => b.score - a.score)
           .slice(0, 10);
-        const head = `<div style="font-family:${SERIF};font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:${GOLD};margin-bottom:6px">${dayjs(t).format("MMM D · HH:mm")}</div>`;
+        const head = `<div style="font-family:${SERIF};font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${GOLD};margin-bottom:6px">${dayjs(t).format("MMM D · HH:mm")}</div>`;
         const body = rows
           .map(
             (r, i) =>

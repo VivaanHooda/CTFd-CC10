@@ -28,7 +28,7 @@
   }
   .modal-content { box-shadow: var(--bs-modal-box-shadow); }
   .modal-title {
-    font-family: 'Voyage Uncial', 'Voyage Display', serif;
+    font-family: 'Voyage Title', serif;
     font-weight: 400;
     color: var(--acc-light);
   }
@@ -40,19 +40,6 @@
 
   /* ----- notification popups (alert + toast): "Hermes brings word" ----- */
   /* the card's fonts; also used by the notifications page */
-  @font-face {
-    font-family: 'Cinzel';
-    src: url('{{ url_for("views.themes", path="webfonts/cinzel.woff2") }}') format('woff2');
-    font-weight: 400 900;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: 'Cormorant Garamond';
-    src: url('{{ url_for("views.themes", path="webfonts/cormorant-garamond.woff2") }}') format('woff2');
-    font-weight: 300 700;
-    font-display: swap;
-  }
-
   .notice-card {
     position: relative;
     border: 1px solid rgba(226, 188, 116, 0.22);
@@ -79,11 +66,11 @@
     display: flex;
     align-items: center;
     gap: 0.75em;
-    font-family: 'Cinzel', 'Voyage Display', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 400;
     font-size: 13px;
     line-height: 1.2;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: rgba(226, 188, 116, 0.75);
   }
@@ -91,7 +78,7 @@
 
   .notice-title {
     margin: 0;
-    font-family: 'Cinzel', 'Voyage Display', Georgia, serif;
+    font-family: 'Voyage Title', serif;
     font-weight: 700;
     line-height: 1.3;
     letter-spacing: 0.01em;
@@ -100,7 +87,7 @@
   }
 
   .notice-text {
-    font-family: 'Cormorant Garamond', 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 400;
     color: #c2b9a8;
     font-variant-numeric: lining-nums;
@@ -109,36 +96,28 @@
   .notice-text strong { color: #f4ead6; font-weight: 600; }
   .notice-text a { color: #e2bc74; }
 
-  /* gold bar button with an inner frame line */
+  /* the site's primary button */
   .notice-btn {
-    position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    height: 62px;
-    padding: 0 0 0 0.3em;
-    border: 0;
-    border-radius: 4px;
-    background: linear-gradient(180deg, #f2d9a2 0%, #d9b56b 55%, #b98f4c 100%);
-    box-shadow: 0 1px 0 rgba(255, 246, 220, 0.25) inset, 0 6px 18px -6px rgba(0, 0, 0, 0.6);
-    font-family: 'Cinzel', 'Voyage Display', Georgia, serif;
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: #14100a;
+    height: 52px;
+    padding: 0 1.6rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: var(--acc-grad);
+    box-shadow: inset 0 1px 0 rgba(255, 246, 220, 0.45);
+    font-family: 'Voyage Serif', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    color: var(--acc-ink);
     transition: filter 0.15s ease;
   }
-  .notice-btn::after {
-    content: "";
-    position: absolute;
-    inset: 5px;
-    border: 1px solid rgba(20, 16, 10, 0.35);
-    border-radius: 2px;
-    pointer-events: none;
-  }
   .notice-btn:hover,
-  .notice-btn:focus-visible { color: #14100a; filter: brightness(1.06); }
-  .notice-btn:focus-visible { outline: 2px solid #f2d9a2; outline-offset: 3px; }
+  .notice-btn:focus-visible { color: var(--acc-ink); filter: brightness(1.07); }
+  .notice-btn:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
 
   /* ----- alert modal: notifications sent as alerts ----- */
   .notice-modal .modal-dialog { max-width: 500px; }
@@ -183,7 +162,7 @@
     .notice-modal .notice-eyebrow { font-size: 13px; }
     .notice-modal .notice-title { font-size: 23px; }
     .notice-modal .notice-text { font-size: 20px; line-height: 28px; }
-    .notice-modal .notice-btn { margin-top: 30px; height: 54px; font-size: 16px; }
+    .notice-modal .notice-btn { margin-top: 30px; height: 48px; font-size: 0.95rem; }
   }
 
   /* ----- tooltips ----- */
@@ -195,7 +174,7 @@
     --bs-tooltip-padding-y: 0.3rem;
     --bs-tooltip-font-size: 0.85rem;
     --bs-tooltip-border-radius: 6px;
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
   }
 
@@ -209,7 +188,7 @@
     background: #0b0a08;
     color: rgba(244, 236, 220, 0.75);
     box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.85);
-    font-family: 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     text-align: left !important;
   }
   #ctfdio-snackbar-email-nudge small { font-size: 1rem; line-height: 1.45; }

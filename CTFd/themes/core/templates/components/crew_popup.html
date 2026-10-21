@@ -24,7 +24,7 @@
     border: 0;
     background: transparent;
     color: #f4ecdc;
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     scrollbar-width: thin;
     scrollbar-color: rgba(var(--acc-rgb), .5) #0b0906;
   }
@@ -35,7 +35,7 @@
   .crew-window { position: relative; width: 100%; transform-origin: 0 0; border: 1px solid rgba(var(--acc-rgb), .38); border-radius: 16px; background: #0b0906; box-shadow: 0 0 100px rgba(var(--acc-rgb), .12), 0 32px 100px rgba(0, 0, 0, .7); }
   .crew-titlebar { display: flex; align-items: center; justify-content: space-between; }
   .crew-titlebar { min-height: 52px; padding: 4px 10px 4px 22px; border-radius: 16px 16px 0 0; background: rgba(255, 255, 255, .012); border-bottom: 1px solid rgba(255, 255, 255, .05); }
-  .crew-terminal { display: flex; align-items: center; gap: 12px; color: #b3a790; font-size: 11px; letter-spacing: .025em; }
+  .crew-terminal { font-family: 'Voyage Mono', ui-monospace, monospace; display: flex; align-items: center; gap: 12px; color: #b3a790; font-size: 11px; letter-spacing: .025em; }
   .crew-terminal > span { color: var(--acc); font-size: 15px; }
   .crew-close { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: #b8ab92; cursor: pointer; transition: color 150ms, background 150ms; }
   .crew-close:hover { color: #fff; background: rgba(var(--acc-rgb), .12); }
@@ -44,20 +44,20 @@
   .crew-poster { position: relative; isolation: isolate; border-radius: 0 0 16px 16px; background: radial-gradient(ellipse at 50% 36%, rgba(var(--acc-rgb), .14), transparent 65%), #0b0906; }
   .crew-atmosphere { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
   .crew-texture { position: absolute; z-index: -1; inset: 24px -24px auto; height: 350px; pointer-events: none; will-change: transform; }
-  .crew-ascii { position: absolute; top: 0; left: 50%; width: max-content; margin: 0; transform: translateX(-50%); font: 10px/11px ui-monospace, Menlo, monospace; letter-spacing: 1px; color: var(--acc); opacity: .34; text-shadow: 0 0 12px rgba(var(--acc-rgb), .9); -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); pointer-events: none; }
+  .crew-ascii { position: absolute; top: 0; left: 50%; width: max-content; margin: 0; transform: translateX(-50%); font: 10px/11px 'Voyage Mono', ui-monospace, monospace; letter-spacing: 1px; color: var(--acc); opacity: .34; text-shadow: 0 0 12px rgba(var(--acc-rgb), .9); -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); pointer-events: none; }
   .crew-scanlines { position: absolute; z-index: -1; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .13) 3px 4px); opacity: .4; pointer-events: none; }
   .crew-scanbeam { position: absolute; z-index: -1; inset: 0; background: linear-gradient(transparent 40%, rgba(var(--acc-rgb), .05) 49.5%, rgba(241, 215, 156, .13) 50%, transparent 50.5%); pointer-events: none; opacity: 0; }
   .crew-dialog[open] .crew-scanbeam { animation: crew-scan 7s 1s linear infinite; }
 
   .crew-content { padding: 52px 38px 26px; text-align: center; }
-  .crew-eyebrow { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 10px; letter-spacing: .1em; }
+  .crew-eyebrow { font-family: 'Voyage Mono', ui-monospace, monospace; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 10px; letter-spacing: .1em; }
   .crew-status { display: inline-flex; align-items: center; gap: 8px; color: var(--acc-light); }
   .crew-dot { width: 5px; height: 5px; background: var(--acc); border-radius: 50%; box-shadow: 0 0 10px rgba(var(--acc-rgb), .8); animation: crew-pulse 2.5s ease-in-out infinite; }
   .crew-edition { color: #9c917c; }
-  .crew-command { margin: 30px 0 14px; font-size: 11px; color: #bdb09a; }
+  .crew-command { margin: 30px 0 14px; font-family: 'Voyage Mono', ui-monospace, monospace; font-size: 11px; color: #bdb09a; }
   .crew-command > span, .crew-tagline > span:first-child { color: var(--acc); }
 
-  .crew-heading { position: relative; display: flex; flex-direction: column; align-items: center; margin: 0; font-family: 'Voyage Title', 'Voyage Display', serif; font-size: clamp(46px, 10vw, 84px); font-weight: 400; line-height: 1.02; letter-spacing: .02em; text-transform: uppercase; color: #f4ecdc; will-change: transform; }
+  .crew-heading { position: relative; display: flex; flex-direction: column; align-items: center; margin: 0; font-family: 'Voyage Title', serif; font-size: clamp(46px, 10vw, 84px); font-weight: 600; line-height: 1.02; letter-spacing: -0.01em; color: #f4ecdc; will-change: transform; }
   .crew-word { position: relative; display: block; padding: .08em .06em; margin: -.08em -.06em; transform-origin: 50% 80%; }
   .crew-word--big { color: var(--acc-light); font-size: 1.32em; line-height: 1.04; text-shadow: 0 0 45px rgba(var(--acc-rgb), .25); }
   .crew-dialog[open] .crew-fly-left { animation: crew-cartoon-left 1350ms 450ms both; }
@@ -68,35 +68,30 @@
   .crew-dialog[open] .crew-links { animation: crew-text-in 700ms 1500ms both; }
   .crew-dialog[open] .crew-later { animation: crew-text-in 700ms 1600ms both; }
 
-  .crew-tagline { margin: 20px 0 0; font-size: 13px; line-height: 1.8; color: #e2d8c4; }
+  .crew-tagline { margin: 20px 0 0; font-family: 'Voyage Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.8; color: #e2d8c4; }
   .crew-tagline > span:first-child { margin-right: 5px; }
   .crew-cursor { color: var(--acc); animation: crew-blink 1.2s steps(2, start) infinite; }
-  .crew-description { margin: 6px 0 24px; font-size: 12px; line-height: 1.8; color: #a99e88; }
+  .crew-description { margin: 6px 0 24px; font-size: 15px; line-height: 1.6; color: #b5aa94; }
 
   .crew-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(100%, 560px); margin: 0 auto; }
-  .crew-link { position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 14px 16px; white-space: nowrap; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 180ms, box-shadow 180ms, transform 180ms, color 180ms, border-color 180ms; }
-  .crew-link i { font-size: 18px; }
-  .crew-link svg { width: 18px; height: 18px; flex: none; }
-  .crew-link:hover { transform: translateY(-2px); }
-  .crew-link:active { transform: translateY(0); }
-  /* matte black buttons; Discord blurple and WhatsApp green live in the logo and lettering */
-  .crew-link--primary, .crew-link--secondary {
-    border: 1px solid rgba(255, 255, 255, .07);
-    background: linear-gradient(180deg, #17161a, #0e0d10);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), inset 0 -1px 0 rgba(0, 0, 0, .6), 0 6px 18px rgba(0, 0, 0, .5);
-  }
-  .crew-link--primary { color: #7c86ff; }
-  .crew-dialog .crew-link--primary:focus-visible { outline-color: rgba(124, 134, 255, .8); }
-  .crew-dialog .crew-link--secondary:focus-visible { outline-color: rgba(51, 212, 115, .8); }
-  .crew-link--secondary { color: #33d473; }
-  .crew-link--primary:hover, .crew-link--primary:focus-visible { color: #98a0ff; border-color: rgba(124, 134, 255, .45); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 22px rgba(0, 0, 0, .55), 0 0 22px rgba(88, 101, 242, .18); }
-  .crew-link--secondary:hover, .crew-link--secondary:focus-visible { color: #5ae08e; border-color: rgba(51, 212, 115, .45); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 22px rgba(0, 0, 0, .55), 0 0 22px rgba(37, 211, 102, .16); }
-  .crew-link::after { position: absolute; z-index: -1; inset: -50% -60%; content: ""; background: linear-gradient(110deg, transparent 40%, rgba(255, 245, 215, .26) 50%, transparent 60%); transform: translateX(-65%); pointer-events: none; }
+  /* the site's secondary button; only the logos carry the Discord and WhatsApp colours */
+  .crew-link { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 1.25rem; white-space: nowrap; border: 1px solid var(--btn-edge); border-radius: var(--btn-radius); background: var(--btn-surface); color: var(--btn-text); font-size: 0.95rem; font-weight: 600; text-decoration: none; transition: background-color 150ms, border-color 150ms, transform 150ms; }
+  .crew-link i { font-size: 20px; }
+  .crew-link svg { width: 16px; height: 16px; flex: none; color: #8d846f; }
+  .crew-link:hover, .crew-link:focus-visible { color: var(--btn-text); background: var(--btn-surface-hover); }
+  .crew-link:active { transform: translateY(1px); }
+  .crew-link--primary i { color: #5865f2; }
+  .crew-link--secondary i { color: #25d366; }
+  .crew-link--primary:hover, .crew-link--primary:focus-visible { border-color: rgba(88, 101, 242, .55); }
+  .crew-link--secondary:hover, .crew-link--secondary:focus-visible { border-color: rgba(37, 211, 102, .5); }
+  .crew-dialog .crew-link--primary:focus-visible { outline-color: rgba(88, 101, 242, .8); }
+  .crew-dialog .crew-link--secondary:focus-visible { outline-color: rgba(37, 211, 102, .8); }
+  .crew-link.is-done svg { color: #4ade80; }
   .crew-link .crew-done { display: none; }
   .crew-link.is-done .crew-done { display: inline; }
   .crew-link.is-done .crew-go { display: none; }
 
-  .crew-later { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px; padding: 8px; border: 0; background: transparent; color: #a79c86; font: inherit; font-size: 11px; cursor: pointer; transition: color 150ms; }
+  .crew-later { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px; padding: 8px; border: 0; background: transparent; color: #a79c86; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 150ms; }
   .crew-later:hover { color: #fff; }
   .crew-dialog .crew-close:focus-visible, .crew-dialog .crew-link:focus-visible, .crew-dialog .crew-later:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 4px; }
 
@@ -139,7 +134,6 @@
   }
   @keyframes crew-text-in { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
   @keyframes crew-scan { 0% { transform: translateY(-45%); opacity: 0; } 12% { opacity: 1; } 60%, 100% { transform: translateY(55%); opacity: 0; } }
-  @keyframes crew-sheen { 0%, 65% { transform: translateX(-65%); } 90%, 100% { transform: translateX(65%); } }
 
   @media (max-width: 520px) {
     .crew-content { padding: 40px 20px 18px; }
@@ -147,8 +141,8 @@
     .crew-terminal { font-size: 10px; gap: 8px; }
     .crew-eyebrow { font-size: 9px; letter-spacing: .04em; }
     .crew-command { margin-top: 26px; font-size: 10px; }
-    .crew-tagline { font-size: 11px; }
-    .crew-description { font-size: 11px; }
+    .crew-tagline { font-size: 12px; }
+    .crew-description { font-size: 14px; }
     .crew-links { grid-template-columns: 1fr; }
   }
 

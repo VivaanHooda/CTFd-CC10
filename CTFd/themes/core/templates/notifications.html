@@ -3,14 +3,6 @@
 {% block stylesheets %}
 {{ super() }}
 <style>
-  @font-face {
-    font-family: 'Voyage Serif';
-    src: url('{{ url_for("views.themes", path="webfonts/cormorant-italic.woff2") }}') format('woff2');
-    font-weight: 500;
-    font-style: italic;
-    font-display: swap;
-  }
-
   html, body { background: #000; }
   body {
     color: #f4ecdc;
@@ -31,8 +23,7 @@
     font-weight: 400;
     font-size: clamp(2.4rem, 6vw, 4.6rem);
     line-height: 1;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
     color: var(--acc-light);
   }
 
@@ -116,7 +107,7 @@
 
   .news-title {
     margin: 0;
-    font-family: 'Cinzel', 'Voyage Display', Georgia, serif;
+    font-family: 'Voyage Title', serif;
     font-weight: 700;
     font-size: 23px;
     line-height: 1.35;
@@ -127,17 +118,17 @@
 
   .news-time {
     flex: none;
-    font-family: 'Cinzel', 'Voyage Display', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 400;
     font-size: 13px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
     color: #ebe0cc;
     font-variant-numeric: lining-nums;
   }
 
   .news-body {
     max-width: 560px;
-    font-family: 'Cormorant Garamond', 'Voyage Serif', Georgia, serif;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 400;
     font-size: 18px;
     line-height: 1.5;
@@ -177,9 +168,8 @@
   .news-empty {
     padding: 2rem 1rem;
     text-align: center;
-    font-family: 'Voyage Serif', Georgia, serif;
-    font-style: italic;
-    font-size: 1.25rem;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
+    font-size: 1.1rem;
     color: rgba(244, 236, 220, 0.6);
   }
 </style>
