@@ -1,0 +1,26 @@
+name: Deploy to server
+
+# Every push to master rebuilds CTFd on rvctf.codingclubrvce.com.
+# The SSH_KEY secret is a deploy key restricted on the server to one forced command,
+# /home/rvce/bin/deploy-rvctf.sh (git pull + rebuild the ctfd container), so the
+# script below is only a label: the server always runs that script, nothing else.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          command_timeout: 20m
+          script: deploy
