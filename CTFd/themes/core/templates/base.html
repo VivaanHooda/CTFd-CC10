@@ -25,7 +25,7 @@
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Voyage to Ithaca: the head of Odysseus under a starry sky, Coding Club tenth anniversary CTF">
+  <meta property="og:image:alt" content="Voyage to Ithaca: a Greek hoplite in a crested helmet against a dusky sky, Coding Club tenth anniversary CTF">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ Configs.ctf_name }} · Every challenge brings you closer to home">
   <meta name="twitter:description" content="{{ og_description }}">
@@ -335,6 +335,10 @@
 {% include "components/footer.html" %}
 
 {% include "components/notifications.html" %}
+
+{% if authed() %}
+  {% include "components/crew_popup.html" %}
+{% endif %}
 
 {% block scripts %}
   {{ Assets.js("assets/js/page.js") }}

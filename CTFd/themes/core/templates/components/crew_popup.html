@@ -1,0 +1,326 @@
+{#
+  "Join the crew" popup: points participants to the Discord server and the WhatsApp group.
+  A port of the cc-website Codewars recruitment popup (ASCII sea, cartoon title entrance,
+  pointer and scroll parallax, scan beam), in the Voyage to Ithaca palette.
+  Shows once per browser session after login; stops for good once both links have been opened.
+#}
+{% set crew_discord = "https://discord.gg/2wKrrde8d" %}
+{% set crew_whatsapp = "https://chat.whatsapp.com/GdS3pnEeUdZB6qvLlzEKul?s=cl&p=i&mlu=4&ilr=4" %}
+
+<style>
+  .crew-dialog {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 0;
+    background: transparent;
+    color: #f4ecdc;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--acc-rgb), .5) #0b0906;
+  }
+
+  .crew-dialog[open] { display: flex; }
+  .crew-dialog::backdrop { background: rgba(2, 2, 4, .8); backdrop-filter: blur(9px); animation: crew-backdrop-in 300ms ease-out; }
+  .crew-window { position: relative; flex-shrink: 0; width: min(660px, 100%); margin: auto; border: 1px solid rgba(var(--acc-rgb), .38); border-radius: 16px; background: #0b0906; box-shadow: 0 0 100px rgba(var(--acc-rgb), .12), 0 32px 100px rgba(0, 0, 0, .7); }
+  .crew-dialog[open] .crew-window { animation: crew-arrive 500ms cubic-bezier(.16, 1, .3, 1) both; }
+  .crew-titlebar, .crew-footer { display: flex; align-items: center; justify-content: space-between; }
+  .crew-titlebar { min-height: 52px; padding: 4px 10px 4px 22px; border-radius: 16px 16px 0 0; background: rgba(255, 255, 255, .012); border-bottom: 1px solid rgba(255, 255, 255, .05); }
+  .crew-terminal { display: flex; align-items: center; gap: 12px; color: #b3a790; font-size: 11px; letter-spacing: .025em; }
+  .crew-terminal > span { color: var(--acc); font-size: 15px; }
+  .crew-close { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: #b8ab92; cursor: pointer; transition: color 150ms, background 150ms; }
+  .crew-close:hover { color: #fff; background: rgba(var(--acc-rgb), .12); }
+  .crew-close svg { width: 18px; height: 18px; }
+
+  .crew-poster { position: relative; isolation: isolate; background: radial-gradient(ellipse at 50% 36%, rgba(var(--acc-rgb), .14), transparent 65%), #0b0906; }
+  .crew-atmosphere { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+  .crew-texture { position: absolute; z-index: -1; inset: 24px -24px auto; height: 350px; pointer-events: none; will-change: transform; }
+  .crew-ascii { position: absolute; top: 0; left: 50%; width: max-content; margin: 0; transform: translateX(-50%); font: 10px/11px ui-monospace, Menlo, monospace; letter-spacing: 1px; color: var(--acc); opacity: .34; text-shadow: 0 0 12px rgba(var(--acc-rgb), .9); -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); pointer-events: none; }
+  .crew-scanlines { position: absolute; z-index: -1; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .13) 3px 4px); opacity: .4; pointer-events: none; }
+  .crew-scanbeam { position: absolute; z-index: -1; inset: 0; background: linear-gradient(transparent 40%, rgba(var(--acc-rgb), .05) 49.5%, rgba(241, 215, 156, .13) 50%, transparent 50.5%); pointer-events: none; opacity: 0; }
+  .crew-dialog[open] .crew-scanbeam { animation: crew-scan 7s 1s linear infinite; }
+
+  .crew-content { padding: 24px 38px 26px; text-align: center; }
+  .crew-eyebrow { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 10px; letter-spacing: .1em; }
+  .crew-status { display: inline-flex; align-items: center; gap: 8px; color: var(--acc-light); }
+  .crew-dot { width: 5px; height: 5px; background: var(--acc); border-radius: 50%; box-shadow: 0 0 10px rgba(var(--acc-rgb), .8); animation: crew-pulse 2.5s ease-in-out infinite; }
+  .crew-edition { color: #9c917c; }
+  .crew-command { margin: 30px 0 14px; font-size: 11px; color: #bdb09a; }
+  .crew-command > span, .crew-tagline > span:first-child { color: var(--acc); }
+
+  .crew-heading { position: relative; display: flex; flex-direction: column; align-items: center; margin: 0; font-family: 'Voyage Title', 'Voyage Display', serif; font-size: clamp(46px, 10vw, 84px); font-weight: 400; line-height: 1.02; letter-spacing: .02em; text-transform: uppercase; color: #f4ecdc; will-change: transform; }
+  .crew-word { position: relative; display: block; padding: .08em .06em; margin: -.08em -.06em; transform-origin: 50% 80%; }
+  .crew-word--big { color: var(--acc-light); font-size: 1.32em; line-height: 1.04; text-shadow: 0 0 45px rgba(var(--acc-rgb), .25); }
+  .crew-dialog[open] .crew-fly-left { animation: crew-cartoon-left 1350ms 200ms both; }
+  .crew-dialog[open] .crew-fly-right { animation: crew-cartoon-right 1250ms 450ms both; }
+  .crew-dialog[open] .crew-command { animation: crew-text-in 650ms 220ms both; }
+  .crew-dialog[open] .crew-tagline { animation: crew-text-in 700ms 1050ms both; }
+  .crew-dialog[open] .crew-description { animation: crew-text-in 700ms 1150ms both; }
+  .crew-dialog[open] .crew-links { animation: crew-text-in 700ms 1250ms both; }
+  .crew-dialog[open] .crew-later { animation: crew-text-in 700ms 1350ms both; }
+
+  .crew-tagline { margin: 20px 0 0; font-size: 13px; line-height: 1.8; color: #e2d8c4; }
+  .crew-tagline > span:first-child { margin-right: 5px; }
+  .crew-cursor { color: var(--acc); animation: crew-blink 1.2s steps(2, start) infinite; }
+  .crew-description { margin: 6px 0 24px; font-size: 12px; line-height: 1.8; color: #a99e88; }
+
+  .crew-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(100%, 470px); margin: 0 auto; }
+  .crew-link { position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 14px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 180ms, box-shadow 180ms, transform 180ms, color 180ms, border-color 180ms; }
+  .crew-link i { font-size: 18px; }
+  .crew-link svg { width: 18px; height: 18px; flex: none; }
+  .crew-link:hover { transform: translateY(-2px); }
+  .crew-link:active { transform: translateY(0); }
+  .crew-link--primary { border: 1px solid var(--acc-light); background: var(--acc-grad); color: var(--acc-ink); box-shadow: 0 5px 25px rgba(var(--acc-rgb), .2), inset 0 1px 0 rgba(255, 255, 255, .3); }
+  .crew-link--primary:hover { color: var(--acc-ink); filter: brightness(1.07); box-shadow: 0 6px 32px rgba(var(--acc-rgb), .35), inset 0 1px 0 rgba(255, 255, 255, .3); }
+  .crew-link--secondary { border: 1px solid rgba(var(--acc-rgb), .5); background: rgba(var(--acc-rgb), .06); color: var(--acc-light); }
+  .crew-link--secondary:hover { color: #fff3d1; border-color: var(--acc-light); background: rgba(var(--acc-rgb), .12); }
+  .crew-link::after { position: absolute; z-index: -1; inset: -50% -60%; content: ""; background: linear-gradient(110deg, transparent 40%, rgba(255, 245, 215, .26) 50%, transparent 60%); transform: translateX(-65%); pointer-events: none; }
+  .crew-dialog[open] .crew-link--primary::after { animation: crew-sheen 6s 1.6s ease-in-out infinite; }
+  .crew-dialog[open] .crew-link--secondary::after { animation: crew-sheen 6s 2.4s ease-in-out infinite; }
+  .crew-link .crew-done { display: none; }
+  .crew-link.is-done .crew-done { display: inline; }
+  .crew-link.is-done .crew-go { display: none; }
+
+  .crew-later { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px; padding: 8px; border: 0; background: transparent; color: #a79c86; font: inherit; font-size: 11px; cursor: pointer; transition: color 150ms; }
+  .crew-later:hover { color: #fff; }
+  .crew-dialog .crew-close:focus-visible, .crew-dialog .crew-link:focus-visible, .crew-dialog .crew-later:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 4px; }
+
+  .crew-footer { gap: 12px; min-height: 43px; padding: 12px 22px; border-top: 1px solid rgba(255, 255, 255, .05); color: #998e78; font-size: 9px; letter-spacing: .08em; }
+  .crew-footer > span:first-child { display: flex; align-items: center; gap: 9px; }
+  .crew-footer-mark { color: var(--acc); font-size: 12px; }
+  .crew-replay { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; margin-block: -5px; padding: 5px; border: 0; border-radius: 4px; background: transparent; color: var(--acc-light); font: inherit; cursor: pointer; }
+  .crew-replay:hover { color: #fff; background: rgba(var(--acc-rgb), .12); }
+  .crew-replay svg { width: 11px; height: 11px; }
+  .crew-dialog .crew-replay:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
+  .crew-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  @keyframes crew-arrive { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes crew-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes crew-blink { to { visibility: hidden; } }
+  @keyframes crew-pulse { 50% { opacity: .45; } }
+  @keyframes crew-cartoon-left {
+    0%, 8% { transform: translateX(calc(-100vw - 100%)) translateY(-35px) rotate(-16deg) scaleX(1.3) scaleY(.8); }
+    54% { transform: translateX(32px) translateY(8px) rotate(5deg) scaleX(.8) scaleY(1.15); }
+    68% { transform: translateX(-15px) translateY(-7px) rotate(-3deg) scaleX(1.08) scaleY(.94); }
+    82% { transform: translateX(6px) translateY(3px) rotate(1deg) scaleX(.97) scaleY(1.02); }
+    100% { transform: none; }
+  }
+  @keyframes crew-cartoon-right {
+    0%, 8% { transform: translateX(calc(100vw + 100%)) translateY(50px) rotate(22deg) scaleX(1.3) scaleY(.8); }
+    52% { transform: translateX(-22px) translateY(-10px) rotate(-8deg) scaleX(.78) scaleY(1.16); }
+    68% { transform: translateX(12px) translateY(6px) rotate(5deg) scaleX(1.1) scaleY(.9); }
+    82% { transform: translateX(-4px) translateY(-3px) rotate(-2deg) scaleX(.96) scaleY(1.04); }
+    100% { transform: none; }
+  }
+  @keyframes crew-text-in { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
+  @keyframes crew-scan { 0% { transform: translateY(-45%); opacity: 0; } 12% { opacity: 1; } 60%, 100% { transform: translateY(55%); opacity: 0; } }
+  @keyframes crew-sheen { 0%, 65% { transform: translateX(-65%); } 90%, 100% { transform: translateX(65%); } }
+
+  @media (max-width: 520px) {
+    .crew-content { padding: 20px 20px 18px; }
+    .crew-titlebar { padding-left: 18px; }
+    .crew-terminal { font-size: 10px; gap: 8px; }
+    .crew-eyebrow { font-size: 9px; letter-spacing: .04em; }
+    .crew-command { margin-top: 26px; font-size: 10px; }
+    .crew-tagline { font-size: 11px; }
+    .crew-description { font-size: 11px; }
+    .crew-links { grid-template-columns: 1fr; }
+    .crew-footer { padding-inline: 18px; font-size: 8px; }
+    .crew-footer > span:last-child { max-width: 96px; text-align: right; line-height: 1.6; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .crew-dialog[open], .crew-dialog::backdrop, .crew-dot, .crew-cursor { animation: none; }
+    .crew-dialog[open] :is(.crew-window, .crew-fly-left, .crew-fly-right, .crew-command, .crew-tagline, .crew-description, .crew-links, .crew-later, .crew-scanbeam), .crew-dialog[open] .crew-link::after { animation: none; }
+    .crew-close, .crew-link, .crew-later { transition: none; }
+    .crew-replay, .crew-hint-motion { display: none; }
+  }
+</style>
+
+<dialog class="crew-dialog" id="crew-popup" aria-labelledby="crew-title" aria-describedby="crew-description">
+  <div class="crew-window">
+    <header class="crew-titlebar">
+      <span class="crew-terminal"><span aria-hidden="true">&gt;_</span> voyage_to_ithaca / muster</span>
+      <button type="button" class="crew-close" data-crew-dismiss aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+
+    <div class="crew-poster">
+      <div class="crew-atmosphere" aria-hidden="true">
+        <div class="crew-texture"><pre class="crew-ascii"></pre></div>
+        <div class="crew-scanlines"></div>
+        <div class="crew-scanbeam"></div>
+      </div>
+      <div class="crew-content">
+        <div class="crew-eyebrow">
+          <span class="crew-status"><span class="crew-dot"></span> ALL HANDS ON DECK</span>
+          <span class="crew-edition">RVCE / 2026</span>
+        </div>
+
+        <p class="crew-command"><span>$</span> muster --crew --event voyage_to_ithaca</p>
+        <h2 id="crew-title" class="crew-heading" aria-label="Join the crew">
+          <span class="crew-word crew-fly-left" aria-hidden="true">Join the</span>
+          <span class="crew-word crew-word--big crew-fly-right" aria-hidden="true">Crew</span>
+        </h2>
+        <p id="crew-description" class="crew-tagline">
+          <span aria-hidden="true">$</span> announcements, updates and support. one harbour.<span class="crew-cursor" aria-hidden="true">_</span>
+        </p>
+        <p class="crew-description">Raise tickets on Discord. Get the latest word on WhatsApp.</p>
+
+        <div class="crew-links">
+          <a class="crew-link crew-link--primary" data-crew-link="discord" href="{{ crew_discord }}" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-discord" aria-hidden="true"></i>
+            <span>Join Discord</span>
+            <svg class="crew-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            <svg class="crew-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            <span class="crew-sr"> (opens in a new tab)</span>
+          </a>
+          <a class="crew-link crew-link--secondary" data-crew-link="whatsapp" href="{{ crew_whatsapp }}" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+            <span>Join WhatsApp</span>
+            <svg class="crew-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            <svg class="crew-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            <span class="crew-sr"> (opens in a new tab)</span>
+          </a>
+        </div>
+        <button type="button" class="crew-later" data-crew-dismiss>I'll come aboard later <span aria-hidden="true">↗</span></button>
+      </div>
+    </div>
+
+    <footer class="crew-footer">
+      <span><span class="crew-footer-mark" aria-hidden="true">&lt;/&gt;</span> CODING CLUB RVCE</span>
+      <button type="button" class="crew-replay" aria-label="Replay the entrance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> REPLAY
+      </button>
+      <span><span class="crew-hint-motion">MOVE / SCROLL · </span>ESC TO CLOSE</span>
+    </footer>
+  </div>
+</dialog>
+
+<script>
+  (function () {
+    var dialog = document.getElementById("crew-popup");
+    if (!dialog || typeof dialog.showModal !== "function") return;
+
+    var DISMISSED = "voyage-crew-popup-dismissed";   // per session
+    var JOINED = "voyage-crew-joined-";              // per link, kept for good
+    var store = function (kind) { try { return window[kind]; } catch (e) { return null; } };
+    var get = function (kind, key) { try { var s = store(kind); return s ? s.getItem(key) : null; } catch (e) { return null; } };
+    var set = function (kind, key) { try { var s = store(kind); if (s) s.setItem(key, "1"); } catch (e) {} };
+
+    var links = dialog.querySelectorAll("[data-crew-link]");
+    var allJoined = function () {
+      return Array.prototype.every.call(links, function (a) { return get("localStorage", JOINED + a.dataset.crewLink); });
+    };
+    Array.prototype.forEach.call(links, function (a) {
+      if (get("localStorage", JOINED + a.dataset.crewLink)) a.classList.add("is-done");
+      a.addEventListener("click", function () {
+        set("localStorage", JOINED + a.dataset.crewLink);
+        a.classList.add("is-done");
+        if (allJoined()) setTimeout(dismiss, 400);
+      });
+    });
+
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var ascii = dialog.querySelector(".crew-ascii");
+    var texture = dialog.querySelector(".crew-texture");
+    var heading = dialog.querySelector(".crew-heading");
+    var poster = dialog.querySelector(".crew-poster");
+    var previousFocus = null, previousOverflow = "";
+
+    // the sea, drawn in characters; the same rolling wave as the Codewars popup
+    function wave(time) {
+      var rows = [];
+      for (var row = 0; row < 30; row++) {
+        var line = "";
+        for (var col = 0; col < 100; col++) {
+          var w = Math.sin(col * 0.075 + row * 0.12 + time) * 6 + Math.cos(col * 0.045 - time * 0.8) * 2;
+          var d = Math.abs(row - 14 - w);
+          line += d > 11 ? " " : " .:-~=+*"[Math.max(0, 7 - Math.floor(d * 0.7))];
+        }
+        rows.push(line);
+      }
+      return rows.join("\n");
+    }
+    ascii.textContent = wave(0);
+
+    // springy parallax: pointer tilts the title and slides the sea; a scroll nudges both
+    var target = { x: 0, y: 0, s: 0 }, pos = { x: 0, y: 0, s: 0 }, vel = { x: 0, y: 0, s: 0 };
+    var frame = 0, last = 0, started = 0, scrollTimer = null;
+    function tick(now) {
+      if (!started) started = now;
+      if (now - last >= 62.5) { ascii.textContent = wave((now - started) * 0.00045); last = now; }
+      ["x", "y", "s"].forEach(function (k) {
+        var stiffness = k === "s" ? 95 : 130, damping = k === "s" ? 16 : 20, mass = k === "s" ? 1 : 0.7;
+        var dt = 1 / 60, force = -stiffness * (pos[k] - target[k]) - damping * vel[k];
+        vel[k] += force / mass * dt; pos[k] += vel[k] * dt;
+      });
+      heading.style.transform = "perspective(800px) rotateX(" + (pos.y * -5) + "deg) rotateY(" + (pos.x * 6) + "deg) translateY(" + (pos.y * -4 + pos.s * -0.5) + "px)";
+      texture.style.transform = "translate(" + (pos.x * -14) + "px," + (pos.y * -10 + pos.s) + "px)";
+      frame = requestAnimationFrame(tick);
+    }
+
+    if (!reduced) {
+      poster.addEventListener("pointermove", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var b = poster.getBoundingClientRect();
+        target.x = (e.clientX - b.left) / b.width * 2 - 1;
+        target.y = (e.clientY - b.top) / b.height * 2 - 1;
+      });
+      poster.addEventListener("pointerleave", function () { target.x = 0; target.y = 0; });
+      poster.addEventListener("wheel", function (e) {
+        target.s = Math.max(-24, Math.min(24, target.s + e.deltaY * 0.08));
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(function () { target.s = 0; }, 140);
+      }, { passive: true });
+    }
+
+    function open() {
+      previousFocus = document.activeElement;
+      previousOverflow = document.body.style.overflow;
+      dialog.showModal();
+      var first = dialog.querySelector(".crew-link:not(.is-done)") || dialog.querySelector(".crew-later");
+      if (first) first.focus({ preventScroll: true });
+      document.body.style.overflow = "hidden";
+      if (!reduced) frame = requestAnimationFrame(tick);
+    }
+
+    function dismiss() {
+      set("sessionStorage", DISMISSED);
+      if (!dialog.open) return;
+      dialog.close();
+    }
+
+    dialog.addEventListener("close", function () {
+      cancelAnimationFrame(frame);
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus && previousFocus.focus && previousFocus.isConnected) previousFocus.focus({ preventScroll: true });
+    });
+    dialog.addEventListener("cancel", function (e) { e.preventDefault(); dismiss(); });
+    dialog.addEventListener("click", function (e) { if (e.target === dialog) dismiss(); });
+    Array.prototype.forEach.call(dialog.querySelectorAll("[data-crew-dismiss]"), function (b) { b.addEventListener("click", dismiss); });
+
+    // replay the cartoon entrance by restarting the animations
+    dialog.querySelector(".crew-replay").addEventListener("click", function () {
+      target.x = target.y = 0;
+      dialog.querySelectorAll(".crew-fly-left, .crew-fly-right").forEach(function (el) {
+        el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
+      });
+    });
+
+    if (get("sessionStorage", DISMISSED) || allJoined()) return;
+    setTimeout(function () {
+      // never stack on top of another open dialog or challenge window
+      if (document.querySelector("dialog[open], .modal.show")) return;
+      open();
+    }, 1600);
+  })();
+</script>
