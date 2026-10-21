@@ -9,6 +9,28 @@
 
   {{ meta | safe }}
 
+  {# link previews (WhatsApp, iMessage, Telegram, Discord, Slack, LinkedIn, X): the poster as a card #}
+  {% set og_path = url_for('views.themes', path='img/og-card.jpg') %}
+  {% set og_image = og_path if og_path.startswith('http') else request.url_root.rstrip('/') ~ og_path %}
+  {% set og_description = "Coding Club's tenth anniversary CTF. Brave the trials of the voyage, outwit giants and sirens, and find your way home." %}
+  <meta name="description" content="{{ og_description }}">
+  <meta name="theme-color" content="#000000">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ Configs.ctf_name }}">
+  <meta property="og:title" content="{{ Configs.ctf_name }} · Every challenge brings you closer to home">
+  <meta property="og:description" content="{{ og_description }}">
+  <meta property="og:url" content="{{ request.url }}">
+  <meta property="og:image" content="{{ og_image }}">
+  <meta property="og:image:secure_url" content="{{ og_image }}">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Voyage to Ithaca: the head of Odysseus under a starry sky, Coding Club tenth anniversary CTF">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ Configs.ctf_name }} · Every challenge brings you closer to home">
+  <meta name="twitter:description" content="{{ og_description }}">
+  <meta name="twitter:image" content="{{ og_image }}">
+
   {% block stylesheets %}
     {{ Assets.css("assets/scss/main.scss") }}
     {% include "components/popup_styles.html" %}
