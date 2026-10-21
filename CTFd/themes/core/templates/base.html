@@ -179,6 +179,8 @@
     }
     .btn:hover { transform: translateY(-1px); }
     .btn:active { transform: translateY(0) scale(0.985); transition-duration: 0.08s; }
+    .btn-primary:active, .btn-primary.active, .btn-primary:first-child:active,
+    .btn-success:active, .btn-success:first-child:active { background: var(--bs-btn-active-bg) !important; color: var(--acc-ink) !important; border-color: transparent !important; }
     .btn:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 3px; }
     .btn-sm { min-height: var(--btn-h-sm); padding: 0 0.9rem; font-size: 0.85rem; border-radius: 9px; }
     .btn-lg { min-height: var(--btn-h-lg); padding: 0 1.7rem; font-size: 1rem; border-radius: 14px; }
@@ -191,9 +193,19 @@
     .btn-onepiece-orange,
     .btn-primary.btn-outlined {
         --bs-btn-color: var(--acc-ink);
+        --bs-btn-bg: var(--btn-primary-bg);
+        --bs-btn-border-color: transparent;
         --bs-btn-hover-color: var(--acc-ink);
+        --bs-btn-hover-bg: var(--btn-primary-bg-hover);
+        --bs-btn-hover-border-color: transparent;
+        /* pressed and focused states stay gold instead of Bootstrap's default blue */
         --bs-btn-active-color: var(--acc-ink);
+        --bs-btn-active-bg: #cfa95c;
+        --bs-btn-active-border-color: transparent;
         --bs-btn-disabled-color: var(--acc-ink);
+        --bs-btn-disabled-bg: var(--btn-primary-bg);
+        --bs-btn-disabled-border-color: transparent;
+        --bs-btn-focus-shadow-rgb: var(--acc-rgb);
         border: 0;
         background: var(--btn-primary-bg);
         color: var(--acc-ink);
@@ -219,8 +231,9 @@
         --bs-btn-color: var(--btn-text);
         --bs-btn-hover-color: #fff;
         --bs-btn-active-color: #fff;
-        --bs-btn-active-bg: transparent;
+        --bs-btn-active-bg: var(--btn-surface-hover);
         --bs-btn-active-border-color: var(--btn-edge-hover);
+        --bs-btn-focus-shadow-rgb: var(--acc-rgb);
         border: 1px solid var(--btn-edge);
         background: var(--btn-surface);
         -webkit-backdrop-filter: blur(10px);
