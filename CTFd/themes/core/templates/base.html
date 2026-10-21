@@ -336,9 +336,7 @@
 
 {% include "components/notifications.html" %}
 
-{% if authed() %}
-  {% include "components/crew_popup.html" %}
-{% endif %}
+{% include "components/crew_popup.html" %}
 
 {% block scripts %}
   {{ Assets.js("assets/js/page.js") }}

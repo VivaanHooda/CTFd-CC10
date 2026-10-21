@@ -50,6 +50,13 @@
             <a class="nav-link" href="{{ url_for('users.listing') }}">{% trans %}Users{% endtrans %}</a>
           </li>
         {% endif %}
+
+        {# the "Join the Crew" popup minimises into, and opens out of, this button #}
+        <li class="nav-item">
+          <button type="button" class="nav-link nav-crew" data-crew-open aria-haspopup="dialog" aria-controls="crew-popup">
+            {% trans %}Join Us{% endtrans %}<span class="nav-crew-dot" aria-hidden="true"></span>
+          </button>
+        </li>
       </ul>
 
       <ul class="navbar-nav nav-side{% if not authed() %} nav-auth{% endif %}">

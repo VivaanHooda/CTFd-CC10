@@ -2,7 +2,9 @@
   "Join the crew" popup: points participants to the Discord server and the WhatsApp group.
   A port of the cc-website Codewars recruitment popup (ASCII sea, cartoon title entrance,
   pointer and scroll parallax, scan beam), in the Voyage to Ithaca palette.
-  Shows once per browser session after login; stops for good once both links have been opened.
+  It lives in the "Join Us" navbar button: on arrival it unfolds out of that button, and closing it
+  sucks it back in, like a macOS window going into the dock (a genie effect). Opens by itself once per
+  browser session; stops opening by itself once both links have been opened, though the button always works.
 #}
 {% set crew_discord = "https://discord.gg/2wKrrde8d" %}
 {% set crew_whatsapp = "https://chat.whatsapp.com/GdS3pnEeUdZB6qvLlzEKul?s=cl&p=i&mlu=4&ilr=4" %}
@@ -28,9 +30,9 @@
   }
 
   .crew-dialog[open] { display: flex; }
-  .crew-dialog::backdrop { background: rgba(2, 2, 4, .8); backdrop-filter: blur(9px); animation: crew-backdrop-in 300ms ease-out; }
-  .crew-window { position: relative; flex-shrink: 0; width: min(660px, 100%); margin: auto; border: 1px solid rgba(var(--acc-rgb), .38); border-radius: 16px; background: #0b0906; box-shadow: 0 0 100px rgba(var(--acc-rgb), .12), 0 32px 100px rgba(0, 0, 0, .7); }
-  .crew-dialog[open] .crew-window { animation: crew-arrive 500ms cubic-bezier(.16, 1, .3, 1) both; }
+  .crew-dialog::backdrop { background: rgba(2, 2, 4, .8); backdrop-filter: blur(9px); }
+  .crew-fly { flex-shrink: 0; width: min(660px, 100%); margin: auto; transform-origin: 0 0; }
+  .crew-window { position: relative; width: 100%; transform-origin: 0 0; border: 1px solid rgba(var(--acc-rgb), .38); border-radius: 16px; background: #0b0906; box-shadow: 0 0 100px rgba(var(--acc-rgb), .12), 0 32px 100px rgba(0, 0, 0, .7); }
   .crew-titlebar, .crew-footer { display: flex; align-items: center; justify-content: space-between; }
   .crew-titlebar { min-height: 52px; padding: 4px 10px 4px 22px; border-radius: 16px 16px 0 0; background: rgba(255, 255, 255, .012); border-bottom: 1px solid rgba(255, 255, 255, .05); }
   .crew-terminal { display: flex; align-items: center; gap: 12px; color: #b3a790; font-size: 11px; letter-spacing: .025em; }
@@ -47,7 +49,7 @@
   .crew-scanbeam { position: absolute; z-index: -1; inset: 0; background: linear-gradient(transparent 40%, rgba(var(--acc-rgb), .05) 49.5%, rgba(241, 215, 156, .13) 50%, transparent 50.5%); pointer-events: none; opacity: 0; }
   .crew-dialog[open] .crew-scanbeam { animation: crew-scan 7s 1s linear infinite; }
 
-  .crew-content { padding: 24px 38px 26px; text-align: center; }
+  .crew-content { padding: 52px 38px 26px; text-align: center; }
   .crew-eyebrow { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 10px; letter-spacing: .1em; }
   .crew-status { display: inline-flex; align-items: center; gap: 8px; color: var(--acc-light); }
   .crew-dot { width: 5px; height: 5px; background: var(--acc); border-radius: 50%; box-shadow: 0 0 10px rgba(var(--acc-rgb), .8); animation: crew-pulse 2.5s ease-in-out infinite; }
@@ -58,29 +60,30 @@
   .crew-heading { position: relative; display: flex; flex-direction: column; align-items: center; margin: 0; font-family: 'Voyage Title', 'Voyage Display', serif; font-size: clamp(46px, 10vw, 84px); font-weight: 400; line-height: 1.02; letter-spacing: .02em; text-transform: uppercase; color: #f4ecdc; will-change: transform; }
   .crew-word { position: relative; display: block; padding: .08em .06em; margin: -.08em -.06em; transform-origin: 50% 80%; }
   .crew-word--big { color: var(--acc-light); font-size: 1.32em; line-height: 1.04; text-shadow: 0 0 45px rgba(var(--acc-rgb), .25); }
-  .crew-dialog[open] .crew-fly-left { animation: crew-cartoon-left 1350ms 200ms both; }
-  .crew-dialog[open] .crew-fly-right { animation: crew-cartoon-right 1250ms 450ms both; }
+  .crew-dialog[open] .crew-fly-left { animation: crew-cartoon-left 1350ms 450ms both; }
+  .crew-dialog[open] .crew-fly-right { animation: crew-cartoon-right 1250ms 700ms both; }
   .crew-dialog[open] .crew-command { animation: crew-text-in 650ms 220ms both; }
-  .crew-dialog[open] .crew-tagline { animation: crew-text-in 700ms 1050ms both; }
-  .crew-dialog[open] .crew-description { animation: crew-text-in 700ms 1150ms both; }
-  .crew-dialog[open] .crew-links { animation: crew-text-in 700ms 1250ms both; }
-  .crew-dialog[open] .crew-later { animation: crew-text-in 700ms 1350ms both; }
+  .crew-dialog[open] .crew-tagline { animation: crew-text-in 700ms 1300ms both; }
+  .crew-dialog[open] .crew-description { animation: crew-text-in 700ms 1400ms both; }
+  .crew-dialog[open] .crew-links { animation: crew-text-in 700ms 1500ms both; }
+  .crew-dialog[open] .crew-later { animation: crew-text-in 700ms 1600ms both; }
 
   .crew-tagline { margin: 20px 0 0; font-size: 13px; line-height: 1.8; color: #e2d8c4; }
   .crew-tagline > span:first-child { margin-right: 5px; }
   .crew-cursor { color: var(--acc); animation: crew-blink 1.2s steps(2, start) infinite; }
   .crew-description { margin: 6px 0 24px; font-size: 12px; line-height: 1.8; color: #a99e88; }
 
-  .crew-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(100%, 470px); margin: 0 auto; }
-  .crew-link { position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 14px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 180ms, box-shadow 180ms, transform 180ms, color 180ms, border-color 180ms; }
+  .crew-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(100%, 560px); margin: 0 auto; }
+  .crew-link { position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 14px 16px; white-space: nowrap; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 180ms, box-shadow 180ms, transform 180ms, color 180ms, border-color 180ms; }
   .crew-link i { font-size: 18px; }
   .crew-link svg { width: 18px; height: 18px; flex: none; }
   .crew-link:hover { transform: translateY(-2px); }
   .crew-link:active { transform: translateY(0); }
-  .crew-link--primary { border: 1px solid var(--acc-light); background: var(--acc-grad); color: var(--acc-ink); box-shadow: 0 5px 25px rgba(var(--acc-rgb), .2), inset 0 1px 0 rgba(255, 255, 255, .3); }
-  .crew-link--primary:hover { color: var(--acc-ink); filter: brightness(1.07); box-shadow: 0 6px 32px rgba(var(--acc-rgb), .35), inset 0 1px 0 rgba(255, 255, 255, .3); }
-  .crew-link--secondary { border: 1px solid rgba(var(--acc-rgb), .5); background: rgba(var(--acc-rgb), .06); color: var(--acc-light); }
-  .crew-link--secondary:hover { color: #fff3d1; border-color: var(--acc-light); background: rgba(var(--acc-rgb), .12); }
+  /* Discord blurple and WhatsApp green, so each is recognisable at a glance */
+  .crew-link--primary { border: 1px solid #8891f7; background: linear-gradient(180deg, #6974f4, #4f5be8); color: #fff; box-shadow: 0 5px 25px rgba(88, 101, 242, .3), inset 0 1px 0 rgba(255, 255, 255, .25); }
+  .crew-link--primary:hover { color: #fff; filter: brightness(1.08); box-shadow: 0 6px 32px rgba(88, 101, 242, .5), inset 0 1px 0 rgba(255, 255, 255, .25); }
+  .crew-link--secondary { border: 1px solid #4fd283; background: linear-gradient(180deg, #22b35c, #168a45); color: #fff; box-shadow: 0 5px 25px rgba(37, 211, 102, .22), inset 0 1px 0 rgba(255, 255, 255, .25); }
+  .crew-link--secondary:hover { color: #fff; filter: brightness(1.08); box-shadow: 0 6px 32px rgba(37, 211, 102, .4), inset 0 1px 0 rgba(255, 255, 255, .25); }
   .crew-link::after { position: absolute; z-index: -1; inset: -50% -60%; content: ""; background: linear-gradient(110deg, transparent 40%, rgba(255, 245, 215, .26) 50%, transparent 60%); transform: translateX(-65%); pointer-events: none; }
   .crew-dialog[open] .crew-link--primary::after { animation: crew-sheen 6s 1.6s ease-in-out infinite; }
   .crew-dialog[open] .crew-link--secondary::after { animation: crew-sheen 6s 2.4s ease-in-out infinite; }
@@ -101,8 +104,12 @@
   .crew-dialog .crew-replay:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
   .crew-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-  @keyframes crew-arrive { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }
-  @keyframes crew-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  /* the "Join Us" navbar button the popup docks into */
+  .voyage-nav .nav-crew { position: relative; cursor: pointer; }
+  .nav-crew-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 8px rgba(var(--acc-rgb), .9); animation: crew-pulse 2.2s ease-in-out infinite; }
+  .nav-crew.is-joined .nav-crew-dot { display: none; }
+  @media (max-width: 991.98px) { .nav-crew-dot { position: static; display: inline-block; margin-left: .6rem; vertical-align: middle; } }
+
   @keyframes crew-blink { to { visibility: hidden; } }
   @keyframes crew-pulse { 50% { opacity: .45; } }
   @keyframes crew-cartoon-left {
@@ -124,7 +131,7 @@
   @keyframes crew-sheen { 0%, 65% { transform: translateX(-65%); } 90%, 100% { transform: translateX(65%); } }
 
   @media (max-width: 520px) {
-    .crew-content { padding: 20px 20px 18px; }
+    .crew-content { padding: 40px 20px 18px; }
     .crew-titlebar { padding-left: 18px; }
     .crew-terminal { font-size: 10px; gap: 8px; }
     .crew-eyebrow { font-size: 9px; letter-spacing: .04em; }
@@ -138,16 +145,17 @@
 
   @media (prefers-reduced-motion: reduce) {
     .crew-dialog[open], .crew-dialog::backdrop, .crew-dot, .crew-cursor { animation: none; }
-    .crew-dialog[open] :is(.crew-window, .crew-fly-left, .crew-fly-right, .crew-command, .crew-tagline, .crew-description, .crew-links, .crew-later, .crew-scanbeam), .crew-dialog[open] .crew-link::after { animation: none; }
+    .crew-dialog[open] :is(.crew-fly-left, .crew-fly-right, .crew-command, .crew-tagline, .crew-description, .crew-links, .crew-later, .crew-scanbeam), .crew-dialog[open] .crew-link::after { animation: none; }
     .crew-close, .crew-link, .crew-later { transition: none; }
     .crew-replay, .crew-hint-motion { display: none; }
   }
 </style>
 
 <dialog class="crew-dialog" id="crew-popup" aria-labelledby="crew-title" aria-describedby="crew-description">
+  <div class="crew-fly">
   <div class="crew-window">
     <header class="crew-titlebar">
-      <span class="crew-terminal"><span aria-hidden="true">&gt;_</span> voyage_to_ithaca / muster</span>
+      <span class="crew-terminal"><span aria-hidden="true">&gt;_</span></span>
       <button type="button" class="crew-close" data-crew-dismiss aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
@@ -160,12 +168,6 @@
         <div class="crew-scanbeam"></div>
       </div>
       <div class="crew-content">
-        <div class="crew-eyebrow">
-          <span class="crew-status"><span class="crew-dot"></span> ALL HANDS ON DECK</span>
-          <span class="crew-edition">RVCE / 2026</span>
-        </div>
-
-        <p class="crew-command"><span>$</span> muster --crew --event voyage_to_ithaca</p>
         <h2 id="crew-title" class="crew-heading" aria-label="Join the crew">
           <span class="crew-word crew-fly-left" aria-hidden="true">Join the</span>
           <span class="crew-word crew-word--big crew-fly-right" aria-hidden="true">Crew</span>
@@ -178,14 +180,14 @@
         <div class="crew-links">
           <a class="crew-link crew-link--primary" data-crew-link="discord" href="{{ crew_discord }}" target="_blank" rel="noopener noreferrer">
             <i class="fab fa-discord" aria-hidden="true"></i>
-            <span>Join Discord</span>
+            <span>Join Discord Server</span>
             <svg class="crew-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
             <svg class="crew-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
             <span class="crew-sr"> (opens in a new tab)</span>
           </a>
           <a class="crew-link crew-link--secondary" data-crew-link="whatsapp" href="{{ crew_whatsapp }}" target="_blank" rel="noopener noreferrer">
             <i class="fab fa-whatsapp" aria-hidden="true"></i>
-            <span>Join WhatsApp</span>
+            <span>Join WhatsApp Group</span>
             <svg class="crew-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
             <svg class="crew-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
             <span class="crew-sr"> (opens in a new tab)</span>
@@ -202,6 +204,7 @@
       </button>
       <span><span class="crew-hint-motion">MOVE / SCROLL · </span>ESC TO CLOSE</span>
     </footer>
+  </div>
   </div>
 </dialog>
 
@@ -225,7 +228,7 @@
       a.addEventListener("click", function () {
         set("localStorage", JOINED + a.dataset.crewLink);
         a.classList.add("is-done");
-        if (allJoined()) setTimeout(dismiss, 400);
+        if (allJoined()) { markJoined(); setTimeout(dismiss, 400); }
       });
     });
 
@@ -283,20 +286,112 @@
       }, { passive: true });
     }
 
+    var fly = dialog.querySelector(".crew-fly");
+    var win = dialog.querySelector(".crew-window");
+    var navButtons = document.querySelectorAll("[data-crew-open]");
+    var busy = false;
+
+    function markJoined() {
+      var done = allJoined();
+      Array.prototype.forEach.call(navButtons, function (b) { b.classList.toggle("is-joined", done); });
+    }
+    markJoined();
+
+    // where to dock: the navbar button, or the menu button when the navbar is collapsed on phones
+    function dock() {
+      var candidates = Array.prototype.slice.call(navButtons).concat([document.querySelector(".voyage-nav .navbar-toggler")]);
+      for (var i = 0; i < candidates.length; i++) {
+        var el = candidates[i];
+        if (!el) continue;
+        var r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) return { el: el, rect: r };
+      }
+      return null;
+    }
+
+    // the genie, after macOS: the window's sides pinch in along S-curves towards the button,
+    // starting at the edge nearest it, while the window is squeezed and drawn into the button
+    function genie(target, opening) {
+      var w = fly.getBoundingClientRect(), b = target.rect;
+      var W = w.width, dx = b.left - w.left, dy = b.top - w.top;
+      var sx = Math.max(0.02, b.width / W), sy = Math.max(0.02, b.height / w.height);
+      var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
+      var smooth = function (v) { v = clamp(v); return v * v * (3 - 2 * v); };
+      var inCubic = function (v) { v = clamp(v); return v * v * v; };
+      var lerp = function (a, c, t) { return a + (c - a) * t; };
+      var FRAMES = 14, ROWS = 12;
+      var flyFrames = [], winFrames = [], backdropFrames = [];
+      for (var i = 0; i <= FRAMES; i++) {
+        var t = i / FRAMES;
+        var pinch = smooth(t / 0.6);                 // the S-curve funnel forms first
+        var py = inCubic((t - 0.12) / 0.88);          // then the window is drawn up into the button
+        var px = inCubic((t - 0.3) / 0.7);            // and narrowed to its width
+        var scaleX = lerp(1, sx, px), shiftX = dx * px;
+        // the button's span in the window's own (pre-transform) coordinates at this moment
+        var bl = (b.left - (w.left + shiftX)) / scaleX / W * 100;
+        var br = bl + b.width / scaleX / W * 100;
+        var left = [], right = [];
+        for (var r = 0; r <= ROWS; r++) {
+          var y = r / ROWS;
+          var f = smooth(pinch * 1.5 - y * 0.5);       // the top (nearest the navbar) pinches first
+          left.push(lerp(0, bl, f).toFixed(2) + "% " + (y * 100).toFixed(2) + "%");
+          right.unshift(lerp(100, br, f).toFixed(2) + "% " + (y * 100).toFixed(2) + "%");
+        }
+        flyFrames.push({ offset: t, transform: "translateY(" + (dy * py).toFixed(2) + "px) scaleY(" + lerp(1, sy, py).toFixed(4) + ")" });
+        winFrames.push({ offset: t,
+          transform: "translateX(" + shiftX.toFixed(2) + "px) scaleX(" + scaleX.toFixed(4) + ")",
+          clipPath: "polygon(" + left.concat(right).join(", ") + ")",
+          opacity: t < 0.85 ? 1 : lerp(1, 0, (t - 0.85) / 0.15) });
+        backdropFrames.push({ offset: t, opacity: 1 - smooth(t / 0.9) });
+      }
+      var timing = { duration: opening ? 600 : 620, fill: "both", easing: "linear", direction: opening ? "reverse" : "normal" };
+      var anims = [fly.animate(flyFrames, timing), win.animate(winFrames, timing)];
+      try { anims.push(dialog.animate(backdropFrames, Object.assign({ pseudoElement: "::backdrop" }, timing))); } catch (e) {}
+      return Promise.all(anims.map(function (a) { return a.finished; })).then(function () { return anims; });
+    }
+
+    // the button bounces a little as the window lands in it, like a dock icon
+    function bounce(el) {
+      if (reduced || !el || !el.animate) return;
+      el.animate([
+        { transform: "scale(1)" }, { transform: "scale(1.14)", offset: 0.35 },
+        { transform: "scale(.96)", offset: 0.7 }, { transform: "scale(1)" }
+      ], { duration: 420, easing: "ease-out" });
+    }
+
     function open() {
+      if (dialog.open || busy) return;
       previousFocus = document.activeElement;
       previousOverflow = document.body.style.overflow;
+      var target = reduced ? null : dock();
       dialog.showModal();
-      var first = dialog.querySelector(".crew-link:not(.is-done)") || dialog.querySelector(".crew-later");
-      if (first) first.focus({ preventScroll: true });
       document.body.style.overflow = "hidden";
       if (!reduced) frame = requestAnimationFrame(tick);
+      var focusFirst = function () {
+        var first = dialog.querySelector(".crew-link:not(.is-done)") || dialog.querySelector(".crew-later");
+        if (first) first.focus({ preventScroll: true });
+      };
+      if (!target) { focusFirst(); return; }
+      busy = true;
+      genie(target, true).then(function (anims) {
+        anims.forEach(function (a) { a.cancel(); });
+        busy = false;
+        focusFirst();
+      });
     }
 
     function dismiss() {
       set("sessionStorage", DISMISSED);
-      if (!dialog.open) return;
-      dialog.close();
+      if (!dialog.open || busy) return;
+      var target = reduced ? null : dock();
+      if (!target) { dialog.close(); return; }
+      busy = true;
+      genie(target, false).then(function (anims) {
+        dialog.close();
+        anims.forEach(function (a) { a.cancel(); });
+        busy = false;
+        bounce(target.el);
+      });
     }
 
     dialog.addEventListener("close", function () {
@@ -307,6 +402,7 @@
     dialog.addEventListener("cancel", function (e) { e.preventDefault(); dismiss(); });
     dialog.addEventListener("click", function (e) { if (e.target === dialog) dismiss(); });
     Array.prototype.forEach.call(dialog.querySelectorAll("[data-crew-dismiss]"), function (b) { b.addEventListener("click", dismiss); });
+    Array.prototype.forEach.call(navButtons, function (b) { b.addEventListener("click", open); });
 
     // replay the cartoon entrance by restarting the animations
     dialog.querySelector(".crew-replay").addEventListener("click", function () {
@@ -316,11 +412,13 @@
       });
     });
 
+    // on arrival, unfold out of the button straight away (once the page has painted)
     if (get("sessionStorage", DISMISSED) || allJoined()) return;
-    setTimeout(function () {
-      // never stack on top of another open dialog or challenge window
-      if (document.querySelector("dialog[open], .modal.show")) return;
-      open();
-    }, 1600);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (document.querySelector("dialog[open], .modal.show")) return;
+        open();
+      });
+    });
   })();
 </script>
