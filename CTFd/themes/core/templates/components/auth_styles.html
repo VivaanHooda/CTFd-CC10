@@ -129,27 +129,11 @@
     color: rgba(244, 236, 220, 0.45) !important;
   }
 
-  /* the submit: the site's primary button */
+  /* the submit uses the shared 3D push button (base.html) */
   .auth-submit {
     width: 100%;
-    height: 48px;
-    margin-top: 0.6rem;
-    border: 0;
-    border-radius: var(--btn-radius);
-    background: var(--btn-primary-bg);
-    color: var(--acc-ink);
-    font-family: 'Voyage Serif', system-ui, sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 0;
-    box-shadow: var(--btn-primary-shadow);
-    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.35);
-    transition: background 0.25s var(--btn-ease), box-shadow 0.3s var(--btn-ease), transform 0.25s var(--btn-ease);
+    margin-top: 0.9rem;
   }
-
-  .auth-submit:hover { background: var(--btn-primary-bg-hover); box-shadow: var(--btn-primary-shadow-hover); transform: translateY(-1px); }
-  .auth-submit:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
-  .auth-submit:active { transform: scale(0.985); }
 
   .auth-row {
     display: flex;

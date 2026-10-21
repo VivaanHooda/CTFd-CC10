@@ -30,7 +30,8 @@
   }
 
   .crew-dialog[open] { display: flex; }
-  .crew-dialog::backdrop { background: rgba(2, 2, 4, .8); backdrop-filter: blur(9px); }
+  .crew-dialog::backdrop { background: rgba(2, 2, 4, .82); transition: backdrop-filter .25s ease, -webkit-backdrop-filter .25s ease; }
+  .crew-dialog.crew-settled::backdrop { -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px); }
   .crew-fly { flex-shrink: 0; width: min(660px, 100%); margin: auto; transform-origin: 0 0; }
   .crew-window { position: relative; width: 100%; transform-origin: 0 0; border: 1px solid rgba(var(--acc-rgb), .38); border-radius: 16px; background: #0b0906; box-shadow: 0 0 100px rgba(var(--acc-rgb), .12), 0 32px 100px rgba(0, 0, 0, .7); }
   .crew-titlebar { display: flex; align-items: center; justify-content: space-between; }
@@ -73,30 +74,37 @@
   .crew-cursor { color: var(--acc); animation: crew-blink 1.2s steps(2, start) infinite; }
   .crew-description { margin: 6px 0 24px; font-size: 15px; line-height: 1.6; color: #b5aa94; }
 
-  .crew-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(100%, 560px); margin: 0 auto; }
-  .crew-link { font-family: 'Voyage Mono', ui-monospace, monospace; position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 14px 16px; white-space: nowrap; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 180ms, box-shadow 180ms, transform 180ms, color 180ms, border-color 180ms; }
-  .crew-link i { font-size: 18px; }
-  .crew-link svg { width: 18px; height: 18px; flex: none; }
-  .crew-link:hover { transform: translateY(-2px); }
-  .crew-link:active { transform: translateY(0); }
-  /* matte black buttons; Discord blurple and WhatsApp green live in the logo and lettering */
-  .crew-link--primary, .crew-link--secondary {
-    border: 1px solid rgba(255, 255, 255, .07);
-    background: linear-gradient(180deg, #17161a, #0e0d10);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), inset 0 -1px 0 rgba(0, 0, 0, .6), 0 6px 18px rgba(0, 0, 0, .5);
+  .crew-links { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: min(100%, 560px); margin: 0 auto; padding-top: 4px; }
+  /* 3D push buttons, the same build as the challenge Submit, in Discord blurple and WhatsApp green */
+  .crew-link {
+    --c: #7c86ff; --c-light: #a5acff; --c-ledge: #2f3580; --c-rgb: 124, 134, 255;
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 52px; padding: 0 16px; white-space: nowrap;
+    border: 2px solid var(--c); border-radius: 3px; background: transparent; color: var(--c);
+    font-family: 'Lato', system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
+    box-shadow: 0 5px 0 var(--c-ledge), 0 7px 10px rgba(0, 0, 0, .5);
+    transform: translateY(-3px);
+    transition: transform .1s ease, box-shadow .1s ease, background-color .1s ease, color .1s ease, border-color .1s ease;
   }
-  .crew-link--primary { color: #7c86ff; }
-  .crew-dialog .crew-link--primary:focus-visible { outline-color: rgba(124, 134, 255, .8); }
-  .crew-dialog .crew-link--secondary:focus-visible { outline-color: rgba(51, 212, 115, .8); }
-  .crew-link--secondary { color: #33d473; }
-  .crew-link--primary:hover, .crew-link--primary:focus-visible { color: #98a0ff; border-color: rgba(124, 134, 255, .45); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 22px rgba(0, 0, 0, .55), 0 0 22px rgba(88, 101, 242, .18); }
-  .crew-link--secondary:hover, .crew-link--secondary:focus-visible { color: #5ae08e; border-color: rgba(51, 212, 115, .45); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 22px rgba(0, 0, 0, .55), 0 0 22px rgba(37, 211, 102, .16); }
-  .crew-link::after { position: absolute; z-index: -1; inset: -50% -60%; content: ""; background: linear-gradient(110deg, transparent 40%, rgba(255, 245, 215, .26) 50%, transparent 60%); transform: translateX(-65%); pointer-events: none; }
+  .crew-link--secondary { --c: #33d473; --c-light: #6ee7a0; --c-ledge: #145c31; --c-rgb: 51, 212, 115; }
+  .crew-link i { font-size: 18px; }
+  .crew-link svg { width: 16px; height: 16px; flex: none; }
+  .crew-link:hover, .crew-link:focus-visible {
+    background: rgba(var(--c-rgb), .08); border-color: var(--c-light); color: var(--c-light);
+    box-shadow: 0 7px 0 var(--c-ledge), 0 9px 14px rgba(0, 0, 0, .6), 0 0 16px rgba(var(--c-rgb), .35);
+    transform: translateY(-5px);
+  }
+  .crew-link:active {
+    background: rgba(var(--c-rgb), .18);
+    box-shadow: 0 1px 0 var(--c-ledge), 0 2px 4px rgba(0, 0, 0, .4);
+    transform: translateY(2px);
+  }
+  .crew-dialog .crew-link:focus-visible { outline: 2px solid rgba(var(--c-rgb), .6); outline-offset: 4px; }
   .crew-link .crew-done { display: none; }
   .crew-link.is-done .crew-done { display: inline; }
   .crew-link.is-done .crew-go { display: none; }
 
-  .crew-later { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px; padding: 8px 12px; border: 0; border-radius: 10px; background: transparent; color: #a79c86; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 150ms; }
+  .crew-later { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 16px; padding: 8px 12px; border: 0; border-radius: 10px; background: transparent; color: #a79c86; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 150ms; }
   .crew-later:hover { color: #fff; }
   .crew-dialog .crew-close:focus-visible, .crew-dialog .crew-link:focus-visible, .crew-dialog .crew-later:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 4px; }
 
@@ -104,7 +112,7 @@
 
   /* genie slices: frozen copies of the window, one band each */
   .crew-genie { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
-  .crew-slice { position: fixed; margin: 0; will-change: transform, opacity; }
+  .crew-slice { position: fixed; margin: 0; overflow: hidden; will-change: transform, opacity; contain: strict; }
   .crew-slice, .crew-slice * { animation: none !important; transition: none !important; }
   /* while it unfolds, the title and copy wait, then make their entrance */
   .crew-hold :is(.crew-fly-left, .crew-fly-right, .crew-tagline, .crew-description, .crew-links, .crew-later) { animation: none !important; opacity: 0; }
@@ -138,7 +146,6 @@
     100% { transform: none; }
   }
   @keyframes crew-text-in { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
-  @keyframes crew-sheen { 0%, 65% { transform: translateX(-65%); } 90%, 100% { transform: translateX(65%); } }
   @keyframes crew-scan { 0% { transform: translateY(-45%); opacity: 0; } 12% { opacity: 1; } 60%, 100% { transform: translateY(55%); opacity: 0; } }
 
   @media (max-width: 520px) {
@@ -154,7 +161,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .crew-dialog[open], .crew-dialog::backdrop, .crew-dot, .crew-cursor { animation: none; }
-    .crew-dialog[open] :is(.crew-fly-left, .crew-fly-right, .crew-command, .crew-tagline, .crew-description, .crew-links, .crew-later, .crew-scanbeam), .crew-dialog[open] .crew-link::after { animation: none; }
+    .crew-dialog[open] :is(.crew-fly-left, .crew-fly-right, .crew-command, .crew-tagline, .crew-description, .crew-links, .crew-later, .crew-scanbeam) { animation: none; }
     .crew-close, .crew-link, .crew-later { transition: none; }
   }
 </style>
@@ -324,7 +331,7 @@
       var smooth = function (v) { v = clamp(v); return v * v * (3 - 2 * v); };
       var ease = function (v) { v = clamp(v); return v < 0.5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2; };
       var lerp = function (a, c, t) { return a + (c - a) * t; };
-      var SLICES = 64, FRAMES = 30;
+      var SLICES = 48, FRAMES = 60;
       var h = H / SLICES;
 
       var overlay = document.createElement("div");
@@ -333,15 +340,22 @@
       var anims = [];
       var timing = { duration: opening ? 640 : 680, fill: "both", easing: "linear", direction: opening ? "reverse" : "normal" };
 
+      // one frozen copy, shared as the source for every band
+      var source = win.cloneNode(true);
+      source.removeAttribute("id");
+      source.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });
+      source.style.cssText = "position:absolute;left:0;width:" + W + "px;height:" + H + "px;margin:0;transform:none;";
+
       for (var i = 0; i < SLICES; i++) {
-        var slice = win.cloneNode(true);
-        slice.removeAttribute("id");
-        slice.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });
-        slice.classList.add("crew-slice");
         var top = i * h, Yc = w.top + top + h / 2;
-        slice.style.cssText = "left:" + w.left + "px;top:" + w.top + "px;width:" + W + "px;height:" + H + "px;" +
-          "clip-path:inset(" + Math.max(0, top - 0.6) + "px 0 " + Math.max(0, H - top - h - 0.6) + "px 0);" +
-          "transform-origin:" + (W / 2) + "px " + (top + h / 2) + "px;";
+        var slice = document.createElement("div");
+        slice.className = "crew-slice";
+        // a hair of overlap between bands so no seams show while they move
+        slice.style.cssText = "left:" + w.left + "px;top:" + (w.top + top - 0.5) + "px;width:" + W + "px;height:" + (h + 1) + "px;" +
+          "transform-origin:50% 50%;";
+        var copy = source.cloneNode(true);
+        copy.style.top = (-top + 0.5) + "px";
+        slice.appendChild(copy);
         var frames = [];
         for (var k = 0; k <= FRAMES; k++) {
           var t = k / FRAMES;
@@ -356,15 +370,21 @@
             transform: "translate(" + (centre - Cw).toFixed(2) + "px," + (Y - Yc).toFixed(2) + "px) scaleX(" + (width / W).toFixed(4) + ")" });
         }
         overlay.appendChild(slice);
-        anims.push(slice.animate(frames, timing));
+        var anim = slice.animate(frames, timing);
+        anim.pause();                                   // held on its first frame until everything is built
+        anims.push(anim);
       }
 
       dialog.appendChild(overlay);
       win.style.visibility = "hidden";
       try {
-        anims.push(dialog.animate([{ offset: 0, opacity: 1 }, { offset: 0.85, opacity: 0 }, { offset: 1, opacity: 0 }],
-          Object.assign({}, timing, { pseudoElement: "::backdrop", easing: "ease-in" })));
+        var fadeBg = dialog.animate([{ offset: 0, opacity: 1 }, { offset: 0.85, opacity: 0 }, { offset: 1, opacity: 0 }],
+          Object.assign({}, timing, { pseudoElement: "::backdrop", easing: "ease-in" }));
+        fadeBg.pause();
+        anims.push(fadeBg);
       } catch (e) {}
+      // start the motion on the next frame, so building the slices never eats into it
+      requestAnimationFrame(function () { anims.forEach(function (a) { a.play(); }); });
       var cleanup = { cancel: function () { overlay.remove(); win.style.visibility = ""; } };
       return Promise.all(anims.map(function (a) { return a.finished; })).then(function () { return anims.concat([cleanup]); });
     }
@@ -385,18 +405,20 @@
       var target = reduced ? null : dock();
       dialog.showModal();
       document.body.style.overflow = "hidden";
-      if (!reduced) frame = requestAnimationFrame(tick);
+      var startSea = function () { if (!reduced) { cancelAnimationFrame(frame); frame = requestAnimationFrame(tick); } };
       var focusFirst = function () {
         var first = dialog.querySelector(".crew-link:not(.is-done)") || dialog.querySelector(".crew-later");
         if (first) first.focus({ preventScroll: true });
       };
-      if (!target) { focusFirst(); return; }
+      if (!target) { dialog.classList.add("crew-settled"); startSea(); focusFirst(); return; }
       busy = true;
       dialog.classList.add("crew-hold");
       genie(target, true).then(function (anims) {
         anims.forEach(function (a) { a.cancel(); });
         dialog.classList.remove("crew-hold");
+        dialog.classList.add("crew-settled");
         busy = false;
+        startSea();
         focusFirst();
       });
     }
@@ -407,6 +429,8 @@
       var target = reduced ? null : dock();
       if (!target) { dialog.close(); return; }
       busy = true;
+      cancelAnimationFrame(frame);
+      dialog.classList.remove("crew-settled");
       genie(target, false).then(function (anims) {
         dialog.close();
         anims.forEach(function (a) { a.cancel(); });

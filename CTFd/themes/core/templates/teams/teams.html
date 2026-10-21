@@ -47,9 +47,9 @@
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      height: 48px;
+      height: 58px;
       margin-bottom: 1.4rem;
-      padding: 0 0.4rem 0 1.1rem;
+      padding: 0 0.6rem 0 1.1rem;
       border: 1px solid rgba(var(--acc-rgb), 0.32);
       border-radius: 12px;
       background: rgba(10, 9, 7, 0.9);
@@ -76,22 +76,13 @@
 
     .teams-search input::placeholder { color: rgba(244, 236, 220, 0.4); }
 
-    .teams-search button {
-      height: 38px;
+    /* the search button is the shared 3D push button (base.html), sized for the capsule */
+    .teams-search .btn-3d {
+      min-height: 38px;
       padding: 0 1.1rem;
-      border: 0;
-      border-radius: 8px;
-      background: var(--btn-primary-bg);
-      box-shadow: var(--btn-primary-shadow);
-      transition: background 0.25s var(--btn-ease), box-shadow 0.3s var(--btn-ease);
-      font-family: 'Voyage Serif', system-ui, sans-serif;
-      font-weight: 600;
-      font-size: 0.875rem;
-      letter-spacing: 0;
-      color: var(--acc-ink);
+      font-size: 0.8rem;
+      letter-spacing: 2px !important;
     }
-
-    .teams-search button:hover { background: var(--btn-primary-bg-hover); box-shadow: var(--btn-primary-shadow-hover); }
 
     .search-note {
       margin: -0.6rem 0 1.2rem 0.4rem;
@@ -255,7 +246,7 @@
           <input type="hidden" name="field" value="name">
           <i class="fas fa-search" aria-hidden="true"></i>
           <input type="text" name="q" value="{{ q or '' }}" placeholder="Search for a team" aria-label="{% trans %}Search teams{% endtrans %}">
-          <button type="submit">{% trans %}Search{% endtrans %}</button>
+          <button type="submit" class="btn-3d">{% trans %}Search{% endtrans %}</button>
         </form>
 
         {% if q and field %}

@@ -265,6 +265,58 @@
         box-shadow: 0 0 0 3px rgba(196, 71, 59, 0.12);
     }
 
+    /* 3D push button: the original challenge Submit, shared by Submit, Login, Register, Join Crew, Create Crew */
+    .btn-3d,
+    .auth-submit,
+    #challenge-window .challenge-submit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 1.4rem;
+        border-radius: 3px !important;
+        border: 2px solid var(--acc) !important;
+        background: transparent !important;
+        color: var(--acc) !important;
+        font-family: 'Lato', system-ui, sans-serif;
+        font-weight: 700 !important;
+        font-size: 0.9rem;
+        letter-spacing: 3px !important;
+        text-transform: uppercase !important;
+        text-shadow: none;
+        box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5) !important;
+        transform: translateY(-3px);
+        filter: none;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease !important;
+    }
+    .btn-3d:hover,
+    .auth-submit:hover,
+    #challenge-window .challenge-submit:hover {
+        background: rgba(var(--acc-rgb), 0.08) !important;
+        box-shadow: 0 7px 0 #5c4317, 0 9px 14px rgba(0, 0, 0, 0.6), 0 0 16px rgba(var(--acc-rgb), 0.35) !important;
+        transform: translateY(-5px);
+        color: var(--acc-light) !important;
+        border-color: var(--acc-light) !important;
+        filter: none;
+    }
+    .btn-3d:active,
+    .auth-submit:active,
+    #challenge-window .challenge-submit:active {
+        background: rgba(var(--acc-rgb), 0.18) !important;
+        box-shadow: 0 1px 0 #5c4317, 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+        transform: translateY(2px);
+    }
+    .btn-3d:focus-visible,
+    .auth-submit:focus-visible,
+    #challenge-window .challenge-submit:focus-visible {
+        outline: none !important;
+        box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(var(--acc-rgb), 0.25) !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .btn-3d, .auth-submit, #challenge-window .challenge-submit { transition: none !important; }
+    }
+
     .btn-link { min-height: 0; padding: 0; color: var(--acc-light); font-weight: 500; box-shadow: none; }
     .btn-link:hover { color: #f4ecdc; transform: none; }
     .btn:disabled, .btn.disabled { opacity: 0.5; transform: none; box-shadow: none; }
