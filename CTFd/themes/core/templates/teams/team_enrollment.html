@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 
 {% block stylesheets %}
-  {{ super() }}
-  {% with auth_backdrop="img/trojan-horse-fire.jpg", auth_backdrop_pos="center 70%", auth_backdrop_pos_sm="30% 62%", auth_panel=true %}{% include "components/auth_styles.html" %}{% endwith %}
-  <style>
-    @media (max-width: 767px) {
-      .auth-backdrop {
-        -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
-        mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
-      }
+{{ super() }}
+{% with auth_backdrop="img/trojan-horse-fire.jpg", auth_backdrop_pos="center 70%", auth_backdrop_pos_sm="30% 62%",
+auth_panel=true %}{% include "components/auth_styles.html" %}{% endwith %}
+<style>
+  @media (max-width: 767px) {
+    .auth-backdrop {
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
+      mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
     }
-  </style>
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -21,17 +22,17 @@
     <p class="auth-sub">No hero sails alone. Join a crew, or found your own.</p>
 
     {% if integrations.mlc() %}
-      <div class="auth-choices">
-        <a class="auth-choice auth-choice--official" href="{{ url_for('auth.oauth_login') }}">
-          <span class="auth-choice-icon"><i class="fas fa-shield-alt" aria-hidden="true"></i></span>
-          <span class="auth-choice-text">
-            <span class="auth-choice-title">{% trans %}Official Crew{% endtrans %}</span>
-            <span class="auth-choice-desc">{% trans %}Sail with your Major League Cyber team.{% endtrans %}</span>
-          </span>
-          <i class="fas fa-arrow-right auth-choice-arrow" aria-hidden="true"></i>
-        </a>
-      </div>
-      <p class="auth-or">{% trans %}or sail with an unofficial crew{% endtrans %}</p>
+    <div class="auth-choices">
+      <a class="auth-choice auth-choice--official" href="{{ url_for('auth.oauth_login') }}">
+        <span class="auth-choice-icon"><i class="fas fa-shield-alt" aria-hidden="true"></i></span>
+        <span class="auth-choice-text">
+          <span class="auth-choice-title">{% trans %}Official Crew{% endtrans %}</span>
+          <span class="auth-choice-desc">{% trans %}Sail with your Major League Cyber team.{% endtrans %}</span>
+        </span>
+        <i class="fas fa-arrow-right auth-choice-arrow" aria-hidden="true"></i>
+      </a>
+    </div>
+    <p class="auth-or">{% trans %}or sail with an unofficial crew{% endtrans %}</p>
     {% endif %}
 
     <div class="auth-choices">
@@ -46,8 +47,9 @@
       <a class="auth-choice" href="{{ url_for('teams.new') }}">
         <span class="auth-choice-icon"><i class="fas fa-flag" aria-hidden="true"></i></span>
         <span class="auth-choice-text">
-          <span class="auth-choice-title">{% trans %}Found a Crew{% endtrans %}</span>
-          <span class="auth-choice-desc">{% trans %}Name your ship and share its password with your crewmates.{% endtrans %}</span>
+          <span class="auth-choice-title">{% trans %}Build Your Crew{% endtrans %}</span>
+          <span class="auth-choice-desc">{% trans %}Name your ship and share its password with your crewmates.{%
+            endtrans %}</span>
         </span>
         <i class="fas fa-arrow-right auth-choice-arrow" aria-hidden="true"></i>
       </a>
