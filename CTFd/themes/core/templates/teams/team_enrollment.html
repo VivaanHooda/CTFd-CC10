@@ -24,12 +24,12 @@ auth_panel=true %}{% include "components/auth_styles.html" %}{% endwith %}
     {% if integrations.mlc() %}
     <div class="auth-choices">
       <a class="auth-choice auth-choice--official" href="{{ url_for('auth.oauth_login') }}">
-        <span class="auth-choice-icon"><i class="fas fa-shield-alt" aria-hidden="true"></i></span>
+        <span class="auth-choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
         <span class="auth-choice-text">
           <span class="auth-choice-title">{% trans %}Official Crew{% endtrans %}</span>
           <span class="auth-choice-desc">{% trans %}Sail with your Major League Cyber team.{% endtrans %}</span>
         </span>
-        <i class="fas fa-arrow-right auth-choice-arrow" aria-hidden="true"></i>
+        <span class="auth-choice-go"><span>Sign in</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
       </a>
     </div>
     <p class="auth-or">{% trans %}or sail with an unofficial crew{% endtrans %}</p>
@@ -37,21 +37,21 @@ auth_panel=true %}{% include "components/auth_styles.html" %}{% endwith %}
 
     <div class="auth-choices">
       <a class="auth-choice" href="{{ url_for('teams.join') }}">
-        <span class="auth-choice-icon"><i class="fas fa-users" aria-hidden="true"></i></span>
+        <span class="auth-choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
         <span class="auth-choice-text">
           <span class="auth-choice-title">{% trans %}Join a Crew{% endtrans %}</span>
           <span class="auth-choice-desc">{% trans %}Have the crew name and password? Climb aboard.{% endtrans %}</span>
         </span>
-        <i class="fas fa-arrow-right auth-choice-arrow" aria-hidden="true"></i>
+        <span class="auth-choice-go"><span>Join</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
       </a>
       <a class="auth-choice" href="{{ url_for('teams.new') }}">
-        <span class="auth-choice-icon"><i class="fas fa-flag" aria-hidden="true"></i></span>
+        <span class="auth-choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 18H2a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4Z"/><path d="M21 14 10 2 3 14h18Z"/><path d="M10 2v16"/></svg></span>
         <span class="auth-choice-text">
           <span class="auth-choice-title">{% trans %}Build Your Crew{% endtrans %}</span>
           <span class="auth-choice-desc">{% trans %}Name your ship and share its password with your crewmates.{%
             endtrans %}</span>
         </span>
-        <i class="fas fa-arrow-right auth-choice-arrow" aria-hidden="true"></i>
+        <span class="auth-choice-go"><span>Create</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
       </a>
     </div>
   </div>

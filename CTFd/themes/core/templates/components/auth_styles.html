@@ -206,42 +206,63 @@
   /* wider card for a choice of paths */
   .auth-card--wide { width: min(100%, 560px); }
 
+  /* crew choices: one grouped panel of rows, line icons, gold only as a hover accent */
   .auth-choices {
-    display: grid;
-    gap: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .auth-choice {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 1.1rem;
-    padding: 1.15rem 1.2rem;
-    border: 1px solid rgba(var(--acc-rgb), 0.22);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.025);
+    gap: 1rem;
+    padding: 1.1rem 1.15rem;
     color: #f4ecdc !important;
     text-decoration: none;
-    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+    transition: background-color 0.15s ease;
   }
 
-  .auth-choice:hover, .auth-choice:focus-visible {
-    border-color: rgba(var(--acc-rgb), 0.6);
-    background: rgba(var(--acc-rgb), 0.07);
-    transform: translateY(-2px);
-    outline: none;
+  .auth-choice + .auth-choice { border-top: 1px solid rgba(255, 255, 255, 0.07); }
+
+  .auth-choice:hover { background: rgba(255, 255, 255, 0.035); }
+
+  .auth-choice:focus-visible {
+    outline: 2px solid var(--acc-light);
+    outline-offset: -2px;
+    border-radius: 14px;
   }
 
   .auth-choice-icon {
     display: grid;
     place-items: center;
     flex: none;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    border: 1px solid rgba(var(--acc-rgb), 0.4);
-    background: radial-gradient(circle at 35% 30%, rgba(var(--acc-rgb), 0.25), rgba(var(--acc-rgb), 0.05));
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    color: rgba(244, 236, 220, 0.8);
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .auth-choice-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .auth-choice:hover .auth-choice-icon {
+    border-color: rgba(var(--acc-rgb), 0.45);
     color: var(--acc-light);
-    font-size: 1.15rem;
   }
 
   .auth-choice-text { flex: 1; min-width: 0; }
@@ -250,28 +271,47 @@
     display: block;
     margin-bottom: 0.15rem;
     font-family: 'Voyage Serif', system-ui, sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0;
-    color: var(--acc-light);
+    font-weight: 600;
+    font-size: 0.98rem;
+    letter-spacing: -0.005em;
+    color: #f4ecdc;
   }
 
   .auth-choice-desc {
     display: block;
-    font-size: 0.95rem;
-    line-height: 1.4;
-    color: rgba(244, 236, 220, 0.62);
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: rgba(244, 236, 220, 0.52);
   }
 
-  .auth-choice-arrow {
+  .auth-choice-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     flex: none;
-    color: var(--acc);
-    font-size: 0.9rem;
-    transition: transform 0.25s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(244, 236, 220, 0.45);
+    transition: color 0.15s ease;
   }
 
-  .auth-choice:hover .auth-choice-arrow { transform: translateX(4px); }
+  .auth-choice-go svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s ease;
+  }
 
-  .auth-choice--official { border-color: rgba(var(--acc-rgb), 0.45); background: rgba(var(--acc-rgb), 0.06); }
+  .auth-choice:hover .auth-choice-go { color: var(--acc-light); }
+  .auth-choice:hover .auth-choice-go svg { transform: translateX(2px); }
+
+  @media (max-width: 420px) {
+    .auth-choice-go span { display: none; }
+  }
 
   .auth-or {
     margin: 0.4rem 0;
