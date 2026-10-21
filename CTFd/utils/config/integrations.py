@@ -10,5 +10,7 @@ def mlc():
 
 
 def mlc_registration():
+    if get_config("registration_paused"):
+        return False
     v = get_config("registration_visibility")
     return v == "mlc"

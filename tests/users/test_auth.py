@@ -838,3 +838,37 @@ def test_user_reset_password_rate_limit(mock_smtp):
             assert mock_smtp.return_value.send_message.call_count == 3
 
     destroy_ctfd(app)
+
+
+def test_registration_paused_blocks_new_signups():
+    """Pausing registrations stops new sign-ups but leaves existing players able to log in"""
+    app = create_ctfd()
+    with app.app_context():
+        register_user(app, name="existing", email="existing@examplectf.com")
+        set_config("registration_paused", True)
+
+        with app.test_client() as client:
+            r = client.get("/register")
+            assert r.status_code == 403
+            assert "registrations are paused" in r.get_data(as_text=True)
+
+            r = client.get("/login")
+            assert r.status_code == 200
+            assert 'href="/register"' not in r.get_data(as_text=True)
+
+            with client.session_transaction() as sess:
+                nonce = sess.get("nonce")
+            r = client.post(
+                "/register",
+                data={"name": "newbie", "email": "newbie@examplectf.com", "password": "password", "nonce": nonce},
+            )
+            assert r.status_code == 403
+        assert Users.query.filter_by(name="newbie").count() == 0
+
+        client = login_as_user(app, name="existing")
+        assert client.get("/challenges").status_code == 200
+
+        set_config("registration_paused", False)
+        with app.test_client() as client:
+            assert client.get("/register").status_code == 200
+    destroy_ctfd(app)

@@ -41,7 +41,14 @@ def accounts_visible():
         return is_admin()
 
 
+def registrations_paused():
+    # Admin > Config > Pause: stops new sign-ups without touching existing accounts
+    return bool(get_config("registration_paused"))
+
+
 def registration_visible():
+    if registrations_paused():
+        return False
     v = get_config(ConfigTypes.REGISTRATION_VISIBILITY)
     if v == RegistrationVisibilityTypes.PUBLIC:
         return True

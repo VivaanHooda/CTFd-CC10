@@ -12,6 +12,18 @@
 			</small>
 		</div>
 
+		<div class="form-group">
+			<div class="form-check pl-0">
+				<label>
+					<input id="registration_paused" name="registration_paused" type="checkbox" {% if registration_paused %}checked{% endif %}>
+					Pause new registrations
+				</label>
+			</div>
+			<small class="form-text text-muted">
+				Stop anyone from signing up until unpaused. The register page and Register links are hidden; existing players can still log in and play.
+			</small>
+		</div>
+
 		<button type="submit" class="btn btn-md btn-primary float-right">Update</button>
 	</form>
 </div>
