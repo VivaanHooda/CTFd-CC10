@@ -143,20 +143,15 @@
         --btn-radius: 12px;
         --btn-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-        --btn-primary-bg: linear-gradient(180deg, #ecd096 0%, #d9b56b 100%);
-        --btn-primary-bg-hover: linear-gradient(180deg, #f3dca8 0%, #e0bf78 100%);
+        /* flat warm gold: a faint lit top edge and an ordinary drop shadow, no halo */
+        --btn-primary-bg: #dcb86e;
+        --btn-primary-bg-hover: #e6c47f;
         --btn-primary-shadow:
-            inset 0 1px 0 rgba(255, 250, 235, 0.55),
-            inset 0 0 0 1px rgba(255, 240, 200, 0.18),
-            inset 0 -1px 0 rgba(90, 60, 15, 0.35),
-            0 1px 2px rgba(0, 0, 0, 0.5),
-            0 8px 22px -10px rgba(var(--acc-rgb), 0.7);
+            inset 0 1px 0 rgba(255, 250, 235, 0.35),
+            0 1px 2px rgba(0, 0, 0, 0.45);
         --btn-primary-shadow-hover:
-            inset 0 1px 0 rgba(255, 250, 235, 0.65),
-            inset 0 0 0 1px rgba(255, 240, 200, 0.24),
-            inset 0 -1px 0 rgba(90, 60, 15, 0.3),
-            0 2px 4px rgba(0, 0, 0, 0.45),
-            0 14px 32px -10px rgba(var(--acc-rgb), 0.85);
+            inset 0 1px 0 rgba(255, 250, 235, 0.4),
+            0 4px 10px -2px rgba(0, 0, 0, 0.5);
 
         --btn-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
         --btn-surface-hover: linear-gradient(180deg, rgba(var(--acc-rgb), 0.14), rgba(var(--acc-rgb), 0.05));
@@ -203,7 +198,6 @@
         background: var(--btn-primary-bg);
         color: var(--acc-ink);
         box-shadow: var(--btn-primary-shadow);
-        text-shadow: 0 1px 0 rgba(255, 245, 220, 0.35);
     }
     .btn-primary:hover, .btn-primary:focus-visible,
     .btn-success:hover, .btn-success:focus-visible,
