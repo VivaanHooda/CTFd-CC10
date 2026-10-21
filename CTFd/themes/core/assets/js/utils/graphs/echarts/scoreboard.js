@@ -7,7 +7,9 @@ const MEDALS = ["#e8c77e", "#c9d1d6", "#c0874a"];
 const FAINT = "rgba(244, 236, 220, 0.22)";
 const INK = "rgba(244, 236, 220, 0.55)";
 const css = (name, fallback) =>
-  (typeof document !== "undefined" && getComputedStyle(document.documentElement).getPropertyValue(name).trim()) || fallback;
+  (typeof document !== "undefined" &&
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim()) ||
+  fallback;
 const SERIF = "'Voyage Serif', 'Cormorant Garamond', Georgia, serif";
 // Marcellus has lining figures, so numbers read evenly on the canvas
 const NUM = "'Voyage Display', Marcellus, Georgia, serif";
@@ -56,7 +58,11 @@ export function getOption(mode, places, optionMerge) {
       formatter: params => {
         const t = +params[0].axisValue;
         const rows = tracks
-          .map((tr, i) => ({ name: tr.name, score: scoreAt(tr.points, t), color: MEDALS[i] || "#f4ecdc" }))
+          .map((tr, i) => ({
+            name: tr.name,
+            score: scoreAt(tr.points, t),
+            color: MEDALS[i] || "#f4ecdc",
+          }))
           .sort((a, b) => b.score - a.score)
           .slice(0, 10);
         const head = `<div style="font-family:${SERIF};font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:${GOLD};margin-bottom:6px">${dayjs(t).format("MMM D · HH:mm")}</div>`;
@@ -72,7 +78,15 @@ export function getOption(mode, places, optionMerge) {
       },
     },
     // ctrl/cmd + scroll zooms; plain scrolling scrolls the page
-    dataZoom: [{ type: "inside", xAxisIndex: [0], zoomOnMouseWheel: "ctrl", moveOnMouseWheel: false, moveOnMouseMove: true }],
+    dataZoom: [
+      {
+        type: "inside",
+        xAxisIndex: [0],
+        zoomOnMouseWheel: "ctrl",
+        moveOnMouseWheel: false,
+        moveOnMouseMove: true,
+      },
+    ],
     xAxis: [
       {
         type: "time",
@@ -85,7 +99,13 @@ export function getOption(mode, places, optionMerge) {
           fontFamily: NUM,
           fontSize: 12,
           hideOverlap: true,
-          formatter: { year: "{yyyy}", month: "{MMM}", day: "{MMM} {d}", hour: "{HH}:{mm}", minute: "{HH}:{mm}" },
+          formatter: {
+            year: "{yyyy}",
+            month: "{MMM}",
+            day: "{MMM} {d}",
+            hour: "{HH}:{mm}",
+            minute: "{HH}:{mm}",
+          },
         },
         splitLine: { show: false },
       },
@@ -127,7 +147,11 @@ export function getOption(mode, places, optionMerge) {
         i === 0
           ? {
               color: {
-                type: "linear", x: 0, y: 0, x2: 0, y2: 1,
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
                 colorStops: [
                   { offset: 0, color: "rgba(232, 199, 126, 0.20)" },
                   { offset: 1, color: "rgba(232, 199, 126, 0)" },
@@ -141,10 +165,19 @@ export function getOption(mode, places, optionMerge) {
         fontFamily: SERIF,
         fontSize: medal ? 14 : 12,
         color: medal || "rgba(244, 236, 220, 0.45)",
-        formatter: p => (narrow ? `{s|${p.value[1]}}` : `{n|${p.seriesName}}  {s|${p.value[1]}}`),
+        formatter: p =>
+          narrow ? `{s|${p.value[1]}}` : `{n|${p.seriesName}}  {s|${p.value[1]}}`,
         rich: {
-          n: { fontFamily: SERIF, fontSize: medal ? 14 : 12, color: medal || "rgba(244, 236, 220, 0.45)" },
-          s: { fontFamily: NUM, fontSize: medal ? 12 : 11, color: medal || "rgba(244, 236, 220, 0.45)" },
+          n: {
+            fontFamily: SERIF,
+            fontSize: medal ? 14 : 12,
+            color: medal || "rgba(244, 236, 220, 0.45)",
+          },
+          s: {
+            fontFamily: NUM,
+            fontSize: medal ? 12 : 11,
+            color: medal || "rgba(244, 236, 220, 0.45)",
+          },
         },
       },
       labelLayout: { moveOverlap: "shiftY" },

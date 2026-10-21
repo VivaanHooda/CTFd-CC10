@@ -62,7 +62,11 @@ def over_limit(bucket, ident, limit):
 
 
 def allowed_domains_message():
-    domains = [d.strip() for d in (get_config("domain_whitelist") or "").split(",") if d.strip()]
+    domains = [
+        d.strip()
+        for d in (get_config("domain_whitelist") or "").split(",")
+        if d.strip()
+    ]
     if not domains:
         return _l("Your email address is not from an allowed domain")
     listed = ", ".join("@" + d.lstrip("*.") for d in domains)
@@ -420,9 +424,7 @@ def register():
             over_limit("register", email_address, REGISTER_LIMIT)
             or over_limit("register_global", "all", REGISTER_GLOBAL_LIMIT)
         ):
-            errors.append(
-                _l("Too many registration attempts. Please try again later.")
-            )
+            errors.append(_l("Too many registration attempts. Please try again later."))
 
         if len(errors) > 0:
             return render_template(

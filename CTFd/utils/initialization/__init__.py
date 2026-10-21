@@ -117,7 +117,9 @@ def init_template_globals(app):
     app.jinja_env.globals.update(integrations=integrations)
     app.jinja_env.globals.update(authed=authed)
     app.jinja_env.globals.update(is_admin=is_admin)
-    app.jinja_env.globals.update(block_automation=lambda: app.config.get("BLOCK_AUTOMATION"))
+    app.jinja_env.globals.update(
+        block_automation=lambda: app.config.get("BLOCK_AUTOMATION")
+    )
     app.jinja_env.globals.update(get_current_user_attrs=get_current_user_attrs)
     app.jinja_env.globals.update(get_current_team_attrs=get_current_team_attrs)
     app.jinja_env.globals.update(get_ip=get_ip)

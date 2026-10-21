@@ -9,7 +9,9 @@ from sqlalchemy.engine.url import URL
 
 # Load secrets (mail credentials etc.) from the repo-root .env, if present.
 # Real environment variables take precedence over values in the file.
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
+load_dotenv(
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+)
 
 _FORCED_EXTRA_CONFIG_TYPES = {}
 

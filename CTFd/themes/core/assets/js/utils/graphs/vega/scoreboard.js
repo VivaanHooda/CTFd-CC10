@@ -1,7 +1,18 @@
 import { cumulativeSum } from "../math";
 
 export function getSpec(description, values) {
-  const pokemonPalette = ['#ffd733', '#3B4CCA', '#E3350D', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f'];
+  const pokemonPalette = [
+    "#ffd733",
+    "#3B4CCA",
+    "#E3350D",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+  ];
 
   let spec = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
@@ -11,44 +22,49 @@ export function getSpec(description, values) {
     background: "transparent",
     config: {
       view: {
-        stroke: "transparent"
+        stroke: "transparent",
       },
       style: {
         "guide-label": {
-          fill: "#ffd733"
+          fill: "#ffd733",
         },
         "guide-title": {
-          fill: "#ffd733"
-        }
+          fill: "#ffd733",
+        },
       },
       axis: {
         domainColor: "#3B4CCA",
         gridColor: "rgba(255,255,255,0.1)",
-        tickColor: "#3B4CCA"
+        tickColor: "#3B4CCA",
       },
       legend: {
         labelColor: "#ffd733",
-        titleColor: "#ffd733"
-      }
+        titleColor: "#ffd733",
+      },
     },
     mark: {
       type: "line",
       strokeWidth: 3,
-      tooltip: true
+      tooltip: true,
     },
     encoding: {
       x: { field: "date", type: "temporal", title: "Time" },
-      y: { field: "score", type: "quantitative", title: "Score", scale: { zero: true } },
+      y: {
+        field: "score",
+        type: "quantitative",
+        title: "Score",
+        scale: { zero: true },
+      },
       color: {
         field: "name",
         type: "nominal",
         legend: {
           orient: "bottom",
-          offset: 20
+          offset: 20,
         },
         scale: {
-          range: pokemonPalette
-        }
+          range: pokemonPalette,
+        },
       },
     },
   };

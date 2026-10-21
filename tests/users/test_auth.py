@@ -860,7 +860,12 @@ def test_registration_paused_blocks_new_signups():
                 nonce = sess.get("nonce")
             r = client.post(
                 "/register",
-                data={"name": "newbie", "email": "newbie@examplectf.com", "password": "password", "nonce": nonce},
+                data={
+                    "name": "newbie",
+                    "email": "newbie@examplectf.com",
+                    "password": "password",
+                    "nonce": nonce,
+                },
             )
             assert r.status_code == 403
         assert Users.query.filter_by(name="newbie").count() == 0

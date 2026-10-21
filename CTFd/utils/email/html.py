@@ -87,7 +87,7 @@ def verification_email_html(ctf_name, url):
         eyebrow="Coding Club RVCE &middot; 10 Years",
         heading="Confirm your email",
         paragraphs=[
-            f"Welcome aboard, sailor. One trial stands between you and <strong style=\"color:{GOLD_LIGHT};\">{name}</strong>.",
+            f'Welcome aboard, sailor. One trial stands between you and <strong style="color:{GOLD_LIGHT};">{name}</strong>.',
             "Confirm this address to unlock the challenges and take your place on the scoreboard.",
         ],
         button_label="Confirm my email",

@@ -115,7 +115,10 @@ def check_registration_visibility(f):
     @functools.wraps(f)
     def _check_registration_visibility(*args, **kwargs):
         if get_config("registration_paused"):
-            abort(403, description="New registrations are paused right now. Please check back later.")
+            abort(
+                403,
+                description="New registrations are paused right now. Please check back later.",
+            )
         v = get_config(ConfigTypes.REGISTRATION_VISIBILITY)
         if v == RegistrationVisibilityTypes.PUBLIC:
             return f(*args, **kwargs)
