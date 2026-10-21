@@ -31,10 +31,14 @@ def test_user_set_profile():
         assert user.website == data["website"]
         assert user.country == data["country"]
 
+        # The Voyage theme's settings page only shows name and email; affiliation,
+        # website and country are still saved through the API (checked above)
         r = client.get("/settings")
         resp = r.get_data(as_text=True)
-        for _k, v in data.items():
-            assert v in resp
+        for k in ("name", "email"):
+            assert data[k] in resp
+        for k in ("affiliation", "website", "country"):
+            assert f'name="{k}"' not in resp
 
         data = {
             "name": "user",
