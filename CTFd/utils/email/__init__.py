@@ -14,7 +14,7 @@ from CTFd.constants.email import (
 )
 from CTFd.utils import get_config
 from CTFd.utils.config import get_mail_provider
-from CTFd.utils.email.html import verification_email_html
+from CTFd.utils.email.html import password_reset_email_html, verification_email_html
 from CTFd.utils.email.providers.mailgun import MailgunEmailProvider
 from CTFd.utils.email.providers.smtp import SMTPEmailProvider
 from CTFd.utils.formatters import safe_format
@@ -24,6 +24,16 @@ from CTFd.utils.security.email import (
 )
 
 PROVIDERS = {"smtp": SMTPEmailProvider, "mailgun": MailgunEmailProvider}
+
+
+def _custom_body(key, default):
+    """The admin-set body for an email, or None when it is unset or just the pre-filled default."""
+    custom = get_config(key)
+    # The admin email page pre-fills the default text, so saving that page stores it verbatim.
+    # Only treat the body as custom when it actually differs from the default.
+    if custom and " ".join(str(custom).split()) == " ".join(default.split()):
+        return None
+    return custom
 
 
 def sendmail(addr, text, subject="Message from {ctf_name}", html=None):
@@ -54,22 +64,28 @@ def password_change_alert(email):
 
 
 def forgot_password(email):
+    url = url_for(
+        "auth.reset_password",
+        data=generate_password_reset_token(email, timeout=60 * 60),
+        _external=True,
+    )
+    custom_body = _custom_body("password_reset_body", DEFAULT_PASSWORD_RESET_BODY)
     text = safe_format(
-        get_config("password_reset_body") or DEFAULT_PASSWORD_RESET_BODY,
+        custom_body or DEFAULT_PASSWORD_RESET_BODY,
         ctf_name=get_config("ctf_name"),
         ctf_description=get_config("ctf_description"),
-        url=url_for(
-            "auth.reset_password",
-            data=generate_password_reset_token(email, timeout=60 * 60),
-            _external=True,
-        ),
+        url=url,
     )
 
     subject = safe_format(
         get_config("password_reset_subject") or DEFAULT_PASSWORD_RESET_SUBJECT,
         ctf_name=get_config("ctf_name"),
     )
-    return sendmail(addr=email, text=text, subject=subject)
+    # A body customised in the admin panel is sent as-is; otherwise use the designed HTML version
+    html = (
+        None if custom_body else password_reset_email_html(get_config("ctf_name"), url)
+    )
+    return sendmail(addr=email, text=text, subject=subject, html=html)
 
 
 def verify_email_address(addr):
@@ -79,13 +95,9 @@ def verify_email_address(addr):
         _external=True,
         _method="GET",
     )
-    custom_body = get_config("verification_email_body")
-    # The admin email page pre-fills the default text, so saving that page stores it verbatim.
-    # Only treat the body as custom when it actually differs from the default.
-    if custom_body and " ".join(str(custom_body).split()) == " ".join(
-        DEFAULT_VERIFICATION_EMAIL_BODY.split()
-    ):
-        custom_body = None
+    custom_body = _custom_body(
+        "verification_email_body", DEFAULT_VERIFICATION_EMAIL_BODY
+    )
     text = safe_format(
         custom_body or DEFAULT_VERIFICATION_EMAIL_BODY,
         ctf_name=get_config("ctf_name"),

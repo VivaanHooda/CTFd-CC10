@@ -635,6 +635,38 @@ def test_reset_password_links_single_use():
 
 
 @patch("smtplib.SMTP")
+def test_forgot_password_email_is_designed(mock_smtp):
+    """The password reset email carries the designed HTML version with the reset link"""
+    app = create_ctfd()
+    with app.app_context():
+        set_config("mail_server", "localhost")
+        set_config("mail_port", 25)
+        set_config("mail_useauth", True)
+        set_config("mail_username", "username")
+        set_config("mail_password", "password")
+        register_user(app, name="user1", email="user1@examplectf.com")
+
+        forgot_password("user1@examplectf.com")
+        sent = mock_smtp.return_value.send_message.call_args[0][0]
+        assert sent.get_content_type() == "multipart/alternative"
+        plain = sent.get_body(("plain",)).get_content()
+        html = sent.get_body(("html",)).get_content()
+        assert "http://localhost/reset_password/" in plain
+        assert "Reset your password" in html
+        assert "http://localhost/reset_password/" in html
+
+        # A body customised in the admin panel is sent as plain text only
+        set_config("password_reset_body", "Custom reset: {url}")
+        forgot_password("user1@examplectf.com")
+        sent = mock_smtp.return_value.send_message.call_args[0][0]
+        assert sent.get_content_type() == "text/plain"
+        assert sent.get_content().startswith(
+            "Custom reset: http://localhost/reset_password/"
+        )
+    destroy_ctfd(app)
+
+
+@patch("smtplib.SMTP")
 def test_reset_password_link_tokens_unique(mock_smtp):
     app = create_ctfd()
     with app.app_context():

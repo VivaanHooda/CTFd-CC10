@@ -96,3 +96,21 @@ def verification_email_html(ctf_name, url):
         footer=f"You're receiving this because this address was used to sign up for {name}.<br>"
         "If that wasn't you, ignore this email and no account will be activated.",
     )
+
+
+def password_reset_email_html(ctf_name, url):
+    name = escape(ctf_name or "the CTF")
+    return _shell(
+        preheader=f"Reset your password for {ctf_name or 'the CTF'}.",
+        eyebrow="Coding Club RVCE &middot; 10 Years",
+        heading="Reset your password",
+        paragraphs=[
+            f'Lost your bearings, sailor? A password reset was requested for your <strong style="color:{GOLD_LIGHT};">{name}</strong> account.',
+            "Choose a new password to get back on course.",
+        ],
+        button_label="Reset my password",
+        url=url,
+        note="This link expires in 1 hour and works only once. You can request a new one from the reset page.",
+        footer=f"You're receiving this because a password reset was requested for this address on {name}.<br>"
+        "If that wasn't you, ignore this email and your password will stay the same.",
+    )
