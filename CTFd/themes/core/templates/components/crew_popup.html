@@ -33,7 +33,7 @@
   .crew-dialog::backdrop { background: rgba(2, 2, 4, .8); backdrop-filter: blur(9px); }
   .crew-fly { flex-shrink: 0; width: min(660px, 100%); margin: auto; transform-origin: 0 0; }
   .crew-window { position: relative; width: 100%; transform-origin: 0 0; border: 1px solid rgba(var(--acc-rgb), .38); border-radius: 16px; background: #0b0906; box-shadow: 0 0 100px rgba(var(--acc-rgb), .12), 0 32px 100px rgba(0, 0, 0, .7); }
-  .crew-titlebar, .crew-footer { display: flex; align-items: center; justify-content: space-between; }
+  .crew-titlebar { display: flex; align-items: center; justify-content: space-between; }
   .crew-titlebar { min-height: 52px; padding: 4px 10px 4px 22px; border-radius: 16px 16px 0 0; background: rgba(255, 255, 255, .012); border-bottom: 1px solid rgba(255, 255, 255, .05); }
   .crew-terminal { display: flex; align-items: center; gap: 12px; color: #b3a790; font-size: 11px; letter-spacing: .025em; }
   .crew-terminal > span { color: var(--acc); font-size: 15px; }
@@ -41,7 +41,7 @@
   .crew-close:hover { color: #fff; background: rgba(var(--acc-rgb), .12); }
   .crew-close svg { width: 18px; height: 18px; }
 
-  .crew-poster { position: relative; isolation: isolate; background: radial-gradient(ellipse at 50% 36%, rgba(var(--acc-rgb), .14), transparent 65%), #0b0906; }
+  .crew-poster { position: relative; isolation: isolate; border-radius: 0 0 16px 16px; background: radial-gradient(ellipse at 50% 36%, rgba(var(--acc-rgb), .14), transparent 65%), #0b0906; }
   .crew-atmosphere { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
   .crew-texture { position: absolute; z-index: -1; inset: 24px -24px auto; height: 350px; pointer-events: none; will-change: transform; }
   .crew-ascii { position: absolute; top: 0; left: 50%; width: max-content; margin: 0; transform: translateX(-50%); font: 10px/11px ui-monospace, Menlo, monospace; letter-spacing: 1px; color: var(--acc); opacity: .34; text-shadow: 0 0 12px rgba(var(--acc-rgb), .9); -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); mask-image: linear-gradient(transparent, #000 25%, #000 55%, transparent); pointer-events: none; }
@@ -79,14 +79,19 @@
   .crew-link svg { width: 18px; height: 18px; flex: none; }
   .crew-link:hover { transform: translateY(-2px); }
   .crew-link:active { transform: translateY(0); }
-  /* Discord blurple and WhatsApp green, so each is recognisable at a glance */
-  .crew-link--primary { border: 1px solid #8891f7; background: linear-gradient(180deg, #6974f4, #4f5be8); color: #fff; box-shadow: 0 5px 25px rgba(88, 101, 242, .3), inset 0 1px 0 rgba(255, 255, 255, .25); }
-  .crew-link--primary:hover { color: #fff; filter: brightness(1.08); box-shadow: 0 6px 32px rgba(88, 101, 242, .5), inset 0 1px 0 rgba(255, 255, 255, .25); }
-  .crew-link--secondary { border: 1px solid #4fd283; background: linear-gradient(180deg, #22b35c, #168a45); color: #fff; box-shadow: 0 5px 25px rgba(37, 211, 102, .22), inset 0 1px 0 rgba(255, 255, 255, .25); }
-  .crew-link--secondary:hover { color: #fff; filter: brightness(1.08); box-shadow: 0 6px 32px rgba(37, 211, 102, .4), inset 0 1px 0 rgba(255, 255, 255, .25); }
+  /* matte black buttons; Discord blurple and WhatsApp green live in the logo and lettering */
+  .crew-link--primary, .crew-link--secondary {
+    border: 1px solid rgba(255, 255, 255, .07);
+    background: linear-gradient(180deg, #17161a, #0e0d10);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), inset 0 -1px 0 rgba(0, 0, 0, .6), 0 6px 18px rgba(0, 0, 0, .5);
+  }
+  .crew-link--primary { color: #7c86ff; }
+  .crew-dialog .crew-link--primary:focus-visible { outline-color: rgba(124, 134, 255, .8); }
+  .crew-dialog .crew-link--secondary:focus-visible { outline-color: rgba(51, 212, 115, .8); }
+  .crew-link--secondary { color: #33d473; }
+  .crew-link--primary:hover, .crew-link--primary:focus-visible { color: #98a0ff; border-color: rgba(124, 134, 255, .45); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 22px rgba(0, 0, 0, .55), 0 0 22px rgba(88, 101, 242, .18); }
+  .crew-link--secondary:hover, .crew-link--secondary:focus-visible { color: #5ae08e; border-color: rgba(51, 212, 115, .45); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 22px rgba(0, 0, 0, .55), 0 0 22px rgba(37, 211, 102, .16); }
   .crew-link::after { position: absolute; z-index: -1; inset: -50% -60%; content: ""; background: linear-gradient(110deg, transparent 40%, rgba(255, 245, 215, .26) 50%, transparent 60%); transform: translateX(-65%); pointer-events: none; }
-  .crew-dialog[open] .crew-link--primary::after { animation: crew-sheen 6s 1.6s ease-in-out infinite; }
-  .crew-dialog[open] .crew-link--secondary::after { animation: crew-sheen 6s 2.4s ease-in-out infinite; }
   .crew-link .crew-done { display: none; }
   .crew-link.is-done .crew-done { display: inline; }
   .crew-link.is-done .crew-go { display: none; }
@@ -95,13 +100,6 @@
   .crew-later:hover { color: #fff; }
   .crew-dialog .crew-close:focus-visible, .crew-dialog .crew-link:focus-visible, .crew-dialog .crew-later:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 4px; }
 
-  .crew-footer { gap: 12px; min-height: 43px; padding: 12px 22px; border-top: 1px solid rgba(255, 255, 255, .05); color: #998e78; font-size: 9px; letter-spacing: .08em; }
-  .crew-footer > span:first-child { display: flex; align-items: center; gap: 9px; }
-  .crew-footer-mark { color: var(--acc); font-size: 12px; }
-  .crew-replay { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; margin-block: -5px; padding: 5px; border: 0; border-radius: 4px; background: transparent; color: var(--acc-light); font: inherit; cursor: pointer; }
-  .crew-replay:hover { color: #fff; background: rgba(var(--acc-rgb), .12); }
-  .crew-replay svg { width: 11px; height: 11px; }
-  .crew-dialog .crew-replay:focus-visible { outline: 2px solid var(--acc-light); outline-offset: 2px; }
   .crew-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   /* genie slices: frozen copies of the window, one band each */
@@ -152,15 +150,12 @@
     .crew-tagline { font-size: 11px; }
     .crew-description { font-size: 11px; }
     .crew-links { grid-template-columns: 1fr; }
-    .crew-footer { padding-inline: 18px; font-size: 8px; }
-    .crew-footer > span:last-child { max-width: 96px; text-align: right; line-height: 1.6; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .crew-dialog[open], .crew-dialog::backdrop, .crew-dot, .crew-cursor { animation: none; }
     .crew-dialog[open] :is(.crew-fly-left, .crew-fly-right, .crew-command, .crew-tagline, .crew-description, .crew-links, .crew-later, .crew-scanbeam), .crew-dialog[open] .crew-link::after { animation: none; }
     .crew-close, .crew-link, .crew-later { transition: none; }
-    .crew-replay, .crew-hint-motion { display: none; }
   }
 </style>
 
@@ -210,13 +205,6 @@
       </div>
     </div>
 
-    <footer class="crew-footer">
-      <span><span class="crew-footer-mark" aria-hidden="true">&lt;/&gt;</span> CODING CLUB RVCE</span>
-      <button type="button" class="crew-replay" aria-label="Replay the entrance">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> REPLAY
-      </button>
-      <span><span class="crew-hint-motion">MOVE / SCROLL · </span>ESC TO CLOSE</span>
-    </footer>
   </div>
   </div>
 </dialog>
@@ -437,13 +425,6 @@
     Array.prototype.forEach.call(dialog.querySelectorAll("[data-crew-dismiss]"), function (b) { b.addEventListener("click", dismiss); });
     Array.prototype.forEach.call(navButtons, function (b) { b.addEventListener("click", open); });
 
-    // replay the cartoon entrance by restarting the animations
-    dialog.querySelector(".crew-replay").addEventListener("click", function () {
-      target.x = target.y = 0;
-      dialog.querySelectorAll(".crew-fly-left, .crew-fly-right").forEach(function (el) {
-        el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
-      });
-    });
 
     // on arrival, unfold out of the button straight away (once the page has painted)
     if (get("sessionStorage", DISMISSED) || allJoined()) return;
