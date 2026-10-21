@@ -1,49 +1,52 @@
 {% extends "base.html" %}
 
 {% block stylesheets %}
-  {{ super() }}
-  {% with auth_backdrop="img/trojan-horse-fire.jpg", auth_backdrop_pos="center 70%", auth_backdrop_pos_sm="30% 62%", auth_panel=true %}{% include "components/auth_styles.html" %}{% endwith %}
-  <style>
-    @media (max-width: 767px) {
-      .auth-backdrop {
-        -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
-        mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
-      }
+{{ super() }}
+{% with auth_backdrop="img/trojan-horse-fire.jpg", auth_backdrop_pos="center 70%", auth_backdrop_pos_sm="30% 62%",
+auth_panel=true %}{% include "components/auth_styles.html" %}{% endwith %}
+<style>
+  @media (max-width: 767px) {
+    .auth-backdrop {
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
+      mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 75%, transparent 100%);
     }
-  </style>
+  }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="auth-backdrop" aria-hidden="true"></div>
 <div class="container auth">
   <div class="auth-card">
-    <h1 class="auth-title">{% trans %}Found a Crew{% endtrans %}</h1>
+    <h1 class="auth-title">{% trans %}Build your Crew{% endtrans %}</h1>
     <p class="auth-sub">Name your ship. Your crewmates join with its password.</p>
 
     {% include "components/errors.html" %}
 
     {% with form = Forms.teams.TeamRegisterForm() %}
-      {% from "macros/forms.html" import render_extra_fields %}
-      <form method="POST">
-        <div class="mb-3">
-          <b>{{ form.name.label(class="form-label") }}</b>
-          {{ form.name(class="form-control", autocomplete="off") }}
-        </div>
+    {% from "macros/forms.html" import render_extra_fields %}
+    <form method="POST">
+      <div class="mb-3">
+        <b>{{ form.name.label(class="form-label") }}</b>
+        {{ form.name(class="form-control", autocomplete="off") }}
+      </div>
 
-        <div class="mb-3">
-          <b>{{ form.password.label(class="form-label") }}</b>
-          {{ form.password(class="form-control", autocomplete="new-password") }}
-          <small class="form-text">{% trans %}Share the crew name and this password with your crewmates so they can join.{% endtrans %}</small>
-        </div>
+      <div class="mb-3">
+        <b>{{ form.password.label(class="form-label") }}</b>
+        {{ form.password(class="form-control", autocomplete="new-password") }}
+        <small class="form-text">{% trans %}Share the crew name and this password with your crewmates so they can
+          join.{% endtrans %}</small>
+      </div>
 
-        {{ render_extra_fields(form.extra) }}
+      {{ render_extra_fields(form.extra) }}
 
-        {{ form.submit(class="auth-submit", value="Create Crew") }}
-        {{ form.nonce() }}
-      </form>
+      {{ form.submit(class="auth-submit", value="Create Crew") }}
+      {{ form.nonce() }}
+    </form>
     {% endwith %}
 
-    <p class="auth-switch">Already have a crew? <a href="{{ url_for('teams.join') }}">{% trans %}Join it{% endtrans %}</a></p>
+    <p class="auth-switch">Already have a crew? <a href="{{ url_for('teams.join') }}">{% trans %}Join it{% endtrans
+        %}</a></p>
   </div>
 </div>
 {% endblock %}

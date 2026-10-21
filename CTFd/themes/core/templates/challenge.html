@@ -1,254 +1,311 @@
 <style>
-    #challenge-window .modal-content {
-        background: #0b0b0b;
-        color: #f4ecdc;
-        border: 1px solid rgba(var(--acc-rgb), 0.35);
-        border-radius: 18px;
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-    }
+  #challenge-window .modal-content {
+    background: #0b0b0b;
+    color: #f4ecdc;
+    border: 1px solid rgba(var(--acc-rgb), 0.35);
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+  }
 
-    #challenge-window .btn-close {
-        filter: invert(1) grayscale(100%) brightness(180%);
-        opacity: 0.6;
-    }
+  #challenge-window .btn-close {
+    filter: invert(1) grayscale(100%) brightness(180%);
+    opacity: 0.6;
+  }
 
-    #challenge-window .nav-tabs {
-        border-bottom: 1px solid rgba(var(--acc-rgb), 0.22);
-        padding: 0 0.25rem;
-    }
-    #challenge-window .nav-tabs .nav-link {
-        color: rgba(244, 236, 220, 0.55);
-        background: transparent;
-        border: none;
-        padding: 0.7rem 1rem;
-        font-family: 'Voyage Serif', Georgia, serif;
-        font-weight: 500;
-        font-size: 0.85rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        transition: color 0.2s ease;
-    }
-    #challenge-window .nav-tabs .nav-link:hover { color: #f4ecdc; }
-    #challenge-window .nav-tabs .nav-link.active {
-        color: var(--acc-light);
-        background: transparent;
-        box-shadow: inset 0 -2px 0 var(--acc);
-    }
+  #challenge-window .nav-tabs {
+    border-bottom: 1px solid rgba(var(--acc-rgb), 0.22);
+    padding: 0 0.25rem;
+  }
 
-    #challenge-window .challenge-name {
-        font-family: 'Voyage Title', serif;
-        font-weight: 400;
-        color: var(--acc-light);
-        font-size: 2.1rem;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-    #challenge-window .challenge-value {
-        font-family: 'Voyage Serif', Georgia, serif;
-        font-weight: 500;
-        color: rgba(244, 236, 220, 0.65);
-        font-size: 1.05rem;
-        letter-spacing: 0.22em;
-        font-variant-numeric: lining-nums;
-        margin-top: 0.2rem;
-    }
-    #challenge-window .challenge-value::after { content: " pts"; }
-    #challenge-window .challenge-tag {
-        background: transparent !important;
-        border: 1px solid rgba(var(--acc-rgb), 0.45);
-        color: var(--acc);
-        border-radius: 999px;
-        padding: 0.25rem 0.75rem;
-        font-family: 'Voyage Serif', Georgia, serif;
-        font-size: 0.75rem;
-        font-weight: 500;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-    }
-    #challenge-window .challenge-attribution,
-    #challenge-window .challenge-ratings { color: rgba(244, 236, 220, 0.5) !important; }
+  #challenge-window .nav-tabs .nav-link {
+    color: rgba(244, 236, 220, 0.55);
+    background: transparent;
+    border: none;
+    padding: 0.7rem 1rem;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
 
-    #challenge-window .challenge-desc {
-        display: block;
-        font-size: 1.05rem;
-        line-height: 1.7;
-        margin: 1.5rem 0;
-        color: rgba(244, 236, 220, 0.88);
-    }
-    #challenge-window .challenge-desc a { color: var(--acc-light); }
-    #challenge-window code,
-    #challenge-window pre { color: var(--acc-light); }
-    #challenge-window pre {
-        padding: 0.8rem 1rem;
-        border: 1px solid rgba(var(--acc-rgb), 0.2);
-        border-radius: 10px;
-        background: #050505;
-    }
+  #challenge-window .nav-tabs .nav-link:hover {
+    color: #f4ecdc;
+  }
 
-    #challenge-window .challenge-input {
-        height: 52px !important;
-        background: #050505;
-        border: 1px solid rgba(var(--acc-rgb), 0.3);
-        color: #f4ecdc;
-        border-radius: 999px;
-        padding: 0 1.2rem !important;
-        font-size: 1.05rem;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    #challenge-window .challenge-input::placeholder { color: rgba(244, 236, 220, 0.35); }
-    #challenge-window .challenge-input:focus {
-        background: #050505;
-        color: #f4ecdc;
-        border-color: var(--acc);
-        box-shadow: 0 0 0 3px rgba(var(--acc-rgb), 0.18);
-        outline: none;
-    }
+  #challenge-window .nav-tabs .nav-link.active {
+    color: var(--acc-light);
+    background: transparent;
+    box-shadow: inset 0 -2px 0 var(--acc);
+  }
 
-    /* the submit button (kept the old class name so templates and plugins still match) */
-    #challenge-window .btn-onepiece-orange,
-    #challenge-window .challenge-submit {
-        height: 52px;
-        background: var(--acc-grad);
-        color: var(--acc-ink);
-        border: 0;
-        border-radius: 999px;
-        font-family: 'Voyage Serif', Georgia, serif;
-        font-weight: 500;
-        font-size: 0.95rem;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        box-shadow: none;
-        transition: filter 0.2s ease;
-    }
-    #challenge-window .btn-onepiece-orange:hover,
-    #challenge-window .challenge-submit:hover {
-        filter: brightness(1.1);
-        color: var(--acc-ink) !important;
-        transform: none;
-    }
+  #challenge-window .challenge-name {
+    font-family: 'Voyage Title', serif;
+    font-weight: 400;
+    color: var(--acc-light);
+    font-size: 2.1rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
 
-    /* files and secondary buttons */
-    #challenge-window .btn-info,
-    #challenge-window .btn-outline-info,
-    #challenge-window .btn-outline-secondary {
-        background: transparent;
-        border: 1px solid rgba(var(--acc-rgb), 0.45);
-        color: var(--acc-light);
-        border-radius: 999px;
-    }
-    #challenge-window .btn-info:hover,
-    #challenge-window .btn-outline-info:hover,
-    #challenge-window .btn-outline-secondary:hover {
-        background: rgba(var(--acc-rgb), 0.12);
-        color: #fff;
-    }
+  #challenge-window .challenge-value {
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    color: rgba(244, 236, 220, 0.65);
+    font-size: 1.05rem;
+    letter-spacing: 0.22em;
+    font-variant-numeric: lining-nums;
+    margin-top: 0.2rem;
+  }
 
-    /* hints */
-    #challenge-window details {
-        background: #0f0f0f;
-        border: 1px solid rgba(var(--acc-rgb), 0.2);
-        border-radius: 12px;
-        margin-bottom: 0.5rem;
-    }
-    #challenge-window summary {
-        padding: 0.75rem 1.1rem;
-        font-family: 'Voyage Serif', Georgia, serif;
-        font-weight: 500;
-        font-size: 1.02rem;
-        cursor: pointer;
-        list-style: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #f4ecdc;
-    }
-    #challenge-window summary::-webkit-details-marker { display: none; }
-    #challenge-window summary:after {
-        content: '+';
-        color: var(--acc);
-        font-size: 1.1rem;
-        transition: transform 0.2s ease;
-    }
-    #challenge-window details[open] summary:after { transform: rotate(45deg); }
-    #challenge-window details > div {
-        padding: 0.8rem 1.1rem 1rem;
-        border-top: 1px solid rgba(var(--acc-rgb), 0.15);
-    }
+  #challenge-window .challenge-value::after {
+    content: " pts";
+  }
 
-    /* tables (solves, submissions) */
-    #challenge-window .table {
-        --bs-table-bg: transparent;
-        --bs-table-striped-bg: rgba(var(--acc-rgb), 0.04);
-        --bs-table-color: #f4ecdc;
-        --bs-table-striped-color: #f4ecdc;
-        color: #f4ecdc;
-    }
-    #challenge-window .table th {
-        color: var(--acc);
-        font-family: 'Voyage Serif', Georgia, serif;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        border-bottom-color: rgba(var(--acc-rgb), 0.3);
-    }
-    #challenge-window .table td { border-color: rgba(var(--acc-rgb), 0.12); }
-    #challenge-window .table a { color: var(--acc-light); }
+  #challenge-window .challenge-tag {
+    background: transparent !important;
+    border: 1px solid rgba(var(--acc-rgb), 0.45);
+    color: var(--acc);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
 
-    #challenge-window .alert { border-radius: 12px; }
+  #challenge-window .challenge-attribution,
+  #challenge-window .challenge-ratings {
+    color: rgba(244, 236, 220, 0.5) !important;
+  }
 
-    /* title and points, after ~/CTFd */
-    #challenge-window .challenge-name {
-        font-size: 1.9rem;
-        letter-spacing: 2px;
-    }
-    #challenge-window .challenge-value {
-        font-family: 'Voyage Display', Georgia, serif;
-        font-size: 1.1rem;
-        letter-spacing: 1px;
-        color: var(--acc);
-        margin-bottom: 0.25rem;
-    }
-    #challenge-window .challenge-value::after { content: ""; }
+  #challenge-window .challenge-desc {
+    display: block;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 1.5rem 0;
+    color: rgba(244, 236, 220, 0.88);
+  }
 
-    /* 3D push button (the ~/CTFd "blockchain" button, in gold) */
-    #challenge-window .challenge-submit {
-        height: 100%;
-        min-height: 48px;
-        border-radius: 3px !important;
-        border: 2px solid var(--acc) !important;
-        background: transparent !important;
-        color: var(--acc) !important;
-        font-family: 'Lato', system-ui, sans-serif;
-        font-weight: 700 !important;
-        font-size: 0.9rem;
-        letter-spacing: 3px !important;
-        text-transform: uppercase !important;
-        box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5) !important;
-        transform: translateY(-3px);
-        filter: none;
-        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease !important;
-    }
-    #challenge-window .challenge-submit:hover {
-        background: rgba(var(--acc-rgb), 0.08) !important;
-        box-shadow: 0 7px 0 #5c4317, 0 9px 14px rgba(0, 0, 0, 0.6), 0 0 16px rgba(var(--acc-rgb), 0.35) !important;
-        transform: translateY(-5px);
-        color: var(--acc-light) !important;
-        border-color: var(--acc-light) !important;
-        filter: none;
-    }
-    #challenge-window .challenge-submit:active {
-        background: rgba(var(--acc-rgb), 0.18) !important;
-        box-shadow: 0 1px 0 #5c4317, 0 2px 4px rgba(0, 0, 0, 0.4) !important;
-        transform: translateY(2px);
-    }
-    #challenge-window .challenge-submit:focus-visible {
-        outline: none !important;
-        box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(var(--acc-rgb), 0.25) !important;
-    }
-    #challenge-window .challenge-input { border-radius: 3px; height: 48px !important; }
+  #challenge-window .challenge-desc a {
+    color: var(--acc-light);
+  }
+
+  #challenge-window code,
+  #challenge-window pre {
+    color: var(--acc-light);
+  }
+
+  #challenge-window pre {
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(var(--acc-rgb), 0.2);
+    border-radius: 10px;
+    background: #050505;
+  }
+
+  #challenge-window .challenge-input {
+    height: 52px !important;
+    background: #050505;
+    border: 1px solid rgba(var(--acc-rgb), 0.3);
+    color: #f4ecdc;
+    border-radius: 999px;
+    padding: 0 1.2rem !important;
+    font-size: 1.05rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  #challenge-window .challenge-input::placeholder {
+    color: rgba(244, 236, 220, 0.35);
+  }
+
+  #challenge-window .challenge-input:focus {
+    background: #050505;
+    color: #f4ecdc;
+    border-color: var(--acc);
+    box-shadow: 0 0 0 3px rgba(var(--acc-rgb), 0.18);
+    outline: none;
+  }
+
+  /* the submit button (kept the old class name so templates and plugins still match) */
+  #challenge-window .btn-onepiece-orange,
+  #challenge-window .challenge-submit {
+    height: 52px;
+    background: var(--acc-grad);
+    color: var(--acc-ink);
+    border: 0;
+    border-radius: 999px;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    box-shadow: none;
+    transition: filter 0.2s ease;
+  }
+
+  #challenge-window .btn-onepiece-orange:hover,
+  #challenge-window .challenge-submit:hover {
+    filter: brightness(1.1);
+    color: var(--acc-ink) !important;
+    transform: none;
+  }
+
+  /* files and secondary buttons */
+  #challenge-window .btn-info,
+  #challenge-window .btn-outline-info,
+  #challenge-window .btn-outline-secondary {
+    background: transparent;
+    border: 1px solid rgba(var(--acc-rgb), 0.45);
+    color: var(--acc-light);
+    border-radius: 999px;
+  }
+
+  #challenge-window .btn-info:hover,
+  #challenge-window .btn-outline-info:hover,
+  #challenge-window .btn-outline-secondary:hover {
+    background: rgba(var(--acc-rgb), 0.12);
+    color: #fff;
+  }
+
+  /* hints */
+  #challenge-window details {
+    background: #0f0f0f;
+    border: 1px solid rgba(var(--acc-rgb), 0.2);
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+  }
+
+  #challenge-window summary {
+    padding: 0.75rem 1.1rem;
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.02rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #f4ecdc;
+  }
+
+  #challenge-window summary::-webkit-details-marker {
+    display: none;
+  }
+
+  #challenge-window summary:after {
+    content: '+';
+    color: var(--acc);
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  #challenge-window details[open] summary:after {
+    transform: rotate(45deg);
+  }
+
+  #challenge-window details>div {
+    padding: 0.8rem 1.1rem 1rem;
+    border-top: 1px solid rgba(var(--acc-rgb), 0.15);
+  }
+
+  /* tables (solves, submissions) */
+  #challenge-window .table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(var(--acc-rgb), 0.04);
+    --bs-table-color: #f4ecdc;
+    --bs-table-striped-color: #f4ecdc;
+    color: #f4ecdc;
+  }
+
+  #challenge-window .table th {
+    color: var(--acc);
+    font-family: 'Voyage Serif', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border-bottom-color: rgba(var(--acc-rgb), 0.3);
+  }
+
+  #challenge-window .table td {
+    border-color: rgba(var(--acc-rgb), 0.12);
+  }
+
+  #challenge-window .table a {
+    color: var(--acc-light);
+  }
+
+  #challenge-window .alert {
+    border-radius: 12px;
+  }
+
+  /* title and points, after ~/CTFd */
+  #challenge-window .challenge-name {
+    font-size: 1.9rem;
+    letter-spacing: 2px;
+  }
+
+  #challenge-window .challenge-value {
+    font-family: 'Voyage Display', Georgia, serif;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    color: var(--acc);
+    margin-bottom: 0.25rem;
+  }
+
+  #challenge-window .challenge-value::after {
+    content: "";
+  }
+
+  /* 3D push button (the ~/CTFd "blockchain" button, in gold) */
+  #challenge-window .challenge-submit {
+    height: 100%;
+    min-height: 48px;
+    border-radius: 3px !important;
+    border: 2px solid var(--acc) !important;
+    background: transparent !important;
+    color: var(--acc) !important;
+    font-family: 'Lato', system-ui, sans-serif;
+    font-weight: 700 !important;
+    font-size: 0.9rem;
+    letter-spacing: 3px !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5) !important;
+    transform: translateY(-3px);
+    filter: none;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease !important;
+  }
+
+  #challenge-window .challenge-submit:hover {
+    background: rgba(var(--acc-rgb), 0.08) !important;
+    box-shadow: 0 7px 0 #5c4317, 0 9px 14px rgba(0, 0, 0, 0.6), 0 0 16px rgba(var(--acc-rgb), 0.35) !important;
+    transform: translateY(-5px);
+    color: var(--acc-light) !important;
+    border-color: var(--acc-light) !important;
+    filter: none;
+  }
+
+  #challenge-window .challenge-submit:active {
+    background: rgba(var(--acc-rgb), 0.18) !important;
+    box-shadow: 0 1px 0 #5c4317, 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(2px);
+  }
+
+  #challenge-window .challenge-submit:focus-visible {
+    outline: none !important;
+    box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(var(--acc-rgb), 0.25) !important;
+  }
+
+  #challenge-window .challenge-input {
+    border-radius: 3px;
+    height: 48px !important;
+  }
 </style>
-<div :class="getStyles()" role="document" x-data="Challenge" x-init='id = {{ challenge.id }}; max_attempts = {{ max_attempts }}; attempts = {{ attempts }}; solve_count = {{ solves or 0 }}; ratingValue = {{ (rating.get("value") if rating else None) | tojson }}; ratingReview = {{ (rating.get("review", "") if rating else None) | tojson }};'>
+
+<div :class="getStyles()" role="document" x-data="Challenge"
+  x-init='id = {{ challenge.id }}; max_attempts = {{ max_attempts }}; attempts = {{ attempts }}; solve_count = {{ solves or 0 }}; ratingValue = {{ (rating.get("value") if rating else None) | tojson }}; ratingReview = {{ (rating.get("review", "") if rating else None) | tojson }};'>
   <div class="modal-content">
     <div class="modal-body py-4 px-4 px-sm-5">
 
@@ -258,13 +315,13 @@
           {% if Configs.challenge_ratings == "public" %}
           <small class="challenge-ratings text-muted">
             {% if ratings %}
-              <span><i class="fa-solid fa-thumbs-up"></i> {{ ratings.up }}</span>
-              <span class="px-1">
-                {% if ratings.count %}
-                ({{ ((ratings.up / (ratings.count)) * 100) | int }}% liked)
-                {% endif %}
-              </span>
-              <span><i class="fa-solid fa-thumbs-down"></i> {{ ratings.down }}</span>
+            <span><i class="fa-solid fa-thumbs-up"></i> {{ ratings.up }}</span>
+            <span class="px-1">
+              {% if ratings.count %}
+              ({{ ((ratings.up / (ratings.count)) * 100) | int }}% liked)
+              {% endif %}
+            </span>
+            <span><i class="fa-solid fa-thumbs-down"></i> {{ ratings.down }}</span>
             {% endif %}
           </small>
           {% endif %}
@@ -280,36 +337,33 @@
           </li>
 
           {% block submissions %}
-            {% if Configs.view_self_submissions %}
-            <li class="nav-item">
-              <button class="nav-link challenge-submissions" data-bs-target="#submissions" @click="showSubmissions()">
-                {% if solves != None %}
-                  Submissions
-                {% endif %}
-              </button>
-            </li>
-            {% endif %}
+          {% if Configs.view_self_submissions %}
+          <li class="nav-item">
+            <button class="nav-link challenge-submissions" data-bs-target="#submissions" @click="showSubmissions()">
+              {% if solves != None %}
+              Submissions
+              {% endif %}
+            </button>
+          </li>
+          {% endif %}
           {% endblock %}
 
           {% block solution %}
-            <li class="nav-item" x-show="getSolutionId()">
-              <button class="nav-link challenge-solution" data-bs-target="#solution" @click="showSolution()">
-                {% trans %}Solution{% endtrans %}
-              </button>
-            </li>
+          <li class="nav-item" x-show="getSolutionId()">
+            <button class="nav-link challenge-solution" data-bs-target="#solution" @click="showSolution()">
+              {% trans %}Solution{% endtrans %}
+            </button>
+          </li>
           {% endblock %}
 
           {% block solves %}
-            {% if solves != None %}
-            <li class="nav-item">
-              <button
-                class="nav-link challenge-solves"
-                data-bs-target="#solves"
-                @click="showSolves()"
-                x-text="solve_count + (solve_count === 1 ? ' Solve' : ' Solves')"
-              >{{ ngettext("%(num)d Solve", "%(num)d Solves", solves) }}</button>
-            </li>
-            {% endif %}
+          {% if solves != None %}
+          <li class="nav-item">
+            <button class="nav-link challenge-solves" data-bs-target="#solves" @click="showSolves()"
+              x-text="solve_count + (solve_count === 1 ? ' Solve' : ' Solves')">{{ ngettext("%(num)d Solve", "%(num)d
+              Solves", solves) }}</button>
+          </li>
+          {% endif %}
           {% endblock %}
         </ul>
       </div>
@@ -326,13 +380,13 @@
 
 
             {% if tags %}
-              <div class="challenge-tags text-center pt-2 pb-3">
-                {% block tags %}
-                  {% for tag in tags %}
-                    <span class="challenge-tag badge bg-info">{{ tag }}</span>
-                  {% endfor %}
-                {% endblock %}
-              </div>
+            <div class="challenge-tags text-center pt-2 pb-3">
+              {% block tags %}
+              {% for tag in tags %}
+              <span class="challenge-tag badge bg-info">{{ tag }}</span>
+              {% endfor %}
+              {% endblock %}
+            </div>
             {% endif %}
 
             <small class="challenge-attribution text-center text-muted">
@@ -342,125 +396,123 @@
             {% block ratings %}{% endblock %}
 
             <div id="challenge-description" class="challenge-desc">
-  {% block description %}{{ challenge.html }}{% endblock %}
-</div>
+              {% block description %}{{ challenge.html }}{% endblock %}
+            </div>
 
             {% if challenge.connection_info %}
-              <div class="mb-2">
-                <span class="challenge-connection-info">
-                  {% block connection_info %}
-                    {% set conn = challenge.connection_info %}
-                    {% if not conn %}
-                    {% elif conn.startswith("http") %}
-                      {{ conn | urlize(target="_blank") }}
-                    {% else %}
-                      <code>{{ conn }}</code>
-                    {% endif %}
-                  {% endblock %}
-                </span>
-              </div>
+            <div class="mb-2">
+              <span class="challenge-connection-info">
+                {% block connection_info %}
+                {% set conn = challenge.connection_info %}
+                {% if not conn %}
+                {% elif conn.startswith("http") %}
+                {{ conn | urlize(target="_blank") }}
+                {% else %}
+                <code>{{ conn }}</code>
+                {% endif %}
+                {% endblock %}
+              </span>
+            </div>
             {% endif %}
 
             {% if hints %}
-              <div class="challenge-hints hint-row row">
-                <div class="col-12 mb-3">
+            <div class="challenge-hints hint-row row">
+              <div class="col-12 mb-3">
                 {% for hint in hints | sort(attribute="cost") %}
-                  <div x-data="Hint" x-init="id = {{ hint.id }}">
-                    {% if hint.content %}
-                    <details>
-                      <summary>{% trans %}View Hint{% endtrans %}{% if hint.title %}: {{ hint.title }}{% endif %}</summary>
-                      <div>{{ hint.html | safe }}</div>
-                    </details>
+                <div x-data="Hint" x-init="id = {{ hint.id }}">
+                  {% if hint.content %}
+                  <details>
+                    <summary>{% trans %}View Hint{% endtrans %}{% if hint.title %}: {{ hint.title }}{% endif %}
+                    </summary>
+                    <div>{{ hint.html | safe }}</div>
+                  </details>
+                  {% else %}
+                  <details @toggle="showHint(event)">
+                    {% if hint.title %}
+                    <summary>{{ hint.title }} (Cost: {{ hint.cost }} point{{ hint.cost|pluralize }})</summary>
                     {% else %}
-                    <details @toggle="showHint(event)">
-                      {% if hint.title %}
-                      <summary>{{ hint.title }} (Cost: {{ hint.cost }} point{{ hint.cost|pluralize }})</summary>
-                      {% else %}
-                      <summary>Unlock Hint for {{ hint.cost }} point{{ hint.cost|pluralize }}</summary>
-                      {% endif %}
-                      <div x-html="html"></div>
-                    </details>
+                    <summary>Unlock Hint for {{ hint.cost }} point{{ hint.cost|pluralize }}</summary>
                     {% endif %}
-                  </div>
-                {% endfor %}
+                    <div x-html="html"></div>
+                  </details>
+                  {% endif %}
                 </div>
+                {% endfor %}
               </div>
+            </div>
             {% endif %}
 
             {% if files %}
-              <div class="row challenge-files text-center pb-3">
-                {% for file in files %}
-                  <div class="col-md-4 col-sm-4 col-xs-12 file-button-wrapper d-block">
-                    {% set segments = file.split('/') %}
-                    {% set token = file.split('?') | last %}
-                    {% if token %}
-                      {% set filename = segments | last | replace("?" + token, "") %}
-                    {% else %}
-                      {% set filename = segments | last %}
-                    {% endif %}
-                    <a
-                        class="btn btn-info btn-file mb-1 d-inline-block px-2 w-100 text-truncate"
-                        href="{{ file }}"
-                        title="{{ filename }}"
-                    >
-                      <i class="fas fa-download"></i>
-                      <small>
-                        {{ filename }}
-                      </small>
-                    </a>
-                  </div>
-                {% endfor %}
+            <div class="row challenge-files text-center pb-3">
+              {% for file in files %}
+              <div class="col-md-4 col-sm-4 col-xs-12 file-button-wrapper d-block">
+                {% set segments = file.split('/') %}
+                {% set token = file.split('?') | last %}
+                {% if token %}
+                {% set filename = segments | last | replace("?" + token, "") %}
+                {% else %}
+                {% set filename = segments | last %}
+                {% endif %}
+                <a class="btn btn-info btn-file mb-1 d-inline-block px-2 w-100 text-truncate" href="{{ file }}"
+                  title="{{ filename }}">
+                  <i class="fas fa-download"></i>
+                  <small>
+                    {{ filename }}
+                  </small>
+                </a>
               </div>
+              {% endfor %}
+            </div>
             {% endif %}
 
             <template x-if="max_attempts > 0">
               <p class="text-center">
-                <span x-text="attempts"></span>/<span x-text="max_attempts"></span> {% trans c=max_attempts %}attempt{% pluralize %}attempts{% endtrans %}
+                <span x-text="attempts"></span>/<span x-text="max_attempts"></span> {% trans c=max_attempts %}attempt{%
+                pluralize %}attempts{% endtrans %}
               </p>
             </template>
 
             <div class="row submit-row">
               <div class="col-12 col-sm-8">
                 {% block input %}
-                  <input
-                      id="challenge-id" class="challenge-id" type="hidden"
-                      value="{{ challenge.id }}"
-                  >
-                  <input
-                      id="challenge-input" class="challenge-input form-control"
-                      type="text" name="submission"
-                      @keyup.enter="submitChallenge()"
-                      placeholder="{% trans %}Flag{% endtrans %}" x-model="submission"
-                  >
+                <input id="challenge-id" class="challenge-id" type="hidden" value="{{ challenge.id }}">
+                <input id="challenge-input" class="challenge-input form-control" type="text" name="submission"
+                  @keyup.enter="submitChallenge()" placeholder="{% trans %}Flag{% endtrans %}" x-model="submission">
                 {% endblock %}
               </div>
 
               <div class="col-12 col-sm-4 mt-3 mt-sm-0 key-submit">
                 {% block submit %}
-                  <button
-                      id="challenge-submit"
-                      class="challenge-submit btn btn-outline-secondary w-100 h-100" type="submit"
-                      @click.debounce.500ms="submitChallenge()"
-                  >
-                    {% trans %}Submit{% endtrans %}
-                  </button>
+                <button id="challenge-submit" class="challenge-submit btn btn-outline-secondary w-100 h-100"
+                  type="submit" @click.debounce.500ms="submitChallenge()">
+                  {% trans %}Submit{% endtrans %}
+                </button>
                 {% endblock %}
               </div>
             </div>
-
             <div class="row notification-row">
               <div class="col-12">
                 <template x-if="response">
                   {# This alert is re-used for all alerts, so it's important not to make it dismissible #}
-                  <div class="alert text-center w-100 mt-3"
-                      :class="{
-                        'alert-success': response.data.status == 'correct',
-                        'alert-info': response.data.status == 'already_solved',
-                        'alert-danger': response.data.status == 'incorrect',
-                        'alert-warning': response.data.status == 'paused',
-                      }"
-                      role="alert"
-                  >
+                  <div class="alert text-center w-100 mt-3" :class="{
+                                    'alert-success': response.data.status == 'correct',
+                                    'alert-info': response.data.status == 'already_solved',
+                                    'alert-danger': response.data.status == 'incorrect',
+                                    'alert-warning': response.data.status == 'paused',
+                                  }
+                                  " x-effect="
+                if (response && response.data.status === 'incorrect') {
+                    const audios = [
+                        'https://www.myinstants.com/media/sounds/cat-laughing-at-you.mp3',
+                        'https://www.myinstants.com/media/sounds/fahhhhhhhhhhhhhh.mp3',
+                        'https://www.myinstants.com/media/sounds/chicken-on-tree-screaming.mp3'
+                    ];
+
+                    const randomAudio = audios[Math.floor(Math.random() * audios.length)];
+
+                    new Audio(randomAudio).play();
+                }
+                                  " role="alert">
                     <strong x-text="response.data.message"></strong>
                     <div x-show="(response.data.status == 'correct' || response.data.status == 'already_solved')">
                       <div x-show="getNextId()">
@@ -476,16 +528,20 @@
                           {% trans %}Share{% endtrans %}
                         </button>
                         <div class="btn-group mt-3" role="group" x-show="share_url">
-                          <button type="button" class="btn btn-sm btn-outline-secondary" @click="copyShareUrl()" data-bs-toggle="tooltip" data-bs-title="Copied!">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" @click="copyShareUrl()"
+                            data-bs-toggle="tooltip" data-bs-title="Copied!">
                             <i class="fa-solid fa-copy"></i>
                           </button>
-                          <a :href="'https://twitter.com/intent/tweet?url=' + encodeURIComponent(share_url)" role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
+                          <a :href="'https://twitter.com/intent/tweet?url=' + encodeURIComponent(share_url)"
+                            role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
                             <i class="fa-brands fa-twitter"></i>
                           </a>
-                          <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(share_url)" role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
+                          <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(share_url)"
+                            role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
                             <i class="fa-brands fa-facebook-f"></i>
                           </a>
-                          <a :href="'http://www.linkedin.com/shareArticle?url=' + encodeURIComponent(share_url)" role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
+                          <a :href="'http://www.linkedin.com/shareArticle?url=' + encodeURIComponent(share_url)"
+                            role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
                             <i class="fa-brands fa-linkedin-in"></i>
                           </a>
                         </div>
@@ -500,36 +556,22 @@
                         <div class="text-center">
                           <p class="mb-2">{% trans %}Rate this challenge:{% endtrans %}</p>
                           <div class="rating-buttons mb-2" x-init="selectedRating = ratingValue || 0;">
-                            <button 
-                              class="btn btn-outline-success me-2" 
-                              :class="{ 'active': selectedRating === 1 }"
-                              @click="selectedRating = 1"
-                            >
+                            <button class="btn btn-outline-success me-2" :class="{ 'active': selectedRating === 1 }"
+                              @click="selectedRating = 1">
                               <i class="fa-solid fa-thumbs-up"></i>
                             </button>
-                            <button 
-                              class="btn btn-outline-danger" 
-                              :class="{ 'active': selectedRating === -1 }"
-                              @click="selectedRating = -1"
-                            >
+                            <button class="btn btn-outline-danger" :class="{ 'active': selectedRating === -1 }"
+                              @click="selectedRating = -1">
                               <i class="fa-solid fa-thumbs-down"></i>
                             </button>
                           </div>
                           <div class="mt-3">
-                            <textarea 
-                              class="form-control" 
-                              rows="2" 
-                              x-model="ratingReview"
+                            <textarea class="form-control" rows="2" x-model="ratingReview"
                               placeholder="{% trans %}Write a review (optional){% endtrans %}"
-                              maxlength="2000"
-                            ></textarea>
+                              maxlength="2000"></textarea>
                           </div>
                           <div class="mt-3">
-                            <button 
-                              @click="submitRating()"
-                              class="btn btn-primary"
-                              :disabled="!selectedRating"
-                            >
+                            <button @click="submitRating()" class="btn btn-primary" :disabled="!selectedRating">
                               {% trans %}Submit{% endtrans %}
                             </button>
                           </div>
@@ -552,25 +594,25 @@
               <div class="col-md-12">
                 <table class="table table-striped align-middle text-center">
                   <thead>
-                  <tr>
-                    <th>{% trans %}Submission{% endtrans %}</th>
-                    <th>{% trans %}Type{% endtrans %}</th>
-                    <th>{% trans %}Date{% endtrans %}</th>
-                  </tr>
+                    <tr>
+                      <th>{% trans %}Submission{% endtrans %}</th>
+                      <th>{% trans %}Type{% endtrans %}</th>
+                      <th>{% trans %}Date{% endtrans %}</th>
+                    </tr>
                   </thead>
                   <tbody id="challenge-submission-names">
-                  <template x-for="submission in submissions">
-                    <tr>
-                      <td x-data="{ truncate: true }">
-                        <code x-text="truncate ? '*'.repeat(submission.provided.length) : submission.provided"></code>
-                        <button class="btn btn-link p-0 pl-1" @click="truncate = !truncate">
-                          <i :class="truncate ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
-                        </button>
-                      </td>
-                      <td x-text="submission.type"></td>
-                      <td x-text="submission.date"></td>
-                    </tr>
-                  </template>
+                    <template x-for="submission in submissions">
+                      <tr>
+                        <td x-data="{ truncate: true }">
+                          <code x-text="truncate ? '*'.repeat(submission.provided.length) : submission.provided"></code>
+                          <button class="btn btn-link p-0 pl-1" @click="truncate = !truncate">
+                            <i :class="truncate ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+                          </button>
+                        </td>
+                        <td x-text="submission.type"></td>
+                        <td x-text="submission.date"></td>
+                      </tr>
+                    </template>
                   </tbody>
                 </table>
               </div>
@@ -582,20 +624,20 @@
               <div class="col-md-12">
                 <table class="table table-striped align-middle text-center">
                   <thead>
-                  <tr>
-                    <th>{% trans %}Name{% endtrans %}</th>
-                    <th>{% trans %}Date{% endtrans %}</th>
-                  </tr>
+                    <tr>
+                      <th>{% trans %}Name{% endtrans %}</th>
+                      <th>{% trans %}Date{% endtrans %}</th>
+                    </tr>
                   </thead>
                   <tbody id="challenge-solves-names">
-                  <template x-for="solve in solves">
-                    <tr>
-                      <td>
-                        <a :href="solve.account_url" x-text="solve.name"></a>
-                      </td>
-                      <td x-text="solve.date"></td>
-                    </tr>
-                  </template>
+                    <template x-for="solve in solves">
+                      <tr>
+                        <td>
+                          <a :href="solve.account_url" x-text="solve.name"></a>
+                        </td>
+                        <td x-text="solve.date"></td>
+                      </tr>
+                    </template>
                   </tbody>
                 </table>
               </div>
