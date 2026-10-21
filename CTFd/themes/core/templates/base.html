@@ -87,17 +87,47 @@
 
   {{ Configs.theme_header }}
   <style>
-    /* ===== Type: Fraunces for titles, Inter for UI and copy, JetBrains Mono for code ===== */
+    /* ===== Type: Fraunces for titles, Ubuntu (as on TryHackMe) for UI and copy, JetBrains Mono for code ===== */
     @font-face {
         font-family: 'Voyage Serif';
-        src: url('{{ url_for("views.themes", path="webfonts/inter.woff2") }}') format('woff2');
-        font-weight: 100 900;
+        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-300.woff2") }}') format('woff2');
+        font-weight: 300;
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Voyage Serif';
+        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-400.woff2") }}') format('woff2');
+        font-weight: 400;
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Voyage Serif';
+        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-500.woff2") }}') format('woff2');
+        font-weight: 500;
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Voyage Serif';
+        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-700.woff2") }}') format('woff2');
+        font-weight: 700;
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Voyage Serif';
+        src: url('{{ url_for("views.themes", path="webfonts/ubuntu-400-italic.woff2") }}') format('woff2');
+        font-weight: 400; font-style: italic;
         font-display: swap;
     }
     @font-face {
         font-family: 'Voyage Title';
         src: url('{{ url_for("views.themes", path="webfonts/fraunces.woff2") }}') format('woff2');
         font-weight: 100 900;
+        font-display: swap;
+    }
+    /* the event wordmark (navbar and landing title) keeps the original Uncial Antiqua */
+    @font-face {
+        font-family: 'Voyage Uncial';
+        src: url('{{ url_for("views.themes", path="webfonts/uncial-antiqua.woff2") }}') format('woff2');
         font-display: swap;
     }
     @font-face {
@@ -109,7 +139,6 @@
 
     body {
         font-family: 'Voyage Serif', system-ui, sans-serif;
-        font-feature-settings: "cv11", "ss01";
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
@@ -285,6 +314,10 @@
         .voyage-nav .navbar-collapse { gap: 14px; }
     }
     @media (min-width: 992px) { .voyage-nav .nav-link { white-space: nowrap; } }
+    /* logged out there is no right capsule, so pin the links to the true centre */
+    @media (min-width: 992px) {
+        .voyage-nav.nav-guest .nav-main { position: absolute; left: 50%; transform: translateX(-50%); }
+    }
     @media (min-width: 992px) and (max-width: 1499.98px) {
         .voyage-nav .nav-link { padding: 0 0.8rem !important; }
         .voyage-nav .navbar-brand { padding: 0 1rem; }
@@ -323,10 +356,10 @@
         padding: 0 1.25rem;
     }
     .navwordmark {
-        font-family: 'Voyage Title', serif;
+        font-family: 'Voyage Uncial', serif;
         font-size: 1.15rem;
-        font-weight: 600;
-        letter-spacing: -0.01em;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
         color: var(--acc-light);
     }
     .voyage-nav .navlogo { max-height: 30px; width: auto; }
@@ -378,7 +411,7 @@
         border-radius: 999px;
         pointer-events: none;
         list-style: none;
-        border: 1px solid rgba(var(--acc-rgb), 0.55);
+        border: 0;
         background: linear-gradient(180deg, rgba(var(--acc-rgb), 0.24), rgba(var(--acc-rgb), 0.1));
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);

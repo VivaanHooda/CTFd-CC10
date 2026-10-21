@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top voyage-nav" aria-label="{% trans %}Main navigation{% endtrans %}">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top voyage-nav{% if not authed() %} nav-guest{% endif %}" aria-label="{% trans %}Main navigation{% endtrans %}">
   <div class="container">
     <a href="{{ url_for('views.static_html', route='') }}" class="navbar-brand">
       {% if Configs.ctf_logo %}
@@ -59,8 +59,8 @@
         </li>
       </ul>
 
-      <ul class="navbar-nav nav-side{% if not authed() %} nav-auth{% endif %}">
-        {% if authed() %}
+      {% if authed() %}
+      <ul class="navbar-nav nav-side">
           {% if is_admin() %}
             <li class="nav-item">
               <a class="nav-link nav-icon" href="{{ url_for('admin.view') }}" title="{% trans %}Admin Panel{% endtrans %}" data-bs-toggle="tooltip" data-bs-placement="bottom">
@@ -102,18 +102,8 @@
               <i class="fas fa-sign-out-alt" aria-hidden="true"></i><span class="nav-icon-label">{% trans %}Logout{% endtrans %}</span>
             </a>
           </li>
-        {% else %}
-          <li class="nav-pill nav-pill-solid" aria-hidden="true"></li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('auth.login') }}">{% trans %}Login{% endtrans %}</a>
-          </li>
-          {% if registration_visible() %}
-            <li class="nav-item">
-              <a class="nav-link" data-pill-default href="{{ url_for('auth.register') }}">{% trans %}Register{% endtrans %}</a>
-            </li>
-          {% endif %}
-        {% endif %}
       </ul>
+      {% endif %}
     </div>
   </div>
 </nav>
