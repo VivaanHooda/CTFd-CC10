@@ -189,47 +189,49 @@
     font-size: 1rem;
   }
 
-  /* inverted: dark pill, gold lettering and rim, gold arrow chip, so the title stays the brightest thing */
+  /* the main call: a borderless black pill in the 3D push-button build (gold ledge underneath),
+     gold lettering and a bare gold arrow */
   .hero-actions .btn-primary {
     --bs-btn-color: var(--acc-light);
-    --bs-btn-bg: #0e0c09;
+    --bs-btn-bg: #030303;
     --bs-btn-hover-color: #f4dfae;
-    --bs-btn-hover-bg: #17130d;
+    --bs-btn-hover-bg: #030303;
     --bs-btn-active-color: #f4dfae;
-    --bs-btn-active-bg: #1d1810;
-    gap: 1.1rem;
-    padding: 0 0.4rem 0 1.9rem;
-    border: 1px solid rgba(var(--acc-rgb), 0.55) !important;
-    background: #0e0c09;
-    color: var(--acc-light);
-    box-shadow: none;
+    --bs-btn-active-bg: #030303;
+    gap: 0.7rem;
+    padding: 0 1.9rem;
+    border: 0 !important;
+    background: #030303 !important;
+    color: var(--acc-light) !important;
+    box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5);
+    transform: translateY(-3px);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, color 0.1s ease;
   }
 
   .hero-actions .btn-primary:hover,
   .hero-actions .btn-primary:focus-visible {
-    border-color: rgba(var(--acc-rgb), 0.85) !important;
-    background: #17130d;
-    color: #f4dfae;
-    box-shadow: none;
+    color: #f4dfae !important;
+    box-shadow: 0 7px 0 #5c4317, 0 9px 14px rgba(0, 0, 0, 0.6);
+    transform: translateY(-5px);
   }
 
-  .hero-actions .btn-primary:active { background: #1d1810 !important; color: #f4dfae !important; }
+  .hero-actions .btn.btn-primary:active,
+  .hero-actions .btn.btn-primary:first-child:active {
+    background: #030303 !important;
+    color: #f4dfae !important;
+    box-shadow: 0 1px 0 #5c4317, 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(2px) !important;
+  }
 
   .hero-chip {
-    display: grid;
+    display: inline-grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #c9a865;
-    box-shadow: none;
-    color: #14100a;
-    transition: transform 0.35s var(--btn-ease), background-color 0.25s ease;
+    color: var(--acc);
   }
 
   .hero-chip svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     fill: none;
     stroke: currentColor;
     stroke-width: 2.2;
@@ -238,7 +240,7 @@
     transition: transform 0.35s var(--btn-ease);
   }
 
-  .hero-actions .btn-primary:hover .hero-chip { background: #d8b874; }
+  .hero-actions .btn-primary:hover .hero-chip { color: var(--acc-light); }
   .hero-actions .btn-primary:hover .hero-chip svg { transform: translateX(2px) rotate(-45deg); }
 
   /* the quiet partner: neutral, no icon, no gold, so the main call stays the only accent */
