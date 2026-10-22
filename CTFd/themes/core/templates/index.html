@@ -243,21 +243,36 @@
   .hero-actions .btn-primary:hover .hero-chip { color: var(--acc-light); }
   .hero-actions .btn-primary:hover .hero-chip svg { transform: translateX(2px) rotate(-45deg); }
 
-  /* the quiet partner: neutral, no icon, no gold, so the main call stays the only accent */
+  /* the quiet partner: the same black 3D pill, off-white lettering on a charcoal ledge,
+     so the gold ledge and gold lettering keep the main call first */
   .hero-actions .btn-secondary {
-    border-color: rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow: none;
-    color: rgba(244, 236, 220, 0.88);
+    --bs-btn-color: #e9e1d1;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-color: #fff;
+    border: 0 !important;
+    background: #030303 !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    color: #e9e1d1 !important;
     font-weight: 500;
+    box-shadow: 0 5px 0 #2b2823, 0 7px 10px rgba(0, 0, 0, 0.5);
+    transform: translateY(-3px);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, color 0.1s ease;
   }
 
   .hero-actions .btn-secondary:hover,
   .hero-actions .btn-secondary:focus-visible {
-    border-color: rgba(255, 255, 255, 0.32);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: none;
-    color: #fff;
+    color: #fff !important;
+    box-shadow: 0 7px 0 #2b2823, 0 9px 14px rgba(0, 0, 0, 0.6);
+    transform: translateY(-5px);
+  }
+
+  .hero-actions .btn.btn-secondary:active,
+  .hero-actions .btn.btn-secondary:first-child:active {
+    background: #030303 !important;
+    color: #fff !important;
+    box-shadow: 0 1px 0 #2b2823, 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(2px) !important;
   }
 
   @media (max-width: 768px) {
