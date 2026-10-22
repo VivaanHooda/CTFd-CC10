@@ -227,10 +227,64 @@ Alpine.data("Challenge", () => ({
     await this.renderSubmissionResponse();
   },
 
+  // what the result card shows for the server's answer
+  result() {
+    const data = (this.response && this.response.data) || {};
+    const message = String(data.message || "");
+    const wasCorrect = /^correct/i.test(message);
+    switch (data.status) {
+      case "correct":
+        return {
+          kind: "correct",
+          icon: "check",
+          title: "Correct",
+          solved: false,
+        };
+      case "incorrect":
+        return {
+          kind: "incorrect",
+          icon: "cross",
+          title: "Incorrect",
+          solved: false,
+        };
+      case "already_solved":
+        return wasCorrect
+          ? {
+              kind: "solved-correct",
+              icon: "check",
+              title: "Correct",
+              solved: true,
+            }
+          : {
+              kind: "solved-incorrect",
+              icon: "cross",
+              title: "Incorrect",
+              solved: true,
+            };
+      default:
+        // paused, ratelimited and anything a plugin returns: the server's own words
+        return {
+          kind: "notice",
+          icon: "info",
+          title: message || "Submission received",
+          solved: false,
+        };
+    }
+  },
+
   async renderSubmissionResponse() {
     const status = this.response.data.status;
     if (status === "correct") playCorrect();
     else if (status === "incorrect") playWrong();
+
+    // replay the card's entrance (pop or shake) even when the same result comes back twice
+    this.$nextTick(() => {
+      const card = this.$root.querySelector(".flag-result");
+      if (!card) return;
+      card.classList.remove("is-new");
+      void card.offsetWidth;
+      card.classList.add("is-new");
+    });
 
     if (this.response.data.status === "correct") {
       this.submission = "";

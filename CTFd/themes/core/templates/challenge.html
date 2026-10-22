@@ -204,6 +204,92 @@
     border-radius: 12px;
   }
 
+  /* ===== flag result card ===== */
+  #challenge-window .flag-result {
+    --fr: 244, 236, 220;
+    text-align: left;
+  }
+  #challenge-window .flag-result--correct { --fr: 74, 222, 128; }
+  #challenge-window .flag-result--incorrect { --fr: 248, 113, 113; }
+  #challenge-window .flag-result--solved-correct,
+  #challenge-window .flag-result--solved-incorrect { --fr: 244, 236, 220; }
+
+  #challenge-window .flag-result-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid rgba(var(--fr), 0.28);
+    border-radius: 6px;
+    background: rgba(var(--fr), 0.06);
+  }
+  #challenge-window .flag-result--solved-correct .flag-result-main,
+  #challenge-window .flag-result--solved-incorrect .flag-result-main,
+  #challenge-window .flag-result--notice .flag-result-main {
+    border-color: rgba(244, 236, 220, 0.14);
+    background: transparent;
+  }
+
+  #challenge-window .flag-result-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(var(--fr), 0.16);
+    color: rgb(var(--fr));
+  }
+  #challenge-window .flag-result--solved-correct .flag-result-icon { color: rgb(74, 222, 128); background: rgba(74, 222, 128, 0.1); }
+  #challenge-window .flag-result--solved-incorrect .flag-result-icon { color: rgb(248, 113, 113); background: rgba(248, 113, 113, 0.1); }
+  #challenge-window .flag-result-icon svg {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  #challenge-window .flag-result-title {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #f4ecdc;
+  }
+  #challenge-window .flag-result--correct .flag-result-title { color: rgb(134, 239, 172); }
+  #challenge-window .flag-result--incorrect .flag-result-title { color: rgb(252, 165, 165); }
+
+  #challenge-window .flag-result-title strong { font-weight: 600; }
+  #challenge-window .flag-result-note {
+    margin-left: 4px;
+    font-weight: 400;
+    color: rgba(244, 236, 220, 0.45);
+  }
+
+  #challenge-window .flag-result-next { min-height: 42px; font-size: 0.8rem; letter-spacing: 2px !important; }
+
+  #challenge-window .flag-result.is-new.flag-result--correct .flag-result-main,
+  #challenge-window .flag-result.is-new.flag-result--solved-correct .flag-result-main { animation: flag-pop 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
+  #challenge-window .flag-result.is-new.flag-result--incorrect .flag-result-main,
+  #challenge-window .flag-result.is-new.flag-result--solved-incorrect .flag-result-main { animation: flag-shake 0.38s ease-in-out; }
+  @keyframes flag-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+  @keyframes flag-shake {
+    0%, 100% { transform: none; }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(2px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #challenge-window .flag-result.is-new .flag-result-main { animation: none; }
+  }
+
+
+
   /* title and points, after ~/CTFd */
   #challenge-window .challenge-name {
     font-size: 1.9rem;
@@ -417,30 +503,23 @@
             <div class="row notification-row">
               <div class="col-12">
                 <template x-if="response">
-                  {# This alert is re-used for all alerts, so it's important not to make it dismissible #}
-                  <div class="alert text-center w-100 mt-3" :class="{
-                                    'alert-success': response.data.status == 'correct',
-                                    'alert-info': response.data.status == 'already_solved',
-                                    'alert-danger': response.data.status == 'incorrect',
-                                    'alert-warning': response.data.status == 'paused',
-                                  }
-                                  " x-effect="
-                if (response && response.data.status === 'incorrect') {
-                    const audios = [
-                        'https://www.myinstants.com/media/sounds/cat-laughing-at-you.mp3',
-                        'https://www.myinstants.com/media/sounds/fahhhhhhhhhhhhhh.mp3',
-                        'https://www.myinstants.com/media/sounds/chicken-on-tree-screaming.mp3'
-                    ];
-
-                    const randomAudio = audios[Math.floor(Math.random() * audios.length)];
-
-                    new Audio(randomAudio).play();
-                }
-                                  " role="alert">
-                    <strong x-text="response.data.message"></strong>
+                  {# One card, re-used for every result, so it is never dismissible #}
+                  <div class="flag-result mt-3" :class="`flag-result--${result().kind}`"
+                    role="status" aria-live="polite">
+                    <div class="flag-result-main">
+                      <span class="flag-result-icon" aria-hidden="true">
+                        <svg x-show="result().icon === 'check'" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                        <svg x-show="result().icon === 'cross'" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                        <svg x-show="result().icon === 'info'" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                      </span>
+                      <span class="flag-result-title">
+                        <strong x-text="result().title"></strong>
+                        <span class="flag-result-note" x-show="result().solved">&middot; {% trans %}already solved{% endtrans %}</span>
+                      </span>
+                    </div>
                     <div x-show="(response.data.status == 'correct' || response.data.status == 'already_solved')">
                       <div x-show="getNextId()">
-                        <button @click="nextChallenge()" class="btn btn-info mt-3">
+                        <button @click="nextChallenge()" class="btn-3d flag-result-next mt-3">
                           {% trans %}Next Challenge{% endtrans %}
                         </button>
                       </div>
