@@ -110,8 +110,10 @@
     --stem: rgba(var(--acc-rgb), 0.35);
     --leaf-fill: none;
     --leaf-stroke: rgba(var(--acc-rgb), 0.5);
-    min-height: 180px;
-    padding: 17px 1rem 46px !important;
+    /* every card is identical: fixed height, same padding solved or not */
+    height: 172px !important;
+    min-height: 0;
+    padding: 18px 1rem 0 !important;
     border: 1px solid rgba(var(--acc-rgb), 0.28) !important;
     border-radius: 14px !important;
     background: #000 !important;
@@ -141,12 +143,16 @@
 
   .challenge-button:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
 
+  /* content is pinned to the top and to the card's width (cards are flex boxes via the shared .btn) */
+  .challenge-button { align-items: flex-start !important; }
   .challenge-inner {
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    min-width: 0;
   }
 
   /* wreath: two laurels framing the value, POINTS tucked between their stems */
@@ -195,14 +201,17 @@
     color: rgba(244, 236, 220, 0.5);
   }
 
+  /* always one line: the script below shrinks the type to fit, ellipsis as a last resort */
   .chal-name {
+    width: 100%;
     margin: 16px 0 0;
     font-family: 'Voyage Display', 'Voyage Serif', sans-serif;
-    font-size: 28px;
+    font-size: 24px;
     line-height: 1.25;
     color: #f4ecdc;
-    overflow-wrap: anywhere;
-    white-space: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-weight: 700;
   }
 
@@ -223,8 +232,7 @@
     --stem: var(--acc-light);
     --leaf-fill: var(--acc-light);
     --leaf-stroke: none;
-    padding: 12px 1rem 50px !important;
-    border: 1.5px solid rgba(var(--acc-rgb), 0.9) !important;
+    border: 1px solid rgba(var(--acc-rgb), 0.9) !important;
     box-shadow: 0 0 28px rgba(var(--acc-rgb), 0.3);
   }
 
@@ -238,8 +246,6 @@
   .challenge-solved .chal-points { color: rgba(var(--acc-rgb), 0.7); }
 
   .challenge-solved .chal-name {
-    margin-top: 12px;
-    font-size: 30px;
     color: var(--acc-light);
     text-shadow: 0 0 14px rgba(var(--acc-rgb), 0.5);
   }
@@ -494,9 +500,59 @@
       });
     }
 
+    // shrink each challenge name until it fits its card on one line (24px down to 13px);
+    // anything still too long ends in an ellipsis, with the full name on hover
+    function fitName(el) {
+      if (!el.clientWidth) return; // not laid out yet; the observer calls back once it is
+      var max = 24, min = 13, size = max;
+      el.style.fontSize = max + 'px';
+      while (size > min && el.scrollWidth > el.clientWidth + 1) {
+        size -= 1;
+        el.style.fontSize = size + 'px';
+      }
+      el.title = el.scrollWidth > el.clientWidth + 1 ? el.textContent : '';
+    }
+
+    function fitAll() {
+      document.querySelectorAll('.challenge-button .chal-name').forEach(fitName);
+    }
+
+    // refit a name whenever its box changes size: first layout, window resize, font swap
+    var resizeWatch = window.ResizeObserver
+      ? new ResizeObserver(function (entries) {
+          entries.forEach(function (entry) { fitName(entry.target); });
+        })
+      : null;
+    function watchNames() {
+      document.querySelectorAll('.challenge-button .chal-name').forEach(function (el) {
+        if (el.dataset.fitWatched) return;
+        el.dataset.fitWatched = '1';
+        if (resizeWatch) resizeWatch.observe(el);
+      });
+    }
+
+    var fitQueued = false;
+    function queueFit() {
+      if (fitQueued) return;
+      fitQueued = true;
+      requestAnimationFrame(function () {
+        fitQueued = false;
+        watchNames();
+        fitAll();
+      });
+    }
+    window.addEventListener('resize', queueFit);
+    window.addEventListener('load', queueFit);
+    // the headline font can land after the cards render, which changes every name's width
+    if (document.fonts) {
+      if (document.fonts.ready) document.fonts.ready.then(queueFit);
+      if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', queueFit);
+    }
+
     function attachAll() {
       document.querySelectorAll('.challenge-button').forEach(attachSpotlight);
       detectSolveTransitions();
+      queueFit();
     }
 
     // observe DOM for Alpine rendering challenge cards
