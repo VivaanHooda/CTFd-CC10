@@ -3,6 +3,7 @@ import CTFd from "../index";
 import { Modal } from "bootstrap";
 import { serializeJSON } from "@ctfdio/ctfd-js/forms";
 import { copyToClipboard } from "../utils/clipboard";
+import { voyageAlert } from "../utils/dialog";
 import { colorHash } from "@ctfdio/ctfd-js/ui";
 import { getOption as getUserScoreOption } from "../utils/graphs/echarts/userscore";
 import { embed } from "../utils/graphs/echarts";
@@ -124,9 +125,8 @@ Alpine.data("CaptainMenu", () => ({
       this.teamInviteModal = new Modal(document.getElementById("team-invite-modal"));
       this.teamInviteModal.show();
     } else {
-      Object.keys(response.errors).map(error => {
-        const error_msg = response.errors[error];
-        alert(error_msg);
+      voyageAlert(Object.values(response.errors).join("\n"), {
+        title: "Couldn't create an invite",
       });
     }
   },

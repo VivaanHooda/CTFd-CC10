@@ -120,6 +120,54 @@
     .notice-modal .notice-text { font-size: 15px; }
   }
 
+  /* ----- the site's confirm / alert dialogs (assets/js/utils/dialog.js) -----
+     A plain near-black panel with square-ish corners, to sit with the 3D buttons. */
+  .voyage-dialog {
+    width: min(420px, calc(100vw - 32px));
+    max-width: none;
+    margin: auto;
+    padding: 24px 24px 26px;
+    border: 1px solid rgba(244, 236, 220, 0.14);
+    border-radius: 6px;
+    background: #0a0a0a;
+    color: #f4ecdc;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  }
+  .voyage-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  .voyage-dialog[open] { animation: voyage-dialog-in 0.16s ease-out; }
+  .voyage-dialog .notice-title { font-size: 19px; }
+  .voyage-dialog .notice-text { margin-top: 8px; font-size: 15px; color: rgba(244, 236, 220, 0.62); }
+  .voyage-dialog .notice-text p { margin: 0 0 0.5em; }
+  .voyage-dialog-actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    justify-content: end;
+    gap: 12px;
+    margin-top: 26px;
+  }
+  /* both buttons: same size, the 3D build's own height */
+  .voyage-dialog-actions .btn-3d {
+    min-width: 128px;
+    min-height: 44px;
+    padding: 0 1.1rem;
+    font-size: 0.82rem;
+    letter-spacing: 2px !important;
+  }
+  @media (max-width: 420px) {
+    .voyage-dialog-actions { grid-auto-flow: row; justify-content: stretch; }
+    .voyage-dialog-actions .voyage-dialog-confirm { order: -1; }
+  }
+  @keyframes voyage-dialog-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .voyage-dialog[open] { animation: none; }
+  }
+
   /* ----- tooltips ----- */
   .tooltip {
     --bs-tooltip-bg: #1a1814;

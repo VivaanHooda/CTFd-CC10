@@ -10,6 +10,7 @@ import highlight from "./theme/highlight";
 import alerts from "./utils/alerts";
 import tooltips from "./utils/tooltips";
 import collapse from "./utils/collapse";
+import dialogs from "./utils/dialog";
 
 import eventAlerts from "./utils/notifications/alerts";
 import eventToasts from "./utils/notifications/toasts";
@@ -28,6 +29,7 @@ CTFd.init(window.init);
   alerts();
   tooltips();
   collapse();
+  dialogs(CTFd);
 
   eventRead();
   eventAlerts();

@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { Tab } from "bootstrap";
 
 import CTFd from "./index";
+import { voyageConfirm } from "./utils/dialog";
 
 window.Alpine = Alpine;
 
@@ -38,16 +39,19 @@ Alpine.data("SetupForm", () => ({
     });
   },
 
-  validateFileSize(e, limit) {
-    if (e.target.files[0].size > limit) {
-      if (
-        !confirm(
-          `This image file is larger than ${
-            limit / 1000
-          }KB which may result in increased load times. Are you sure you'd like to use this file?`,
-        )
-      ) {
-        e.target.value = "";
+  async validateFileSize(e, limit) {
+    const input = e.target;
+    if (input.files[0].size > limit) {
+      const keep = await voyageConfirm(
+        `This image is larger than ${limit / 1000}KB, which may slow down page loads.`,
+        {
+          title: "Use this large image?",
+          confirmLabel: "Use it",
+          cancelLabel: "Choose another",
+        },
+      );
+      if (!keep) {
+        input.value = "";
       }
     }
   },

@@ -1,6 +1,7 @@
 import Alpine from "alpinejs";
 
 import CTFd from "./index";
+import { voyageAlert } from "./utils/dialog";
 
 import { Modal, Tab, Tooltip } from "bootstrap";
 import highlight from "./theme/highlight";
@@ -268,7 +269,9 @@ Alpine.data("Challenge", () => ({
       this.ratingValue = this.selectedRating;
       this.ratingSubmitted = true;
     } else {
-      alert("Error submitting rating");
+      voyageAlert("Your rating couldn't be saved. Please try again.", {
+        title: "Rating not saved",
+      });
     }
   },
 }));

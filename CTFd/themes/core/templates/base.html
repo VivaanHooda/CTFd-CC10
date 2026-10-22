@@ -320,6 +320,25 @@
         outline: none !important;
         box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(var(--acc-rgb), 0.25) !important;
     }
+    /* the quiet partner of a 3D button (Cancel and the like): same build, neutral grey */
+    .btn-3d.btn-3d--muted {
+        border-color: rgba(244, 236, 220, 0.28) !important;
+        color: rgba(244, 236, 220, 0.72) !important;
+        box-shadow: 0 5px 0 #26231e, 0 7px 10px rgba(0, 0, 0, 0.5) !important;
+    }
+    .btn-3d.btn-3d--muted:hover {
+        background: rgba(244, 236, 220, 0.05) !important;
+        border-color: rgba(244, 236, 220, 0.55) !important;
+        color: #f4ecdc !important;
+        box-shadow: 0 7px 0 #26231e, 0 9px 14px rgba(0, 0, 0, 0.6) !important;
+    }
+    .btn-3d.btn-3d--muted:active {
+        background: rgba(244, 236, 220, 0.09) !important;
+        box-shadow: 0 1px 0 #26231e, 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+    .btn-3d.btn-3d--muted:focus-visible {
+        box-shadow: 0 5px 0 #26231e, 0 7px 10px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(244, 236, 220, 0.2) !important;
+    }
     @media (prefers-reduced-motion: reduce) {
         .btn-3d, .auth-submit, #challenge-window .challenge-submit { transition: none !important; }
     }
