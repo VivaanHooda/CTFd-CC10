@@ -30,9 +30,11 @@
         <div class="mb-3">
           <b>{{ form.email.label(class="form-label") }}</b>
           {{ form.email(class="form-control", value=email, autocomplete="email") }}
+          {% if Configs.domain_whitelist %}
           <small class="form-text">
-            {% if Configs.domain_whitelist %}Use your {% for d in Configs.domain_whitelist.split(",") %}{% if not loop.first %} / {% endif %}@{{ d.strip().lstrip("*.") }}{% endfor %} address &middot; {% endif %}{% trans %}Never shown to the public{% endtrans %}
+            Use your {% for d in Configs.domain_whitelist.split(",") %}{% if not loop.first %} / {% endif %}@{{ d.strip().lstrip("*.") }}{% endfor %} address
           </small>
+          {% endif %}
         </div>
 
         <div class="mb-3">

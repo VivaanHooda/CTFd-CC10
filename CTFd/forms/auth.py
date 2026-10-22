@@ -33,7 +33,6 @@ def RegistrationForm(*args, **kwargs):
         )
         email = EmailField(
             _l("Email"),
-            description="Never shown to the public",
             validators=[InputRequired()],
         )
         password = PasswordField(
