@@ -2,6 +2,7 @@ import Alpine from "alpinejs";
 
 import CTFd from "./index";
 import { voyageAlert } from "./utils/dialog";
+import { playCorrect, playWrong } from "./utils/clicksound";
 
 import { Modal, Tab, Tooltip } from "bootstrap";
 import highlight from "./theme/highlight";
@@ -227,6 +228,10 @@ Alpine.data("Challenge", () => ({
   },
 
   async renderSubmissionResponse() {
+    const status = this.response.data.status;
+    if (status === "correct") playCorrect();
+    else if (status === "incorrect") playWrong();
+
     if (this.response.data.status === "correct") {
       this.submission = "";
       this.solve_count += 1;
