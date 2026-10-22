@@ -134,6 +134,70 @@
     h4, h5, h6, .h4, .h5, .h6 { font-family: 'Voyage Serif', system-ui, sans-serif; font-weight: 600; letter-spacing: -0.005em; }
     code, pre, kbd, samp { font-family: 'Voyage Mono', ui-monospace, monospace; }
 
+    /* ===== Custom cursors, from tryhackme.codingclub (globals.css), recoloured to the navbar pill yellow =====
+       Only real mouse devices (hover + fine pointer) get the custom SVG cursors.
+       Touch / coarse-pointer devices fall back to the native cursor, so phones and
+       touch tablets never render the desktop reticle or arrow. */
+    @media (hover: hover) and (pointer: fine) {
+    * {
+        cursor:
+            url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 viewBox=%270 0 24 24%27%3E%3Cpath fill=%27%23000000%27 stroke=%27%23ffd23f%27 stroke-width=%272%27 d=%27M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.35Z%27/%3E%3C/svg%3E"),
+            auto;
+    }
+
+    /* Text cursor for inputs and text areas */
+    input,
+    textarea,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    [contenteditable="true"] {
+        cursor:
+            url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2714%27 viewBox=%270 0 14 18%27 fill=%27none%27%3E%3Crect x=%275%27 y=%270%27 width=%274%27 height=%2718%27 fill=%27%23ffd23f%27/%3E%3Crect x=%270%27 y=%270%27 width=%2714%27 height=%273%27 fill=%27%23ffd23f%27/%3E%3Crect x=%270%27 y=%2715%27 width=%2714%27 height=%273%27 fill=%27%23ffd23f%27/%3E%3C/svg%3E") 5 7,
+            text;
+    }
+
+    /* Pointer cursor for buttons, links, and interactive elements */
+    button,
+    button *,
+    [role="button"],
+    [role="button"] *,
+    a,
+    a *,
+    summary,
+    summary *,
+    input[type="submit"],
+    input[type="button"],
+    .btn,
+    .btn *,
+    .btn-3d,
+    .btn-3d * {
+        cursor:
+            url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2718%27 height=%2718%27 viewBox=%270 0 24 24%27%3E%3Cpath fill=%27%23000000%27 stroke=%27%23ffd23f%27 stroke-width=%272%27 stroke-linejoin=%27round%27 d=%27M10 11V8.99c0-.88.59-1.64 1.44-1.86h.05A1.99 1.99 0 0 1 14 9.05V12v-2c0-.88.6-1.65 1.46-1.87h.05A1.98 1.98 0 0 1 18 10.06V13v-1.94a2 2 0 0 1 1.51-1.94h0A2 2 0 0 1 22 11.06V14c0 .6-.08 1.27-.21 1.97a7.96 7.96 0 0 1-7.55 6.48 54.98 54.98 0 0 1-4.48 0 7.96 7.96 0 0 1-7.55-6.48C2.08 15.27 2 14.59 2 14v-1.49c0-1.11.9-2.01 2.01-2.01h0a2 2 0 0 1 2.01 2.03l-.01.97v-10c0-1.1.9-2 2-2h0a2 2 0 0 1 2 2V11Z%27/%3E%3C/svg%3E") 5 0,
+            pointer !important;
+    }
+
+    button:active,
+    button:active *,
+    [role="button"]:active,
+    [role="button"]:active *,
+    a:active,
+    a:active * {
+        cursor:
+            url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2718%27 height=%2718%27 viewBox=%270 0 24 24%27%3E%3Cpath fill=%27%23000000%27 stroke=%27%23ffd23f%27 stroke-width=%272%27 stroke-linejoin=%27round%27 d=%27M10 11V8.99c0-.88.59-1.64 1.44-1.86h.05A1.99 1.99 0 0 1 14 9.05V12v-2c0-.88.6-1.65 1.46-1.87h.05A1.98 1.98 0 0 1 18 10.06V13v-1.94a2 2 0 0 1 1.51-1.94h0A2 2 0 0 1 22 11.06V14c0 .6-.08 1.27-.21 1.97a7.96 7.96 0 0 1-7.55 6.48 54.98 54.98 0 0 1-4.48 0 7.96 7.96 0 0 1-7.55-6.48C2.08 15.27 2 14.59 2 14v-1.49c0-1.11.9-2.01 2.01-2.01h0a2 2 0 0 1 2.01 2.03l-.01.97v-10c0-1.1.9-2 2-2h0a2 2 0 0 1 2 2V11Z%27/%3E%3C/svg%3E") 5 0,
+            pointer !important;
+    }
+
+    /* Default cursor for selects */
+    select,
+    option {
+        cursor:
+            url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 viewBox=%270 0 24 24%27%3E%3Cpath fill=%27%23000000%27 stroke=%27%23ffd23f%27 stroke-width=%272%27 d=%27M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.35Z%27/%3E%3C/svg%3E"),
+            pointer;
+    }
+    } /* end @media (hover: hover) and (pointer: fine) */
+
     /* text selection everywhere: the navbar pill's bright yellow with black text */
     ::selection { background: #ffd23f; color: #000; }
     ::-moz-selection { background: #ffd23f; color: #000; }
