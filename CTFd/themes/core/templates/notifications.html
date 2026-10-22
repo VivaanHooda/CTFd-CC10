@@ -43,97 +43,91 @@
     padding-bottom: 4rem;
   }
 
-  /* ===== Notification card (Figma 10:7) ===== */
+  /* ===== Notification cards: neutral surfaces, a line icon, gold only as a small accent ===== */
   .news-list {
     display: grid;
-    gap: 16px;
+    gap: 12px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .news-card {
-    position: relative;
     display: flex;
     align-items: flex-start;
-    gap: 24px;
-    /* Figma's 28/32/30/28 is measured from the outer edge; CSS padding starts inside the 1px border */
-    padding: 27px 31px 29px 27px;
-    border: 1px solid rgba(226, 188, 116, 0.22);
+    gap: 16px;
+    padding: 20px 22px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
     border-radius: 14px;
-    background: linear-gradient(180deg, #15120e, #0b0a08);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.025);
   }
 
-  /* gold bar straddling the left edge */
-  .news-card::before {
-    content: "";
-    position: absolute;
-    left: -2px;
-    top: 26px;
-    width: 3px;
-    height: 60px;
-    border-radius: 2px;
-    background: #e2bc74;
-  }
-
-  .news-seal {
-    position: relative;
+  .news-icon {
+    display: grid;
+    place-items: center;
     flex: none;
-    width: 60px;
-    height: 60px;
-    border: 1px solid rgba(226, 188, 116, 0.75);
-    border-radius: 50%;
-    background: radial-gradient(circle closest-side, rgba(226, 188, 116, 0.18), rgba(226, 188, 116, 0.02));
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    color: var(--acc-light);
   }
-  .news-seal img { position: absolute; display: block; max-width: none; }
-  .news-seal .seal-ring { left: -1px; top: -1px; width: 60px; height: 60px; }
-  .news-seal .seal-laurel { left: 16px; top: 16px; width: 26px; height: 26px; }
+
+  .news-icon svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
   .news-content {
     flex: 1 0 0;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
   }
 
+  /* at least as tall as the icon, so a one-line title sits level with it */
   .news-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    min-height: 40px;
   }
 
   .news-title {
     margin: 0;
     font-family: 'Voyage Display', 'Voyage Serif', sans-serif;
     font-weight: 700;
-    font-size: 23px;
+    font-size: 18px;
     line-height: 1.35;
-    letter-spacing: 0.02em;
-    color: #f4ead6;
+    letter-spacing: -0.01em;
+    color: #f4ecdc;
     overflow-wrap: anywhere;
   }
 
   .news-time {
     flex: none;
     font-family: 'Voyage Serif', system-ui, sans-serif;
-    font-weight: 400;
-    font-size: 13px;
-    letter-spacing: 0;
-    color: #ebe0cc;
-    font-variant-numeric: lining-nums;
+    font-weight: 500;
+    font-size: 12.5px;
+    color: rgba(244, 236, 220, 0.42);
+    font-variant-numeric: tabular-nums;
   }
 
   .news-body {
-    max-width: 560px;
+    max-width: 600px;
     font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 18px;
-    line-height: 1.5;
-    color: #c2b9a8;
-    font-variant-numeric: lining-nums;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: rgba(244, 236, 220, 0.66);
   }
 
   .news-body p { margin-bottom: 0.6em; }
@@ -142,27 +136,24 @@
   .news-body ol:last-child { margin-bottom: 0; }
   .news-body ul,
   .news-body ol { padding-left: 1.2rem; }
-  .news-body li::marker { color: #e2bc74; }
-  .news-body strong { color: #f4ead6; font-weight: 600; }
-  .news-body a { color: #e2bc74; text-decoration: underline; text-decoration-color: rgba(226, 188, 116, 0.4); text-underline-offset: 3px; }
-  .news-body a:hover { color: #f4ead6; text-decoration-color: currentColor; }
+  .news-body li::marker { color: rgba(244, 236, 220, 0.4); }
+  .news-body strong { color: #f4ecdc; font-weight: 600; }
+  .news-body a { color: var(--acc-light); text-decoration: underline; text-decoration-color: rgba(var(--acc-rgb), 0.4); text-underline-offset: 3px; }
+  .news-body a:hover { color: #f4ecdc; text-decoration-color: currentColor; }
   .news-body code {
     padding: 0.1em 0.35em;
     border-radius: 4px;
-    background: rgba(244, 234, 214, 0.07);
-    font-size: 0.82em;
-    color: #f4ead6;
+    background: rgba(244, 236, 220, 0.07);
+    font-size: 0.85em;
+    color: #f4ecdc;
   }
 
   @media (max-width: 575.98px) {
-    .news-card { gap: 16px; padding: 21px 19px 23px 19px; }
-    .news-card::before { top: 20px; height: 48px; }
-    .news-seal { width: 48px; height: 48px; }
-    .news-seal .seal-ring { width: 48px; height: 48px; }
-    .news-seal .seal-laurel { left: 11px; top: 11px; width: 24px; height: 24px; }
-    .news-head { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
-    .news-title { font-size: 19px; }
-    .news-body { font-size: 17px; }
+    .news-card { gap: 14px; padding: 16px 16px 18px; }
+    .news-icon { width: 36px; height: 36px; }
+    .news-head { flex-direction: column; align-items: flex-start; justify-content: center; gap: 0.15rem; min-height: 36px; }
+    .news-title { font-size: 17px; }
+    .news-body { font-size: 15px; }
   }
 
   .news-empty {
@@ -190,10 +181,9 @@
   <ol class="news-list">
     {% for notification in notifications %}
     <li class="news-card">
-      <div class="news-seal" aria-hidden="true">
-        <img class="seal-ring" src="{{ url_for('views.themes', path='img/notice/seal-ring.svg') }}" alt="">
-        <img class="seal-laurel" src="{{ url_for('views.themes', path='img/notice/seal-laurel.svg') }}" alt="">
-      </div>
+      <span class="news-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+      </span>
       <div class="news-content">
         <div class="news-head">
           <h3 class="news-title">{{ notification.title }}</h3>
