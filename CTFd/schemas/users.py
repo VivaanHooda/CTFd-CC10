@@ -7,7 +7,6 @@ from CTFd.models import Brackets, UserFieldEntries, UserFields, Users, ma
 from CTFd.schemas.fields import UserFieldEntriesSchema
 from CTFd.utils import get_config, string_types
 from CTFd.utils.crypto import verify_password
-from CTFd.utils.email import check_email_is_blacklisted, check_email_is_whitelisted
 from CTFd.utils.user import get_current_user, is_admin
 from CTFd.utils.validators import validate_country_code, validate_language
 
@@ -125,38 +124,11 @@ class UserSchema(ma.ModelSchema):
         else:
             if email == current_user.email:
                 return data
-            else:
-                confirm = data.get("confirm")
-
-                if bool(confirm) is False:
-                    raise ValidationError(
-                        "Please confirm your current password", field_names=["confirm"]
-                    )
-
-                test = verify_password(
-                    plaintext=confirm, ciphertext=current_user.password
-                )
-                if test is False:
-                    raise ValidationError(
-                        "Your previous password is incorrect", field_names=["confirm"]
-                    )
-
-                if existing_user:
-                    raise ValidationError(
-                        "Email address has already been used", field_names=["email"]
-                    )
-                if check_email_is_whitelisted(email) is False:
-                    raise ValidationError(
-                        "Email address is not from an allowed domain",
-                        field_names=["email"],
-                    )
-                if check_email_is_blacklisted(email) is True:
-                    raise ValidationError(
-                        "Email address is not from an allowed domain",
-                        field_names=["email"],
-                    )
-                if get_config("verify_emails"):
-                    current_user.verified = False
+            # Players can't change their own email address; only admins can
+            raise ValidationError(
+                "Your email address can't be changed. Contact an organiser if it needs updating.",
+                field_names=["email"],
+            )
 
     @pre_load
     def validate_password_confirmation(self, data):

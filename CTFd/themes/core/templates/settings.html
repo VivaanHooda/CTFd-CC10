@@ -86,6 +86,33 @@
   }
 
   .settings hr { margin: 1.6rem 0; border-color: rgba(var(--acc-rgb), 0.2); opacity: 1; }
+
+  .settings .form-control:disabled {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-color: rgba(244, 236, 220, 0.08);
+    color: rgba(244, 236, 220, 0.42);
+    cursor: not-allowed;
+    opacity: 1;
+  }
+  .settings-field-note {
+    margin: 0.45rem 0 0;
+    font-size: 0.85rem;
+    color: rgba(244, 236, 220, 0.45);
+  }
+
+  .settings-section { margin-bottom: 1.1rem; }
+  .settings-section-title {
+    margin: 0 0 0.25rem;
+    font-family: 'Voyage Display', 'Voyage Serif', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #f4ecdc;
+  }
+  .settings-section-note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(244, 236, 220, 0.55);
+  }
   .settings .text-muted, .settings .form-text { color: rgba(244, 236, 220, 0.5) !important; }
 
   .settings .form-control, .settings .form-select {
@@ -151,19 +178,21 @@
                         </div>
                         <div class="mb-3">
                             <b>{{ form.email.label(class="form-label") }}</b>
-                            {{ form.email(class="form-control", value=email) }}
-                        </div>
-                        <div class="mb-3">
-                            <b>{{ form.language.label(class="form-label") }}</b>
-                            {{ form.language(class="form-select", value=language) }}
+                            {# players can't change their email (enforced in the API too); disabled fields aren't submitted #}
+                            {{ form.email(class="form-control", value=email, disabled=True) }}
+                            <p class="settings-field-note">{% trans %}Your email can't be changed. Contact an organiser if it needs updating.{% endtrans %}</p>
                         </div>
                         <hr>
+                        <div class="settings-section">
+                            <h2 class="settings-section-title">{% trans %}Change Password{% endtrans %}</h2>
+                            <p class="settings-section-note">{% trans %}Leave these blank to keep your current password.{% endtrans %}</p>
+                        </div>
                         <div class="mb-3">
                             <b>{{ form.confirm.label(class="form-label") }}</b>
                             {{ form.confirm(class="form-control") }}
                         </div>
                         <div class="mb-3">
-                            <b>{{ form.password.label(class="form-label") }}</b>
+                            <b>{{ form.password.label(class="form-label", text="New Password") }}</b>
                             {{ form.password(class="form-control") }}
                         </div>
                         <hr>
