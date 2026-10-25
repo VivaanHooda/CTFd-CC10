@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from CTFd.models import Flags
+from CTFd.utils import set_config
 from tests.helpers import (
     create_ctfd,
     destroy_ctfd,
     gen_challenge,
     gen_flag,
     login_as_user,
+    register_user,
 )
 
 
@@ -238,3 +240,139 @@ def test_flag_content_not_stripped_on_other_types():
 
             f = Flags.query.filter_by(id=flag_id).first()
             assert f.content == "   updated_custom_flag   "
+
+
+def test_api_dynamic_flags():
+    """Dynamic flags: key generation, own key, key edits, preview, per-team checks"""
+    import json
+
+    from CTFd.models import Challenges
+    from CTFd.plugins.flags import dynamic
+    from tests.helpers import gen_team
+
+    secret = "ab" * 32
+    app = create_ctfd(user_mode="teams")
+    with app.app_context():
+        gen_challenge(app.db, state="visible")
+        team_a = gen_team(app.db, name="Argonauts", email="a@examplectf.com")
+        team_b = gen_team(app.db, name="Trojans", email="b@examplectf.com")
+        user_a = team_a.members[0].name
+        user_b = team_b.members[0].name
+        assert Challenges.query.count() == 1
+
+        with login_as_user(app, "admin") as admin:
+            # No key given: the server generates one
+            r = admin.post(
+                "/api/v1/flags",
+                json={"challenge": 1, "type": "dynamic", "content": " cc10{gen} "},
+            )
+            assert r.status_code == 200
+            data = r.get_json()["data"]
+            assert data["content"] == "cc10{gen}"
+            assert len(json.loads(data["data"])["secret"]) == 64
+
+            # Admin's own key is stored as typed
+            r = admin.post(
+                "/api/v1/flags",
+                json={
+                    "challenge": 1,
+                    "type": "dynamic",
+                    "content": "cc10{own}",
+                    "data": json.dumps({"secret": secret}),
+                },
+            )
+            own_id = r.get_json()["data"]["id"]
+            assert json.loads(Flags.query.get(own_id).data)["secret"] == secret
+
+            # Bad key is rejected
+            r = admin.post(
+                "/api/v1/flags",
+                json={
+                    "challenge": 1,
+                    "type": "dynamic",
+                    "content": "cc10{x}",
+                    "data": json.dumps({"secret": "zz"}),
+                },
+            )
+            assert r.status_code == 400
+
+            # Editing only the text keeps the key; sending a new key changes it
+            r = admin.patch(f"/api/v1/flags/{own_id}", json={"content": "cc10{w4x}"})
+            assert r.status_code == 200
+            assert json.loads(Flags.query.get(own_id).data)["secret"] == secret
+            r = admin.patch(
+                f"/api/v1/flags/{own_id}", json={"data": json.dumps({"secret": "cd" * 32})}
+            )
+            assert r.status_code == 200
+            assert json.loads(Flags.query.get(own_id).data)["secret"] == "cd" * 32
+            admin.patch(
+                f"/api/v1/flags/{own_id}", json={"data": json.dumps({"secret": secret})}
+            )
+
+            # Preview shows each team's flag
+            r = admin.get(f"/api/v1/flags/{own_id}/preview?identity=Argonauts")
+            flag_a = r.get_json()["data"]["flag"]
+            assert flag_a == dynamic.make_flag(secret, "Argonauts", "cc10{w4x}")
+            r = admin.get(f"/api/v1/flags/{own_id}/preview?identity=Trojans")
+            flag_b = r.get_json()["data"]["flag"]
+
+            # AI-agent prompt is built from form values and includes team A's flag
+            r = admin.post(
+                "/api/v1/flags/agent-prompt",
+                json={"content": "cc10{w4x}", "data": {"secret": secret}},
+            )
+            assert r.status_code == 200
+            assert secret in r.get_json()["data"]["prompt"]
+            # Warns while teams can still rename themselves
+            assert r.get_json()["data"]["warnings"]
+            set_config("name_changes", False)
+            r = admin.post(
+                "/api/v1/flags/agent-prompt",
+                json={"content": "cc10{w4x}", "data": {"secret": secret}},
+            )
+            assert r.get_json()["data"]["warnings"] == []
+
+        # Preview and prompt are admin only
+        with app.test_client() as client:
+            r = client.get(f"/api/v1/flags/{own_id}/preview?identity=Argonauts")
+            assert r.status_code in (302, 403)
+            r = client.post("/api/v1/flags/agent-prompt", json={"content": "x"})
+            assert r.status_code in (302, 403)
+
+        # Team B can't use team A's flag; each team's own flag works
+        client_b = login_as_user(app, name=user_b)
+        r = client_b.post(
+            "/api/v1/challenges/attempt",
+            json={"challenge_id": 1, "submission": flag_a},
+        )
+        assert r.get_json()["data"]["status"] == "incorrect"
+        r = client_b.post(
+            "/api/v1/challenges/attempt",
+            json={"challenge_id": 1, "submission": flag_b},
+        )
+        assert r.get_json()["data"]["status"] == "correct"
+
+        client_a = login_as_user(app, name=user_a)
+        r = client_a.post(
+            "/api/v1/challenges/attempt",
+            json={"challenge_id": 1, "submission": flag_a},
+        )
+        assert r.get_json()["data"]["status"] == "correct"
+    destroy_ctfd(app)
+
+
+def test_api_dynamic_flag_bad_data_rejects():
+    """A misconfigured dynamic flag rejects submissions instead of erroring"""
+    app = create_ctfd()
+    with app.app_context():
+        gen_challenge(app.db, state="visible")
+        gen_flag(app.db, 1, content="cc10{x}", type="dynamic", data="{broken")
+        register_user(app)
+        with login_as_user(app) as client:
+            r = client.post(
+                "/api/v1/challenges/attempt",
+                json={"challenge_id": 1, "submission": "cc10{x}"},
+            )
+            assert r.status_code == 200
+            assert r.get_json()["data"]["status"] == "incorrect"
+    destroy_ctfd(app)

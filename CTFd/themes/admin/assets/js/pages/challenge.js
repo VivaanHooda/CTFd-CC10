@@ -77,6 +77,12 @@ function handleChallengeOptions(event) {
     type: params.flag_type,
     data: params.flag_data ? params.flag_data : "",
   };
+  if (params.flag_type === "dynamic") {
+    // Send the key shown in the form so it matches the AI-agent prompt
+    flag_params.data = JSON.stringify({
+      secret: (params.flag_secret || "").trim(),
+    });
+  }
   // Define a save_challenge function
   let save_challenge = function () {
     CTFd.fetch("/api/v1/challenges/" + params.challenge_id, {
@@ -135,7 +141,17 @@ function handleChallengeOptions(event) {
       }
       resolve();
     }),
-  ]).then((_responses) => {
+  ]).then((responses) => {
+    // Don't move on with a challenge whose flag failed to save
+    const flagResponse = responses[0];
+    if (flagResponse && !flagResponse.success) {
+      ezAlert({
+        title: "Flag not saved",
+        body: Object.values(flagResponse.errors || {}).join("<br>"),
+        button: "OK",
+      });
+      return;
+    }
     save_challenge();
   });
 }
@@ -321,6 +337,138 @@ $(() => {
   });
 
   $("#challenge-create-options form").submit(handleChallengeOptions);
+
+  // Static / Dynamic flag choice in the create options modal
+  let generatedKey = "";
+  let promptTimer = null;
+  const randomKey = function () {
+    const bytes = new Uint8Array(32);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  };
+  const copyField = function (button, field) {
+    const done = () => {
+      $(button).text("Copied");
+      setTimeout(() => $(button).text(button.dataset.label), 1500);
+    };
+    button.dataset.label = button.dataset.label || $(button).text();
+    field.select();
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(field.value).then(done);
+    } else {
+      document.execCommand("copy");
+      done();
+    }
+  };
+  const loadAgentPrompt = function () {
+    clearTimeout(promptTimer);
+    promptTimer = setTimeout(() => {
+      CTFd.fetch("/api/v1/flags/agent-prompt", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: $("#flag-input").val(),
+          data: { secret: $("#flag-secret").val().trim() },
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.success) {
+            $("#flag-prompt").val(response.data.prompt);
+            const warnings = response.data.warnings || [];
+            $("#flag-dynamic-warnings")
+              .text(warnings.join(" "))
+              .toggleClass(
+                "d-none",
+                !warnings.length || !$("#flag-type-dynamic").is(":checked"),
+              );
+          }
+        });
+    }, 300);
+  };
+  const syncFlagOptions = function (event) {
+    const dynamic = $("#flag-type-dynamic").is(":checked");
+    const ownKey = $("#flag-key-own").is(":checked");
+    const flag = $("#flag-input");
+    const secret = $("#flag-secret");
+
+    $("#flag-case-col").toggleClass("d-none", dynamic);
+    $("#flag-input-col").toggleClass("col-md-8", !dynamic);
+    $("#flag-input-col").toggleClass("col-md-12", dynamic);
+    $("#flag-key-group").toggleClass("d-none", !dynamic);
+    $("#flag-dynamic-example").toggleClass("d-none", !dynamic);
+    $("#flag-help").text(
+      dynamic
+        ? "Each team must submit this flag with their own unique suffix"
+        : "Static flag for your challenge",
+    );
+    flag.attr("placeholder", dynamic ? "cc10{w4x_h1d}" : "");
+    flag.prop("required", dynamic);
+
+    // Show where the per-team suffix will go
+    const base = flag.val().trim() || "cc10{w4x_h1d}";
+    const tag = "3fa9c0b17e";
+    let example;
+    if (base.includes("%TAG%")) {
+      example = base.split("%TAG%").join(tag);
+    } else if (base.lastIndexOf("}") === -1) {
+      example = `${base}_${tag}`;
+    } else {
+      const i = base.lastIndexOf("}");
+      example = `${base.slice(0, i)}_${tag}${base.slice(i)}`;
+    }
+    $("#flag-dynamic-preview").text(example);
+
+    // Generated keys are made here so the prompt shows the key that gets saved
+    if (dynamic && !generatedKey) {
+      generatedKey = randomKey();
+    }
+    const switchedMode = event && event.target.name === "flag_key_mode";
+    if (switchedMode) {
+      secret.val(ownKey ? "" : generatedKey);
+    } else if (!ownKey) {
+      secret.val(generatedKey);
+    }
+    secret.prop("readonly", !ownKey);
+    secret.prop("required", dynamic);
+    secret.attr(
+      "placeholder",
+      ownKey ? "Hex key, e.g. the challenge server's secret.key" : "",
+    );
+    $("#flag-key-help").text(
+      ownKey
+        ? "The backend will use exactly this key. Give the same key to your challenge server."
+        : "A new random key for this challenge. Give it to your challenge server.",
+    );
+    $("#flag-prompt-group").toggleClass("d-none", !dynamic);
+    if (!dynamic) {
+      $("#flag-dynamic-warnings").addClass("d-none");
+    }
+    const key = secret.val().trim();
+    const valid = !(dynamic && ownKey) || /^([0-9a-fA-F]{2})+$/.test(key);
+    secret[0].setCustomValidity(
+      valid ? "" : "Key must be hex (0-9, a-f), an even number of characters",
+    );
+    secret.toggleClass("is-invalid", key !== "" && !valid);
+
+    if (dynamic) {
+      loadAgentPrompt();
+    }
+  };
+  $(
+    "#challenge-create-options input[name=flag_type], #challenge-create-options input[name=flag_key_mode]",
+  ).change(syncFlagOptions);
+  $("#flag-input, #flag-secret").on("input", syncFlagOptions);
+  $("#flag-secret-copy").click(function () {
+    copyField(this, $("#flag-secret")[0]);
+  });
+  $("#flag-prompt-copy").click(function () {
+    copyField(this, $("#flag-prompt")[0]);
+  });
 
   $(".chal-function")
     .change(function () {

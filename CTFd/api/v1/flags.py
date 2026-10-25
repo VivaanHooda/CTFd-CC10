@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from flask import request
@@ -8,8 +9,16 @@ from CTFd.api.v1.helpers.schemas import sqlalchemy_to_pydantic
 from CTFd.api.v1.schemas import APIDetailedSuccessResponse, APIListSuccessResponse
 from CTFd.constants import RawEnum
 from CTFd.models import Flags, db
-from CTFd.plugins.flags import FLAG_CLASSES, get_flag_class
+from CTFd.plugins.flags import (
+    FLAG_CLASSES,
+    CTFdDynamicFlag,
+    FlagException,
+    agent_prompt,
+    dynamic,
+    get_flag_class,
+)
 from CTFd.schemas.flags import FlagSchema
+from CTFd.utils import get_config
 from CTFd.utils.decorators import admins_only
 from CTFd.utils.helpers.models import build_model_filters
 
@@ -91,6 +100,12 @@ class FlagList(Resource):
     def post(self):
         req = request.get_json()
         schema = FlagSchema()
+
+        if req.get("type") == "dynamic":
+            try:
+                req["data"] = CTFdDynamicFlag.prepare_data(req.get("data") or "")
+            except FlagException as e:
+                return {"success": False, "errors": {"data": [str(e)]}}, 400
         response = schema.load(req, session=db.session)
 
         if response.errors:
@@ -98,7 +113,7 @@ class FlagList(Resource):
 
         # We only want to operate on flag types where are have
         # high confidence a leading/trailing space was not intentional
-        if response.data.type in ("static", "regex"):
+        if response.data.type in ("static", "regex", "dynamic"):
             response.data.content = response.data.content.strip()
 
         db.session.add(response.data)
@@ -190,8 +205,17 @@ class Flag(Resource):
 
         # We only want to operate on flag types where are have
         # high confidence a leading/trailing space was not intentional
-        if flag.type in ("static", "regex") and req.get("content"):
+        if flag.type in ("static", "regex", "dynamic") and req.get("content"):
             req["content"] = req["content"].strip()
+
+        # Dynamic flags keep their stored key unless a new one is sent
+        if req.get("type", flag.type) == "dynamic" and (
+            "data" in req or flag.type != "dynamic"
+        ):
+            try:
+                req["data"] = CTFdDynamicFlag.prepare_data(req.get("data") or "")
+            except FlagException as e:
+                return {"success": False, "errors": {"data": [str(e)]}}, 400
 
         response = schema.load(req, session=db.session, instance=flag, partial=True)
 
@@ -204,3 +228,55 @@ class Flag(Resource):
         db.session.close()
 
         return {"success": True, "data": response.data}
+
+
+@flags_namespace.route("/agent-prompt")
+class FlagAgentPrompt(Resource):
+    @admins_only
+    def post(self):
+        """Build the AI-agent prompt for a dynamic flag from unsaved form values"""
+        req = request.get_json() or {}
+        data = req.get("data") or {}
+        if isinstance(data, str):
+            try:
+                data = json.loads(data) if data.strip() else {}
+            except ValueError:
+                data = {}
+        try:
+            length = int(data.get("len") or dynamic.DEFAULT_LENGTH)
+        except (ValueError, TypeError):
+            length = dynamic.DEFAULT_LENGTH
+        prompt = agent_prompt.build(
+            req.get("content", ""),
+            secret=(data.get("secret") or "").strip().lower(),
+            length=length,
+            bind=data.get("bind") or "team_name",
+        )
+        warnings = []
+        if get_config("name_changes", default=True):
+            warnings.append(
+                "Teams can still rename themselves. A renamed team's dynamic flag "
+                "stops working. Turn off 'Name changes' in Admin > Config > Accounts."
+            )
+        return {"success": True, "data": {"prompt": prompt, "warnings": warnings}}
+
+
+@flags_namespace.route("/<flag_id>/preview")
+class FlagPreview(Resource):
+    @admins_only
+    def get(self, flag_id):
+        """Show the flag a given team/user must submit for a dynamic flag"""
+        flag = Flags.query.filter_by(id=flag_id).first_or_404()
+        if flag.type != "dynamic":
+            return {"success": False, "errors": {"type": ["Not a dynamic flag"]}}, 400
+
+        identity = request.args.get("identity", "").strip()
+        if not identity:
+            return {"success": False, "errors": {"identity": ["Enter a name"]}}, 400
+
+        try:
+            expected = CTFdDynamicFlag.expected(flag, identity)
+        except Exception:
+            return {"success": False, "errors": {"data": ["Flag is misconfigured"]}}, 400
+
+        return {"success": True, "data": {"identity": identity, "flag": expected}}

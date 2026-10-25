@@ -8,7 +8,7 @@ from CTFd.schemas.fields import TeamFieldEntriesSchema
 from CTFd.utils import get_config, string_types
 from CTFd.utils.crypto import verify_password
 from CTFd.utils.user import get_current_team, get_current_user, is_admin
-from CTFd.utils.validators import validate_country_code
+from CTFd.utils.validators import find_lookalike_team, validate_country_code
 
 
 class TeamSchema(ma.ModelSchema):
@@ -62,8 +62,14 @@ class TeamSchema(ma.ModelSchema):
             return
         name = name.strip()
 
-        existing_team = Teams.query.filter_by(name=name).first()
         current_team = get_current_team()
+        # A look-alike name (case/spacing/Unicode) would share dynamic flags
+        existing_team = Teams.query.filter_by(name=name).first()
+        if existing_team is None:
+            exclude_id = int(data.get("id", 0)) if is_admin() else None
+            if exclude_id is None and current_team:
+                exclude_id = current_team.id
+            existing_team = find_lookalike_team(name, exclude_id=exclude_id or None)
         # Admins should be able to patch anyone but they cannot cause a collision.
         if is_admin():
             team_id = int(data.get("id", 0))

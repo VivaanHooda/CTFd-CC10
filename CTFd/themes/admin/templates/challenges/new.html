@@ -22,15 +22,29 @@
 			<div class="modal-body">
 				<form method="POST" enctype="multipart/form-data">
 					<div class="form-group">
+						<label class="d-block mb-1">Flag type</label>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="flag-type-static" name="flag_type" value="static" class="custom-control-input" checked>
+							<label class="custom-control-label" for="flag-type-static">Static <small class="text-muted">(same flag for everyone)</small></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="flag-type-dynamic" name="flag_type" value="dynamic" class="custom-control-input">
+							<label class="custom-control-label" for="flag-type-dynamic">Dynamic <small class="text-muted">(unique flag per team)</small></label>
+						</div>
+					</div>
+					<div class="form-group">
 						<div class="row">
-							<div class="col-md-8">
+							<div class="col-md-8" id="flag-input-col">
 								<label>
 									Flag:<br>
-									<small class="form-text text-muted">Static flag for your challenge</small>
+									<small class="form-text text-muted" id="flag-help">Static flag for your challenge</small>
 								</label>
-								<input type="text" class="form-control" name="flag">
+								<input type="text" class="form-control" name="flag" id="flag-input">
+								<small class="form-text text-muted d-none" id="flag-dynamic-example">
+									A team will submit: <code id="flag-dynamic-preview">cc10{w4x_h1d_3fa9c0b17e}</code>
+								</small>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-4" id="flag-case-col">
 								<label>
 									&nbsp;
 									<small class="form-text text-muted">&nbsp;</small>
@@ -41,7 +55,33 @@
 								</select>
 							</div>
 						</div>
-						<input type="hidden" name="flag_type" value="static">
+					</div>
+					<div class="form-group d-none" id="flag-key-group">
+						<label class="d-block mb-1">Secret key</label>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="flag-key-generate" name="flag_key_mode" value="generate" class="custom-control-input" checked>
+							<label class="custom-control-label" for="flag-key-generate">Generate automatically</label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="flag-key-own" name="flag_key_mode" value="own" class="custom-control-input">
+							<label class="custom-control-label" for="flag-key-own">Enter my own key</label>
+						</div>
+						<div class="input-group mt-2">
+							<input type="text" class="form-control text-monospace" name="flag_secret" id="flag-secret" autocomplete="off" spellcheck="false" readonly>
+							<div class="input-group-append">
+								<button class="btn btn-outline-secondary" type="button" id="flag-secret-copy">Copy</button>
+							</div>
+						</div>
+						<small class="form-text text-muted" id="flag-key-help">A new random key for this challenge. Give it to your challenge server.</small>
+					</div>
+					<div class="alert alert-warning py-2 d-none" id="flag-dynamic-warnings"></div>
+					<div class="form-group d-none" id="flag-prompt-group">
+						<label class="d-block mb-1">
+							Prompt for your AI agent<br>
+							<small class="form-text text-muted">Paste this into the AI agent building the challenge. It has the exact flag, key, algorithm and test cases, so the challenge hands out flags CTFd accepts.</small>
+						</label>
+						<textarea class="form-control text-monospace small" id="flag-prompt" rows="8" readonly></textarea>
+						<button class="btn btn-outline-secondary btn-sm mt-2" type="button" id="flag-prompt-copy">Copy prompt</button>
 					</div>
 					<div class="form-group">
 						<div class="form-group">

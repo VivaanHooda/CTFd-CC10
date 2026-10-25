@@ -232,7 +232,9 @@ def new():
 
         user = get_current_user()
 
-        existing_team = Teams.query.filter_by(name=teamname).first()
+        existing_team = Teams.query.filter_by(
+            name=teamname
+        ).first() or validators.find_lookalike_team(teamname)
         if existing_team:
             errors.append("That team name is already taken")
         if not teamname:

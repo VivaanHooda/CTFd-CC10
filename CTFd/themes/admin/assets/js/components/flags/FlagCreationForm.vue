@@ -59,6 +59,7 @@
 <script>
 import $ from "jquery";
 import CTFd from "../../compat/CTFd";
+import { ezAlert } from "../../compat/ezq";
 import nunjucks from "nunjucks";
 import "../../compat/json";
 
@@ -129,7 +130,15 @@ export default {
         .then((response) => {
           return response.json();
         })
-        .then((_response) => {
+        .then((response) => {
+          if (!response.success) {
+            ezAlert({
+              title: "Error",
+              body: Object.values(response.errors || {}).join("<br>"),
+              button: "OK",
+            });
+            return;
+          }
           this.$emit("refreshFlags", this.$options.name);
         });
     },

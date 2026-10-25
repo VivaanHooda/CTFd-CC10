@@ -1,0 +1,150 @@
+<label>
+	Dynamic<br>
+	<small>Each team must submit this flag with their own unique suffix.</small>
+</label>
+<div class="form-group">
+	<input type="text" class="form-control" name="content" id="dyn-edit-content" value="{{ content }}" required>
+	<small class="form-text text-muted">
+		A team will submit: <code id="dyn-edit-example"></code>
+	</small>
+</div>
+<div class="form-group">
+	<label class="d-block mb-1">Secret key</label>
+	<div class="input-group">
+		<input type="text" class="form-control text-monospace" id="dyn-edit-secret" autocomplete="off" spellcheck="false" required>
+		<div class="input-group-append">
+			<button class="btn btn-outline-secondary" type="button" id="dyn-edit-copy">Copy</button>
+			<button class="btn btn-outline-secondary" type="button" id="dyn-edit-regen">Regenerate</button>
+		</div>
+	</div>
+	<small class="form-text text-muted">Give this key to your challenge server. You can also paste in your own key.</small>
+	<div class="alert alert-warning py-2 mt-2 mb-0 d-none" id="dyn-edit-warn">
+		The key has changed. After you save, every team's flag for this challenge will be different.
+	</div>
+</div>
+<div class="form-group">
+	<label class="d-block mb-1">Check a team's flag</label>
+	<div class="input-group">
+		<input type="text" class="form-control" id="dyn-edit-team" placeholder="Team name">
+		<div class="input-group-append">
+			<button class="btn btn-outline-secondary" type="button" id="dyn-edit-preview">Show flag</button>
+		</div>
+	</div>
+	<small class="form-text text-muted" id="dyn-edit-result">Uses the saved flag and key.</small>
+</div>
+<div class="alert alert-warning py-2 d-none" id="dyn-edit-warnings"></div>
+<div class="form-group">
+	<label class="d-block mb-1">
+		Prompt for your AI agent<br>
+		<small class="form-text text-muted">Paste this into the AI agent building the challenge. It has the exact flag, key, algorithm and test cases, so the challenge hands out flags CTFd accepts. If you change the flag or key, save and give the agent the new prompt.</small>
+	</label>
+	<textarea class="form-control text-monospace small" id="dyn-edit-prompt" rows="8" readonly></textarea>
+	<button class="btn btn-outline-secondary btn-sm mt-2" type="button" id="dyn-edit-prompt-copy">Copy prompt</button>
+</div>
+<input type="hidden" id="dyn-edit-saved" value="{{ data }}">
+<input type="hidden" name="data" id="dyn-edit-data" value="">
+<input type="hidden" name="type" value="dynamic">
+<input type="hidden" name="id" value="{{ id }}">
+<hr>
+<div class="form-group">
+	<button class="btn btn-success float-right">Update</button>
+</div>
+
+<script>
+	(function () {
+		var content = document.getElementById("dyn-edit-content");
+		var example = document.getElementById("dyn-edit-example");
+		var secret = document.getElementById("dyn-edit-secret");
+		var warn = document.getElementById("dyn-edit-warn");
+		var data = document.getElementById("dyn-edit-data");
+		var team = document.getElementById("dyn-edit-team");
+		var result = document.getElementById("dyn-edit-result");
+		var prompt = document.getElementById("dyn-edit-prompt");
+		if (!content) return;
+
+		var saved = {};
+		try { saved = JSON.parse(document.getElementById("dyn-edit-saved").value) || {}; } catch (e) {}
+		var flagId = document.querySelector("#dyn-edit-data").form.querySelector("input[name=id]").value;
+		secret.value = saved.secret || "";
+
+		function placeTag(base, tag) {
+			if (base.indexOf("%TAG%") !== -1) return base.split("%TAG%").join(tag);
+			var i = base.lastIndexOf("}");
+			if (i === -1) return base + "_" + tag;
+			return base.slice(0, i) + "_" + tag + base.slice(i);
+		}
+
+		function sync() {
+			example.textContent = placeTag(content.value.trim(), "3fa9c0b17e");
+			var key = secret.value.trim();
+			var valid = /^([0-9a-fA-F]{2})+$/.test(key);
+			secret.setCustomValidity(valid ? "" : "Key must be hex (0-9, a-f), an even number of characters");
+			secret.classList.toggle("is-invalid", key !== "" && !valid);
+			warn.classList.toggle("d-none", !valid || key.toLowerCase() === (saved.secret || ""));
+			data.value = JSON.stringify(Object.assign({}, saved, { secret: key }));
+			loadPrompt();
+		}
+
+		document.getElementById("dyn-edit-regen").addEventListener("click", function () {
+			var bytes = new Uint8Array(32);
+			window.crypto.getRandomValues(bytes);
+			secret.value = Array.from(bytes, function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+			sync();
+		});
+
+		function copy(button, field) {
+			field.select();
+			var done = function () { button.textContent = "Copied"; setTimeout(function () { button.textContent = button.dataset.label; }, 1500); };
+			button.dataset.label = button.dataset.label || button.textContent;
+			if (navigator.clipboard && window.isSecureContext) {
+				navigator.clipboard.writeText(field.value).then(done);
+			} else {
+				document.execCommand("copy");
+				done();
+			}
+		}
+		document.getElementById("dyn-edit-copy").addEventListener("click", function () { copy(this, secret); });
+		document.getElementById("dyn-edit-prompt-copy").addEventListener("click", function () { copy(this, prompt); });
+
+		var promptTimer = null;
+		function loadPrompt() {
+			clearTimeout(promptTimer);
+			promptTimer = setTimeout(function () {
+				window.CTFd.fetch("/api/v1/flags/agent-prompt", {
+					method: "POST",
+					credentials: "same-origin",
+					headers: { Accept: "application/json", "Content-Type": "application/json" },
+					body: JSON.stringify({ content: content.value, data: data.value }),
+				})
+					.then(function (r) { return r.json(); })
+					.then(function (r) {
+						if (!r.success) return;
+						prompt.value = r.data.prompt;
+						var warnings = document.getElementById("dyn-edit-warnings");
+						warnings.textContent = (r.data.warnings || []).join(" ");
+						warnings.classList.toggle("d-none", !warnings.textContent);
+					});
+			}, 300);
+		}
+
+		function preview() {
+			var name = team.value.trim();
+			if (!name) return;
+			window.CTFd.fetch("/api/v1/flags/" + flagId + "/preview?identity=" + encodeURIComponent(name), { method: "GET" })
+				.then(function (r) { return r.json(); })
+				.then(function (r) {
+					result.innerHTML = "";
+					var out = document.createElement(r.success ? "code" : "span");
+					out.textContent = r.success ? r.data.flag : Object.values(r.errors).join(" ");
+					result.appendChild(out);
+				});
+		}
+		document.getElementById("dyn-edit-preview").addEventListener("click", preview);
+		team.addEventListener("keydown", function (e) {
+			if (e.key === "Enter") { e.preventDefault(); preview(); }
+		});
+
+		[content, secret].forEach(function (el) { el.addEventListener("input", sync); });
+		sync();
+	})();
+</script>

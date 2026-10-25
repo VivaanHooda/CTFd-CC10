@@ -1,0 +1,131 @@
+<label>
+	Dynamic<br>
+	<small>Enter the flag. Each team must submit it with their own unique suffix.</small>
+</label>
+<div class="form-group">
+	<input type="text" class="form-control" name="content" id="dyn-create-content" placeholder="cc10{w4x_h1d}" required>
+	<small class="form-text text-muted">
+		A team will submit: <code id="dyn-create-example">cc10{w4x_h1d_3fa9c0b17e}</code>
+		<br>The suffix is added before the last <code>}</code>, or wherever you write <code>%TAG%</code>.
+	</small>
+</div>
+<div class="form-group">
+	<label class="d-block mb-1">Secret key</label>
+	<div class="custom-control custom-radio custom-control-inline">
+		<input type="radio" id="dyn-create-gen" name="dyn_key_mode" value="generate" class="custom-control-input" checked>
+		<label class="custom-control-label" for="dyn-create-gen">Generate automatically</label>
+	</div>
+	<div class="custom-control custom-radio custom-control-inline">
+		<input type="radio" id="dyn-create-own" name="dyn_key_mode" value="own" class="custom-control-input">
+		<label class="custom-control-label" for="dyn-create-own">Enter my own key</label>
+	</div>
+	<div class="input-group mt-2">
+		<input type="text" class="form-control text-monospace" id="dyn-create-secret" autocomplete="off" spellcheck="false" readonly required>
+		<div class="input-group-append">
+			<button class="btn btn-outline-secondary" type="button" id="dyn-create-copy">Copy</button>
+		</div>
+	</div>
+	<small class="form-text text-muted" id="dyn-create-keyhelp">A new random key for this challenge. Give it to your challenge server.</small>
+</div>
+<div class="alert alert-warning py-2 d-none" id="dyn-create-warnings"></div>
+<div class="form-group">
+	<label class="d-block mb-1">
+		Prompt for your AI agent<br>
+		<small class="form-text text-muted">Paste this into the AI agent building the challenge. It has the exact flag, key, algorithm and test cases, so the challenge hands out flags CTFd accepts.</small>
+	</label>
+	<textarea class="form-control text-monospace small" id="dyn-create-prompt" rows="8" readonly></textarea>
+	<button class="btn btn-outline-secondary btn-sm mt-2" type="button" id="dyn-create-prompt-copy">Copy prompt</button>
+</div>
+<input type="hidden" name="data" id="dyn-create-data" value="">
+<input type="hidden" name="type" value="dynamic">
+
+<script>
+	(function () {
+		var content = document.getElementById("dyn-create-content");
+		var example = document.getElementById("dyn-create-example");
+		var gen = document.getElementById("dyn-create-gen");
+		var own = document.getElementById("dyn-create-own");
+		var secret = document.getElementById("dyn-create-secret");
+		var help = document.getElementById("dyn-create-keyhelp");
+		var data = document.getElementById("dyn-create-data");
+		var prompt = document.getElementById("dyn-create-prompt");
+		if (!content) return;
+
+		function randomKey() {
+			var bytes = new Uint8Array(32);
+			window.crypto.getRandomValues(bytes);
+			return Array.from(bytes, function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+		}
+		// Made here so the prompt shows the key that gets saved
+		var generatedKey = randomKey();
+
+		function placeTag(base, tag) {
+			if (base.indexOf("%TAG%") !== -1) return base.split("%TAG%").join(tag);
+			var i = base.lastIndexOf("}");
+			if (i === -1) return base + "_" + tag;
+			return base.slice(0, i) + "_" + tag + base.slice(i);
+		}
+
+		function copy(button, field) {
+			field.select();
+			var done = function () { button.textContent = "Copied"; setTimeout(function () { button.textContent = button.dataset.label; }, 1500); };
+			button.dataset.label = button.dataset.label || button.textContent;
+			if (navigator.clipboard && window.isSecureContext) {
+				navigator.clipboard.writeText(field.value).then(done);
+			} else {
+				document.execCommand("copy");
+				done();
+			}
+		}
+
+		var promptTimer = null;
+		function loadPrompt() {
+			clearTimeout(promptTimer);
+			promptTimer = setTimeout(function () {
+				window.CTFd.fetch("/api/v1/flags/agent-prompt", {
+					method: "POST",
+					credentials: "same-origin",
+					headers: { Accept: "application/json", "Content-Type": "application/json" },
+					body: JSON.stringify({ content: content.value, data: { secret: secret.value.trim() } }),
+				})
+					.then(function (r) { return r.json(); })
+					.then(function (r) {
+						if (!r.success) return;
+						prompt.value = r.data.prompt;
+						var warnings = document.getElementById("dyn-create-warnings");
+						warnings.textContent = (r.data.warnings || []).join(" ");
+						warnings.classList.toggle("d-none", !warnings.textContent);
+					});
+			}, 300);
+		}
+
+		function sync(event) {
+			example.textContent = placeTag(content.value.trim() || "cc10{w4x_h1d}", "3fa9c0b17e");
+
+			var useOwn = own.checked;
+			if (event && event.target.name === "dyn_key_mode") {
+				secret.value = useOwn ? "" : generatedKey;
+			} else if (!useOwn) {
+				secret.value = generatedKey;
+			}
+			secret.readOnly = !useOwn;
+			secret.placeholder = useOwn ? "Hex key, e.g. the challenge server's secret.key" : "";
+			help.textContent = useOwn
+				? "The backend will use exactly this key. Give the same key to your challenge server."
+				: "A new random key for this challenge. Give it to your challenge server.";
+
+			var key = secret.value.trim();
+			var valid = /^([0-9a-fA-F]{2})+$/.test(key);
+			secret.setCustomValidity(valid ? "" : "Key must be hex (0-9, a-f), an even number of characters");
+			secret.classList.toggle("is-invalid", key !== "" && !valid);
+			data.value = JSON.stringify({ secret: key });
+			loadPrompt();
+		}
+
+		document.getElementById("dyn-create-copy").addEventListener("click", function () { copy(this, secret); });
+		document.getElementById("dyn-create-prompt-copy").addEventListener("click", function () { copy(this, prompt); });
+		[content, secret].forEach(function (el) { el.addEventListener("input", sync); });
+		[gen, own].forEach(function (el) { el.addEventListener("change", sync); });
+		sync();
+	})();
+</script>

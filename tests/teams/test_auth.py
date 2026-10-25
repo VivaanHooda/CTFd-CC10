@@ -243,3 +243,45 @@ def test_teams_from_admin_hidden():
             team = Teams.query.filter_by(name="team_admin").first()
             assert team.hidden == True
     destroy_ctfd(app)
+
+
+def test_teams_new_post_lookalike_name():
+    """Team names that differ only by case/spacing are rejected (they'd share dynamic flags)"""
+    app = create_ctfd(user_mode="teams")
+    with app.app_context():
+        gen_team(app.db, name="Hello World", email="hw@examplectf.com")
+        gen_user(app.db, name="user")
+        with login_as_user(app) as client:
+            for name in ("hello world", "  HELLO   world "):
+                with client.session_transaction() as sess:
+                    data = {
+                        "name": name,
+                        "password": "password",
+                        "nonce": sess.get("nonce"),
+                    }
+                r = client.post("/teams/new", data=data)
+                assert r.status_code == 403
+            assert Teams.query.count() == 1
+    destroy_ctfd(app)
+
+
+def test_api_team_lookalike_names():
+    """The API blocks look-alike team names but lets a team re-case its own name"""
+    app = create_ctfd(user_mode="teams")
+    with app.app_context():
+        gen_team(app.db, name="Hello World", email="hw@examplectf.com")
+        other = gen_team(app.db, name="Argonauts", email="ar@examplectf.com")
+        other_id = other.id
+        with login_as_user(app, "admin") as admin:
+            r = admin.post(
+                "/api/v1/teams",
+                json={"name": "HELLO world", "email": "x@examplectf.com", "password": "p"},
+            )
+            assert r.status_code == 400
+
+            r = admin.patch(f"/api/v1/teams/{other_id}", json={"name": "hello WORLD"})
+            assert r.status_code == 400
+
+            r = admin.patch(f"/api/v1/teams/{other_id}", json={"name": "ARGONAUTS"})
+            assert r.status_code == 200
+    destroy_ctfd(app)

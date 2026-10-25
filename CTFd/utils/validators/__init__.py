@@ -6,7 +6,7 @@ from flask import request
 from marshmallow import ValidationError
 
 from CTFd.constants.languages import LANGUAGE_NAMES
-from CTFd.models import Users
+from CTFd.models import Teams, Users
 from CTFd.utils.countries import lookup_country_code
 from CTFd.utils.user import get_current_user, is_admin
 
@@ -92,3 +92,19 @@ def validate_language(language):
         return
     if LANGUAGE_NAMES.get(language) is None:
         raise ValidationError("Invalid Language")
+
+
+def find_lookalike_team(name, exclude_id=None):
+    """
+    Return a team whose name matches name once normalised the way dynamic flags
+    hash it (case, spacing, Unicode). Two such teams would share dynamic flags.
+    """
+    from CTFd.plugins.flags.dynamic import normalise
+
+    target = normalise(name)
+    if not target:
+        return None
+    for team in Teams.query.with_entities(Teams.id, Teams.name).all():
+        if team.id != exclude_id and normalise(team.name) == target:
+            return Teams.query.filter_by(id=team.id).first()
+    return None

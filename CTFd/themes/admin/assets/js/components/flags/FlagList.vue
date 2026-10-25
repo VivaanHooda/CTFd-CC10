@@ -28,7 +28,7 @@
         <tr :name="flag.id" v-for="flag in flags" :key="flag.id">
           <td class="text-center">{{ flag.type }}</td>
           <td class="text-break">
-            <pre class="flag-content">{{ flag.content }}</pre>
+            <pre class="flag-content">{{ displayContent(flag) }}</pre>
           </td>
           <td class="text-center">
             <i
@@ -82,6 +82,22 @@ export default {
     };
   },
   methods: {
+    displayContent: function (flag) {
+      if (flag.type !== "dynamic") {
+        return flag.content;
+      }
+      // Show where each team's unique suffix goes
+      const tag = "<team tag>";
+      const base = flag.content;
+      if (base.includes("%TAG%")) {
+        return base.split("%TAG%").join(tag);
+      }
+      const i = base.lastIndexOf("}");
+      if (i === -1) {
+        return `${base}_${tag}`;
+      }
+      return `${base.slice(0, i)}_${tag}${base.slice(i)}`;
+    },
     loadFlags: function () {
       CTFd.fetch(`/api/v1/challenges/${this.$props.challenge_id}/flags`, {
         method: "GET",
