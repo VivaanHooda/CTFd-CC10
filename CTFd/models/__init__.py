@@ -1285,3 +1285,49 @@ class Ratings(db.Model):
         return "<Rating user_id={} challenge_id={} value={}>".format(
             self.user_id, self.challenge_id, self.value
         )
+
+
+class FlagShares(db.Model):
+    """
+    A wrong submission that was another account's dynamic flag: evidence that the
+    owner's flag was shared with the submitter.
+    """
+
+    __tablename__ = "flag_shares"
+    id = db.Column(db.Integer, primary_key=True)
+    challenge_id = db.Column(
+        db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE")
+    )
+    flag_id = db.Column(db.Integer, db.ForeignKey("flags.id", ondelete="SET NULL"))
+    submission_id = db.Column(
+        db.Integer, db.ForeignKey("submissions.id", ondelete="SET NULL")
+    )
+    # Who submitted the flag
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+    team_id = db.Column(db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE"))
+    # Whose flag it was
+    owner_user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+    owner_team_id = db.Column(db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE"))
+    ip = db.Column(db.String(46))
+    provided = db.Column(db.Text)
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    challenge = db.relationship(
+        "Challenges", foreign_keys="FlagShares.challenge_id", lazy="select"
+    )
+    user = db.relationship("Users", foreign_keys="FlagShares.user_id", lazy="select")
+    team = db.relationship("Teams", foreign_keys="FlagShares.team_id", lazy="select")
+    owner_user = db.relationship(
+        "Users", foreign_keys="FlagShares.owner_user_id", lazy="select"
+    )
+    owner_team = db.relationship(
+        "Teams", foreign_keys="FlagShares.owner_team_id", lazy="select"
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(FlagShares, self).__init__(**kwargs)
+
+    def __repr__(self):
+        return "<FlagShare challenge_id={} team_id={} owner_team_id={}>".format(
+            self.challenge_id, self.team_id, self.owner_team_id
+        )

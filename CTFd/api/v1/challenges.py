@@ -32,6 +32,7 @@ from CTFd.models import (
 )
 from CTFd.models import ChallengeTopics as ChallengeTopicsModel
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
+from CTFd.plugins.flags import sharing as flag_sharing
 from CTFd.schemas.challenges import ChallengeSchema
 from CTFd.schemas.flags import FlagSchema
 from CTFd.schemas.hints import HintSchema
@@ -975,6 +976,14 @@ class ChallengeAttempt(Resource):
                         )
                         clear_standings()
                         clear_challenges()
+                        # Was this another team's dynamic flag?
+                        flag_sharing.check_submission(
+                            user=user,
+                            team=team,
+                            challenge=challenge,
+                            provided=request_data.get("submission", ""),
+                            ip=get_ip(),
+                        )
 
                     log(
                         "submissions",

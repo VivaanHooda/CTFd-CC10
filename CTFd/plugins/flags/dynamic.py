@@ -10,6 +10,7 @@ copy this file and mint exactly the flags CTFd will accept.
 
 Matches the legacy rvce_flags scheme with salt="" (each flag has its own secret).
 """
+
 import hashlib
 import hmac
 import re

@@ -275,7 +275,11 @@ def test_api_team_lookalike_names():
         with login_as_user(app, "admin") as admin:
             r = admin.post(
                 "/api/v1/teams",
-                json={"name": "HELLO world", "email": "x@examplectf.com", "password": "p"},
+                json={
+                    "name": "HELLO world",
+                    "email": "x@examplectf.com",
+                    "password": "p",
+                },
             )
             assert r.status_code == 400
 

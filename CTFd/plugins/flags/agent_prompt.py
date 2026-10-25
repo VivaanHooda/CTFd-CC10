@@ -3,6 +3,7 @@ Builds a copy-paste prompt that tells a challenge author's AI agent exactly how
 to mint dynamic flags that CTFd will accept. The reference code embedded in the
 prompt is the real dynamic.py, so the two can never drift apart.
 """
+
 import inspect
 
 from CTFd.plugins.flags import dynamic
@@ -11,9 +12,9 @@ EXAMPLE_TEAMS = ("hello", "  Team   ARGO ")
 
 BIND_TEXT = {
     "team_name": "the team's CTFd team name",
-    "team_id": "the team's numeric CTFd team id, as a string (e.g. \"7\")",
+    "team_id": 'the team\'s numeric CTFd team id, as a string (e.g. "7")',
     "user_name": "the player's CTFd username",
-    "user_id": "the player's numeric CTFd user id, as a string (e.g. \"42\")",
+    "user_id": 'the player\'s numeric CTFd user id, as a string (e.g. "42")',
 }
 
 

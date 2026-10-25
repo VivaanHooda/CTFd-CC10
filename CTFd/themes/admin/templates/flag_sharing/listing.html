@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+
+{% macro account_link(team, user) -%}
+	{%- if team -%}
+		<a href="{{ url_for('admin.teams_detail', team_id=team.id) }}">{{ team.name }}</a>
+	{%- elif user -%}
+		<a href="{{ url_for('admin.users_detail', user_id=user.id) }}">{{ user.name }}</a>
+	{%- else -%}
+		<span class="text-muted">deleted</span>
+	{%- endif -%}
+{%- endmacro %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Flag Sharing</h1>
+		<p class="text-muted mb-0">Wrong submissions that were another team's dynamic flag</p>
+	</div>
+</div>
+
+<div class="container">
+	{% if notice %}
+	<div class="alert alert-{{ notice[0] }}" role="alert">{{ notice[1] }}</div>
+	{% endif %}
+
+	<div class="card mb-4">
+		<div class="card-body">
+			<h5 class="card-title">Email alerts</h5>
+			<p class="text-muted small">
+				When a team submits another team's flag for the first time on a challenge, an email with the details is sent here.
+				Separate several addresses with commas. Leave empty to turn alerts off.
+			</p>
+			{% if not mail_ready %}
+			<div class="alert alert-warning py-2">
+				No mail server is set up, so alerts can't be sent yet.
+				Set one up in <a href="{{ url_for('admin.config') }}#email">Config &gt; Email</a>.
+				Incidents are still recorded below.
+			</div>
+			{% endif %}
+			<form method="POST" action="{{ url_for('admin.flag_sharing_settings') }}" class="form-row align-items-start">
+				<input type="hidden" name="nonce" value="{{ Session.nonce }}">
+				<div class="col-md-8 mb-2">
+					<input type="text" class="form-control" name="alert_email" value="{{ alert_email }}" placeholder="admin@example.com" autocomplete="off">
+				</div>
+				<div class="col-md-2 mb-2">
+					<button type="submit" class="btn btn-primary w-100">Save</button>
+				</div>
+				<div class="col-md-2 mb-2">
+					<button type="submit" class="btn btn-outline-secondary w-100" formaction="{{ url_for('admin.flag_sharing_test_email') }}" {% if not alert_email %}disabled title="Save an address first"{% endif %}>Send test</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<h4>Who shared with whom</h4>
+	{% if pairs %}
+	<div class="table-responsive mb-4">
+		<table class="table table-striped border">
+			<thead>
+				<tr>
+					<th>Flag owner <small class="text-muted">(shared from)</small></th>
+					<th></th>
+					<th>Submitted by <small class="text-muted">(shared to)</small></th>
+					<th class="text-center">Incidents</th>
+					<th class="text-center">Challenges</th>
+					<th>Last seen (IST)</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for pair, share in pairs %}
+				<tr>
+					<td>{{ account_link(share.owner_team, share.owner_user) }}</td>
+					<td class="text-muted">&rarr;</td>
+					<td>{{ account_link(share.team, share.user) }}</td>
+					<td class="text-center">{{ pair.count }}</td>
+					<td class="text-center">{{ pair.challenges }}</td>
+					<td>{{ pair.last | ist }}</td>
+					<td class="text-right"><a href="{{ url_for('admin.flag_sharing_detail', share_id=share.id) }}">Latest</a></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% else %}
+	<p class="text-muted mb-4">No flag sharing detected yet.</p>
+	{% endif %}
+
+	<h4>All incidents</h4>
+	{% if shares.items %}
+	<div class="table-responsive">
+		<table class="table table-striped border">
+			<thead>
+				<tr>
+					<th>Time (IST)</th>
+					<th>Challenge</th>
+					<th>Flag owner</th>
+					<th></th>
+					<th>Submitted by</th>
+					<th>Player</th>
+					<th>IP</th>
+					<th>Submitted flag</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for share in shares.items %}
+				<tr>
+					<td class="text-nowrap">{{ share.date | ist }}</td>
+					<td>
+						{% if share.challenge %}
+						<a href="{{ url_for('admin.challenges_detail', challenge_id=share.challenge_id) }}">{{ share.challenge.name }}</a>
+						{% endif %}
+					</td>
+					<td>{{ account_link(share.owner_team, share.owner_user) }}</td>
+					<td class="text-muted">&rarr;</td>
+					<td>{{ account_link(share.team, share.user) }}</td>
+					<td>{{ account_link(None, share.user) }}</td>
+					<td class="text-nowrap">{{ share.ip }}</td>
+					<td><pre class="mb-0" title="{{ share.provided }}">{{ share.provided | truncate(40, True) }}</pre></td>
+					<td class="text-right"><a href="{{ url_for('admin.flag_sharing_detail', share_id=share.id) }}">Details</a></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% if shares.pages > 1 %}
+	<div class="text-center">
+		{% if shares.has_prev %}<a href="{{ prev_page }}">&lt;&lt;&lt;</a>{% endif %}
+		Page {{ shares.page }} of {{ shares.pages }}
+		{% if shares.has_next %}<a href="{{ next_page }}">&gt;&gt;&gt;</a>{% endif %}
+	</div>
+	{% endif %}
+	{% else %}
+	<p class="text-muted">No incidents.</p>
+	{% endif %}
+</div>
+{% endblock %}

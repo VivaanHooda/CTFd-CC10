@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+
+{% macro account_link(team, user) -%}
+	{%- if team -%}
+		<a href="{{ url_for('admin.teams_detail', team_id=team.id) }}">{{ team.name }}</a>
+	{%- elif user -%}
+		<a href="{{ url_for('admin.users_detail', user_id=user.id) }}">{{ user.name }}</a>
+	{%- else -%}
+		<span class="text-muted">deleted</span>
+	{%- endif -%}
+{%- endmacro %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Flag Sharing Incident</h1>
+		<p class="mb-0">
+			{{ account_link(share.owner_team, share.owner_user) }}'s flag was submitted by {{ account_link(share.team, share.user) }}
+		</p>
+	</div>
+</div>
+
+<div class="container">
+	{% if notice %}
+	<div class="alert alert-{{ notice[0] }}" role="alert">{{ notice[1] }}</div>
+	{% endif %}
+
+	<p><a href="{{ url_for('admin.flag_sharing_listing') }}">&larr; All incidents</a></p>
+
+	<div class="card mb-4">
+		<div class="card-body">
+			<dl class="row mb-0">
+				<dt class="col-sm-3">Challenge</dt>
+				<dd class="col-sm-9">
+					{% if share.challenge %}
+					<a href="{{ url_for('admin.challenges_detail', challenge_id=share.challenge_id) }}">{{ share.challenge.name }}</a>
+					{% endif %}
+				</dd>
+
+				<dt class="col-sm-3">Flag owner <small class="text-muted">(shared from)</small></dt>
+				<dd class="col-sm-9">
+					{{ account_link(share.owner_team, share.owner_user) }}
+					{% if owner_solve %}
+					<span class="text-muted">&middot; solved at {{ owner_solve.date | ist(True) }}</span>
+					{% else %}
+					<span class="text-muted">&middot; has not solved it</span>
+					{% endif %}
+				</dd>
+
+				<dt class="col-sm-3">Submitted by <small class="text-muted">(shared to)</small></dt>
+				<dd class="col-sm-9">
+					{{ account_link(share.team, share.user) }}
+					{% if share.team %}<span class="text-muted">&middot; player</span> {{ account_link(None, share.user) }}{% endif %}
+					{% if receiver_solve %}
+					<span class="text-muted">&middot; solved at {{ receiver_solve.date | ist(True) }}</span>
+					{% else %}
+					<span class="text-muted">&middot; has not solved it</span>
+					{% endif %}
+				</dd>
+
+				<dt class="col-sm-3">Time (IST)</dt>
+				<dd class="col-sm-9">{{ share.date | ist }}</dd>
+
+				<dt class="col-sm-3">IP address</dt>
+				<dd class="col-sm-9">{{ share.ip }}</dd>
+
+				<dt class="col-sm-3">Submitted flag</dt>
+				<dd class="col-sm-9"><pre class="mb-0 text-break" style="white-space: pre-wrap;">{{ share.provided }}</pre></dd>
+			</dl>
+		</div>
+	</div>
+
+	<h4>Submission log for this challenge</h4>
+	<p class="text-muted small">Every submission by both teams on this challenge, oldest first. Highlighted rows are submissions of another team's flag.</p>
+	<div class="table-responsive mb-4">
+		<table class="table table-sm border">
+			<thead>
+				<tr>
+					<th>Time (IST)</th>
+					<th>Team / account</th>
+					<th>Player</th>
+					<th>Result</th>
+					<th>Submitted</th>
+					<th>IP</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for sub in log %}
+				{% set is_owner = (share.owner_team_id and sub.team_id == share.owner_team_id) or (not share.owner_team_id and sub.user_id == share.owner_user_id) %}
+				<tr class="{% if sub.id in shared_submission_ids %}table-danger{% endif %}">
+					<td class="text-nowrap">{{ sub.date | ist }}</td>
+					<td>
+						{% if sub.team %}{{ account_link(sub.team, None) }}{% else %}{{ account_link(None, sub.user) }}{% endif %}
+						<small class="text-muted">({% if is_owner %}owner{% else %}submitter{% endif %})</small>
+					</td>
+					<td>{{ account_link(None, sub.user) }}</td>
+					<td>
+						{% if sub.id in shared_submission_ids %}<span class="badge badge-danger">shared flag</span>
+						{% elif sub.type == "correct" %}<span class="badge badge-success">correct</span>
+						{% else %}<span class="badge badge-secondary">{{ sub.type }}</span>{% endif %}
+					</td>
+					<td><pre class="mb-0" title="{{ sub.provided }}">{{ sub.provided | truncate(50, True) }}</pre></td>
+					<td class="text-nowrap">{{ sub.ip }}</td>
+				</tr>
+				{% else %}
+				<tr><td colspan="6" class="text-muted">No submissions found.</td></tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	{% if related | length > 1 %}
+	<h4>All incidents between these two</h4>
+	<div class="table-responsive mb-4">
+		<table class="table table-sm border">
+			<thead>
+				<tr><th>Time (IST)</th><th>Challenge</th><th>Player</th><th></th></tr>
+			</thead>
+			<tbody>
+				{% for r in related %}
+				<tr class="{% if r.id == share.id %}table-active{% endif %}">
+					<td class="text-nowrap">{{ r.date | ist }}</td>
+					<td>{% if r.challenge %}{{ r.challenge.name }}{% endif %}</td>
+					<td>{{ account_link(None, r.user) }}</td>
+					<td class="text-right">{% if r.id != share.id %}<a href="{{ url_for('admin.flag_sharing_detail', share_id=r.id) }}">Details</a>{% endif %}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% endif %}
+
+	<form method="POST" action="{{ url_for('admin.flag_sharing_dismiss', share_id=share.id) }}" onsubmit="return confirm('Dismiss this incident? Use this for false alarms, e.g. your own testing. The submission itself stays in the submissions log.');">
+		<input type="hidden" name="nonce" value="{{ Session.nonce }}">
+		<button type="submit" class="btn btn-outline-danger">Dismiss incident</button>
+	</form>
+</div>
+{% endblock %}

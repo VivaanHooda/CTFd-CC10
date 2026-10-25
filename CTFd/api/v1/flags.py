@@ -277,6 +277,9 @@ class FlagPreview(Resource):
         try:
             expected = CTFdDynamicFlag.expected(flag, identity)
         except Exception:
-            return {"success": False, "errors": {"data": ["Flag is misconfigured"]}}, 400
+            return {
+                "success": False,
+                "errors": {"data": ["Flag is misconfigured"]},
+            }, 400
 
         return {"success": True, "data": {"identity": identity, "flag": expected}}

@@ -301,7 +301,8 @@ def test_api_dynamic_flags():
             assert r.status_code == 200
             assert json.loads(Flags.query.get(own_id).data)["secret"] == secret
             r = admin.patch(
-                f"/api/v1/flags/{own_id}", json={"data": json.dumps({"secret": "cd" * 32})}
+                f"/api/v1/flags/{own_id}",
+                json={"data": json.dumps({"secret": "cd" * 32})},
             )
             assert r.status_code == 200
             assert json.loads(Flags.query.get(own_id).data)["secret"] == "cd" * 32
