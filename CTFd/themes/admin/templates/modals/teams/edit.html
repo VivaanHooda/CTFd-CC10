@@ -4,6 +4,9 @@
 	<div class="form-group">
 		{{ form.name.label }}
 		{{ form.name(class="form-control", autocomplete="off") }}
+		<small class="form-text text-muted">
+			Dynamic flags are tied to the team name. If you rename this team, the flags it already has stop working and it must get new ones from each challenge.
+		</small>
 	</div>
 	<div class="form-group">
 		{{ form.email.label }}

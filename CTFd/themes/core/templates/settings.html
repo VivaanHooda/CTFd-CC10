@@ -174,7 +174,13 @@
                     <form method="post" x-data="SettingsForm" @submit.prevent="updateProfile()">
                         <div class="mb-3">
                             <b>{{ form.name.label(class="form-label") }}</b>
+                            {# locked when the admin turns off name changes (enforced in the API too); disabled fields aren't submitted #}
+                            {% if Configs.name_changes == False %}
+                            {{ form.name(class="form-control", value=name, disabled=True) }}
+                            <small class="form-text text-muted">{% trans %}Name changes are disabled for this event{% endtrans %}</small>
+                            {% else %}
                             {{ form.name(class="form-control", value=name) }}
+                            {% endif %}
                         </div>
                         <div class="mb-3">
                             <b>{{ form.email.label(class="form-label") }}</b>
