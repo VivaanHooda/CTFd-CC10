@@ -90,48 +90,39 @@
     background: var(--acc);
   }
 
-  .category-count {
-    font-family: 'Voyage Mono', ui-monospace, monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0;
-    color: rgba(244, 236, 220, 0.5);
-    font-variant-numeric: lining-nums;
-  }
-
-  /* ===== Subcategory: a quieter heading inside a category ===== */
+  /* ===== Subcategory: nested inside its category on a gold rail ===== */
   .subcategory + .subcategory {
-    margin-top: 1.2rem;
+    margin-top: 1.6rem;
   }
 
-  .subcategory-header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin: 0.4rem 0 0.2rem;
+  .subcategory.is-named {
+    margin-left: 0.3rem;
+    padding-left: 1.4rem;
+    border-left: 1px solid transparent;
+    border-image: linear-gradient(180deg, rgba(var(--acc-rgb), 0.55), rgba(var(--acc-rgb), 0.08)) 1;
   }
 
   .subcategory-header h4 {
-    margin: 0;
-    font-family: 'Voyage Mono', ui-monospace, monospace;
+    position: relative;
+    margin: 0.2rem 0 0;
+    font-family: 'Voyage Serif', system-ui, sans-serif;
     font-weight: 500;
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(var(--acc-rgb), 0.85);
+    font-size: 1.15rem;
+    letter-spacing: 0;
+    color: rgba(var(--acc-rgb), 0.95);
   }
 
-  /* short gold rule after the name, fading out */
-  .subcategory-header::after {
+  /* a small gold notch where the heading meets the rail */
+  .subcategory-header h4::before {
     content: "";
-    flex: 1;
-    max-width: 12rem;
-    height: 1px;
-    order: 1;
-    background: linear-gradient(90deg, rgba(var(--acc-rgb), 0.35), transparent);
-  }
-
-  .subcategory-header .category-count {
-    order: 2;
+    position: absolute;
+    left: calc(-1.4rem - 4px);
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border: 1px solid var(--acc);
+    background: #030303;
+    transform: translateY(-50%) rotate(45deg);
   }
 
   /* ===== Challenge cards: laurel wreath around the points (Figma 6:2 / 6:73) ===== */
@@ -435,15 +426,13 @@
         <section class="category">
           <div class="category-header">
             <h3 x-text="category"></h3>
-            <span class="category-count" x-text="`${getChallenges(category).filter(c => c.solved_by_me).length} / ${getChallenges(category).length}`"></span>
           </div>
 
           <template x-for="subcategory in getSubcategories(category)" :key="subcategory">
-            <div class="subcategory">
+            <div class="subcategory" :class="subcategory && 'is-named'">
               <template x-if="subcategory">
                 <div class="subcategory-header">
                   <h4 x-text="subcategory"></h4>
-                  <span class="category-count" x-text="`${getChallenges(category, subcategory).filter(c => c.solved_by_me).length} / ${getChallenges(category, subcategory).length}`"></span>
                 </div>
               </template>
               <div class="challenges-row row">

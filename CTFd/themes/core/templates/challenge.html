@@ -132,6 +132,85 @@
     height: 100%;
   }
 
+  /* file downloads: the landing page's black 3D pill (gold ledge, gold lettering, bare gold arrow) */
+  #challenge-window .challenge-files {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.9rem 0.75rem;
+    padding: 0.4rem 0 1.25rem;
+  }
+
+  #challenge-window .file-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 100%;
+    min-height: 46px;
+    padding: 0 1.1rem 0 1.4rem;
+    border-radius: 999px;
+    background: #030303;
+    color: var(--acc-light);
+    font-family: 'Lato', system-ui, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    box-shadow: 0 5px 0 #5c4317, 0 7px 10px rgba(0, 0, 0, 0.5);
+    transform: translateY(-3px);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, color 0.1s ease;
+  }
+
+  #challenge-window .file-pill:hover,
+  #challenge-window .file-pill:focus-visible {
+    color: #f4dfae;
+    box-shadow: 0 7px 0 #5c4317, 0 9px 14px rgba(0, 0, 0, 0.6);
+    transform: translateY(-5px);
+    outline: none;
+  }
+
+  #challenge-window .file-pill:focus-visible {
+    box-shadow: 0 7px 0 #5c4317, 0 9px 14px rgba(0, 0, 0, 0.6), 0 0 0 3px rgba(var(--acc-rgb), 0.3);
+  }
+
+  #challenge-window .file-pill:active {
+    box-shadow: 0 1px 0 #5c4317, 0 2px 4px rgba(0, 0, 0, 0.4);
+    transform: translateY(2px);
+  }
+
+  #challenge-window .file-pill-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #challenge-window .file-pill-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    color: var(--acc);
+  }
+
+  #challenge-window .file-pill-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.35s var(--btn-ease);
+  }
+
+  #challenge-window .file-pill:hover .file-pill-icon { color: var(--acc-light); }
+  #challenge-window .file-pill:hover .file-pill-icon svg { transform: translateY(2px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #challenge-window .file-pill,
+    #challenge-window .file-pill-icon svg { transition: none; }
+  }
+
   /* hints */
   #challenge-window details {
     background: #0f0f0f;
@@ -291,9 +370,13 @@
 
 
   /* title and points, after ~/CTFd */
+  /* the title stays on one line: an inline fitter on the h2 shrinks long names to fit */
   #challenge-window .challenge-name {
     font-size: 1.9rem;
     letter-spacing: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   #challenge-window .challenge-value {
@@ -381,7 +464,9 @@
       <div>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade show active" id="challenge">
-            <h2 class="challenge-name text-center pt-3">
+            <h2 class="challenge-name text-center pt-3"
+              x-data="{ fit() { $el.style.fontSize = ''; let size = parseFloat(getComputedStyle($el).fontSize); while ($el.scrollWidth > $el.clientWidth && size > 14) { size -= 1; $el.style.fontSize = size + 'px'; } } }"
+              x-init="new ResizeObserver(() => fit()).observe($el); document.fonts.ready.then(() => fit())">
               {{ challenge.name }}
             </h2>
             <h3 class="challenge-value text-center">
@@ -453,9 +538,8 @@
             {% endif %}
 
             {% if files %}
-            <div class="row challenge-files text-center pb-3">
+            <div class="challenge-files">
               {% for file in files %}
-              <div class="col-md-4 col-sm-4 col-xs-12 file-button-wrapper d-block">
                 {% set segments = file.split('/') %}
                 {% set token = file.split('?') | last %}
                 {% if token %}
@@ -463,14 +547,10 @@
                 {% else %}
                 {% set filename = segments | last %}
                 {% endif %}
-                <a class="btn btn-info btn-file mb-1 d-inline-block px-2 w-100 text-truncate" href="{{ file }}"
-                  title="{{ filename }}">
-                  <i class="fas fa-download"></i>
-                  <small>
-                    {{ filename }}
-                  </small>
+                <a class="file-pill" href="{{ file }}" title="Download {{ filename }}">
+                  <span class="file-pill-name">{{ filename }}</span>
+                  <span class="file-pill-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"/></svg></span>
                 </a>
-              </div>
               {% endfor %}
             </div>
             {% endif %}
