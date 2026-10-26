@@ -13,13 +13,27 @@
 	{% endblock %}
 
 	{% block category %}
+	{% set suggestions = challenge_category_suggestions() %}
 	<div class="form-group">
 		<label>
 			Category<br>
 			<small class="form-text text-muted">Challenge Category</small>
 		</label>
-		<input type="text" class="form-control chal-category" name="category" value="{{ challenge.category }}">
+		<input type="text" class="form-control chal-category" name="category" value="{{ challenge.category }}" list="chal-category-options" autocomplete="off">
 	</div>
+	<div class="form-group">
+		<label>
+			Subcategory<br>
+			<small class="form-text text-muted">Optional. Groups challenges inside the category on the board. Leave empty to show it at the top of the category.</small>
+		</label>
+		<input type="text" class="form-control chal-subcategory" name="subcategory" value="{{ challenge.subcategory or '' }}" list="chal-subcategory-options" autocomplete="off">
+	</div>
+	<datalist id="chal-category-options">
+		{% for category in suggestions.categories %}<option value="{{ category }}">{% endfor %}
+	</datalist>
+	<datalist id="chal-subcategory-options">
+		{% for subcategory, category in suggestions.subcategories %}<option value="{{ subcategory }}" label="{{ category }}">{% endfor %}
+	</datalist>
 	{% endblock %}
 
 	{% block message %}

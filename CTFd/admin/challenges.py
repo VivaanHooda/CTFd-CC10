@@ -9,6 +9,19 @@ from CTFd.utils.security.signing import serialize
 from CTFd.utils.user import get_current_team, get_current_user
 
 
+@admin.app_template_global()
+def challenge_category_suggestions():
+    """Existing categories and (subcategory, category) pairs for form suggestions"""
+    rows = (
+        Challenges.query.with_entities(Challenges.category, Challenges.subcategory)
+        .distinct()
+        .all()
+    )
+    categories = sorted({c for c, _ in rows if c})
+    subcategories = sorted({(s, c or "") for c, s in rows if s})
+    return {"categories": categories, "subcategories": subcategories}
+
+
 @admin.route("/admin/challenges")
 @admins_only
 def challenges_listing():

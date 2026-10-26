@@ -54,6 +54,19 @@ class ChallengeSchema(ma.ModelSchema):
         ],
     )
 
+    subcategory = field_for(
+        Challenges,
+        "subcategory",
+        allow_none=True,
+        validate=[
+            validate.Length(
+                min=0,
+                max=80,
+                error="Challenge could not be saved. Challenge subcategory too long",
+            )
+        ],
+    )
+
     description = field_for(
         Challenges,
         "description",

@@ -119,6 +119,7 @@ class BaseChallenge(object):
             "connection_info": challenge.connection_info,
             "next_id": challenge.next_id,
             "category": challenge.category,
+            "subcategory": challenge.subcategory,
             "state": challenge.state,
             "max_attempts": challenge.max_attempts,
             "position": challenge.position,

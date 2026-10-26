@@ -12,6 +12,7 @@ class ChallengeSearchForm(BaseForm):
             ("name", "Name"),
             ("id", "ID"),
             ("category", "Category"),
+            ("subcategory", "Subcategory"),
             ("type", "Type"),
         ],
         default="name",

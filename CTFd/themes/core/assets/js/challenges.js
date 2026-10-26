@@ -381,11 +381,34 @@ Alpine.data("ChallengeBoard", () => ({
     return categories;
   },
 
-  getChallenges(category) {
+  // Subcategories of a category in board order. "" (no subcategory) comes
+  // first so ungrouped challenges sit at the top of the category.
+  getSubcategories(category) {
+    const subcategories = [];
+
+    this.getChallenges(category).forEach(challenge => {
+      const subcategory = challenge.subcategory || "";
+
+      if (!subcategories.includes(subcategory)) {
+        subcategories.push(subcategory);
+      }
+    });
+
+    const named = subcategories.filter(subcategory => subcategory !== "");
+    return subcategories.includes("") ? ["", ...named] : named;
+  },
+
+  getChallenges(category, subcategory) {
     let challenges = this.challenges;
 
     if (category !== null) {
       challenges = this.challenges.filter(challenge => challenge.category === category);
+    }
+
+    if (subcategory !== undefined) {
+      challenges = challenges.filter(
+        challenge => (challenge.subcategory || "") === subcategory,
+      );
     }
 
     try {

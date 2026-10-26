@@ -118,6 +118,7 @@ class Challenges(db.Model):
     max_attempts = db.Column(db.Integer, default=0)
     value = db.Column(db.Integer)
     category = db.Column(db.String(80))
+    subcategory = db.Column(db.String(80), nullable=True)
     type = db.Column(db.String(80))
     state = db.Column(db.String(80), nullable=False, default="visible")
     logic = db.Column(db.String(80), nullable=False, default="any")

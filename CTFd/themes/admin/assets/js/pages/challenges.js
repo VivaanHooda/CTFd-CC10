@@ -46,6 +46,10 @@ function bulkEditChallenges(_event) {
         <input type="text" name="category" data-initial="" value="">
       </div>
       <div class="form-group">
+        <label>Subcategory</label>
+        <input type="text" name="subcategory" data-initial="" value="">
+      </div>
+      <div class="form-group">
         <label>Value</label>
         <input type="number" name="value" data-initial="" value="">
       </div>

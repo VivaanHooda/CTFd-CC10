@@ -98,6 +98,42 @@
     font-variant-numeric: lining-nums;
   }
 
+  /* ===== Subcategory: a quieter heading inside a category ===== */
+  .subcategory + .subcategory {
+    margin-top: 1.2rem;
+  }
+
+  .subcategory-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0.4rem 0 0.2rem;
+  }
+
+  .subcategory-header h4 {
+    margin: 0;
+    font-family: 'Voyage Mono', ui-monospace, monospace;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(var(--acc-rgb), 0.85);
+  }
+
+  /* short gold rule after the name, fading out */
+  .subcategory-header::after {
+    content: "";
+    flex: 1;
+    max-width: 12rem;
+    height: 1px;
+    order: 1;
+    background: linear-gradient(90deg, rgba(var(--acc-rgb), 0.35), transparent);
+  }
+
+  .subcategory-header .category-count {
+    order: 2;
+  }
+
   /* ===== Challenge cards: laurel wreath around the points (Figma 6:2 / 6:73) ===== */
   /* cancel the stock theme's glow so cards sit flat until hovered */
   [data-bs-theme] .challenge-button { box-shadow: none; }
@@ -402,34 +438,44 @@
             <span class="category-count" x-text="`${getChallenges(category).filter(c => c.solved_by_me).length} / ${getChallenges(category).length}`"></span>
           </div>
 
-          <div class="challenges-row row">
-            <template x-for="(c, idx) in getChallenges(category)" :key="c.id">
-              <div class="col-sm-6 col-md-4 col-lg-3 my-3">
-                <button
-                    class="challenge-button btn btn-dark w-100 h-100"
-                    :class="[
-                      c.solved_by_me ? 'challenge-solved' : '',
-                      ...c.tags.map((tag) => `tag-${tag.value.replace(/ /g, '-')}`),
-                    ];"
-                    :data-challenge-id="c.id"
-                    :data-solved="c.solved_by_me ? '1' : '0'"
-                    :value="c.id" @click="loadChallenge(c.id)"
-                >
-                  <div class="challenge-inner">
-                    <div class="chal-wreath">
-                      <svg class="chal-laurel is-left" viewBox="0 0 29.684 51.5437" aria-hidden="true"><use href="#chal-laurel"></use></svg>
-                      <span class="chal-value" x-text="c.value"></span>
-                      <svg class="chal-laurel is-right" viewBox="0 0 29.684 51.5437" aria-hidden="true"><use href="#chal-laurel"></use></svg>
-                      <span class="chal-points">{% trans %}Points{% endtrans %}</span>
-                    </div>
-                    <p class="chal-name" x-text="c.name"></p>
-                    <span class="chal-rule" aria-hidden="true"></span>
+          <template x-for="subcategory in getSubcategories(category)" :key="subcategory">
+            <div class="subcategory">
+              <template x-if="subcategory">
+                <div class="subcategory-header">
+                  <h4 x-text="subcategory"></h4>
+                  <span class="category-count" x-text="`${getChallenges(category, subcategory).filter(c => c.solved_by_me).length} / ${getChallenges(category, subcategory).length}`"></span>
+                </div>
+              </template>
+              <div class="challenges-row row">
+                <template x-for="(c, idx) in getChallenges(category, subcategory)" :key="c.id">
+                  <div class="col-sm-6 col-md-4 col-lg-3 my-3">
+                    <button
+                        class="challenge-button btn btn-dark w-100 h-100"
+                        :class="[
+                          c.solved_by_me ? 'challenge-solved' : '',
+                          ...c.tags.map((tag) => `tag-${tag.value.replace(/ /g, '-')}`),
+                        ];"
+                        :data-challenge-id="c.id"
+                        :data-solved="c.solved_by_me ? '1' : '0'"
+                        :value="c.id" @click="loadChallenge(c.id)"
+                    >
+                      <div class="challenge-inner">
+                        <div class="chal-wreath">
+                          <svg class="chal-laurel is-left" viewBox="0 0 29.684 51.5437" aria-hidden="true"><use href="#chal-laurel"></use></svg>
+                          <span class="chal-value" x-text="c.value"></span>
+                          <svg class="chal-laurel is-right" viewBox="0 0 29.684 51.5437" aria-hidden="true"><use href="#chal-laurel"></use></svg>
+                          <span class="chal-points">{% trans %}Points{% endtrans %}</span>
+                        </div>
+                        <p class="chal-name" x-text="c.name"></p>
+                        <span class="chal-rule" aria-hidden="true"></span>
+                      </div>
+                      <span class="chal-band">&#10003; {% trans %}Conquered{% endtrans %}</span>
+                    </button>
                   </div>
-                  <span class="chal-band">&#10003; {% trans %}Conquered{% endtrans %}</span>
-                </button>
+                </template>
               </div>
-            </template>
-          </div>
+            </div>
+          </template>
         </section>
       </template>
 
