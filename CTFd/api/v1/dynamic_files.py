@@ -1,11 +1,12 @@
 import re
 import time
 
+import requests
 from flask import request
 from flask_restx import Namespace, Resource
 
 from CTFd.cache import clear_challenges
-from CTFd.dynamic_files import GeneratorError, fetch
+from CTFd.dynamic_files import LINK, GeneratorError, fetch, is_link, link_url
 from CTFd.models import Challenges, DynamicFiles, Teams, Users, db
 from CTFd.plugins.flags import dynamic
 from CTFd.utils.decorators import admins_only
@@ -46,10 +47,12 @@ def clean(req, partial=False):
 
     if req.get("endpoint"):
         url = str(req["endpoint"]).strip()
-        if url.startswith(("http://", "https://")):
+        if url.startswith(("http://", "https://", LINK + "https://")):
             data["endpoint"] = url
         else:
-            errors["endpoint"] = ["Must start with http:// or https://"]
+            errors["endpoint"] = [
+                "Must start with http://, https:// or link+https://"
+            ]
 
     if "secret" in req:
         secret = (req["secret"] or "").strip().lower()
@@ -154,6 +157,29 @@ class DynamicFileTest(Resource):
         user_id = str(user.id) if user else ""
 
         start = time.monotonic()
+        if is_link(df):
+            # Follow the player's first hop only: the page should answer the
+            # signed link with a redirect (and a session), not an error.
+            try:
+                r = requests.get(
+                    link_url(df, name, team_id, user_id),
+                    timeout=(5, df.timeout or 60),
+                    allow_redirects=False,
+                )
+            except requests.RequestException as e:
+                return {"success": False, "errors": {"generator": [str(e)]}}, 502
+            r.close()
+            ok = r.status_code < 400
+            return {
+                "success": ok,
+                "data": {
+                    "status": r.status_code,
+                    "content_type": r.headers.get("Content-Type"),
+                    "bytes": 0,
+                    "seconds": round(time.monotonic() - start, 2),
+                },
+                **({} if ok else {"errors": {"generator": [f"HTTP {r.status_code}"]}}),
+            }, (200 if ok else 502)
         try:
             r = fetch(df, name, team_id, user_id)
         except GeneratorError as e:

@@ -11,6 +11,10 @@ Signed request (generators verify it with ctfd_dl.py):
     GET <endpoint>?team=<identity>&team_id=<id>&user_id=<id>&ts=<unix>&sig=<hex>
     sig = HMAC-SHA256(secret, "ctfd-dl\\0" + team + "\\0" + team_id + "\\0"
                               + user_id + "\\0" + ts)
+
+Link mode: an endpoint written as link+https://host/path is a challenge web page,
+not a generator. The pill then redirects the player's browser to https://host/path
+with the same signed query, and the page reads the team from it.
 """
 
 import hashlib
@@ -19,7 +23,9 @@ import logging
 import time
 
 import requests
-from flask import Blueprint, Response, abort, stream_with_context
+from urllib.parse import urlencode
+
+from flask import Blueprint, Response, abort, redirect, stream_with_context
 
 from CTFd.models import DynamicFiles, Solves
 from CTFd.plugins.flags import CTFdDynamicFlag
@@ -40,6 +46,7 @@ logger = logging.getLogger(__name__)
 
 CHUNK = 64 * 1024
 DOMAIN = "ctfd-dl"
+LINK = "link+"
 
 
 class GeneratorError(Exception):
@@ -51,23 +58,37 @@ def sign(secret, team, team_id, user_id, ts):
     return hmac.new(bytes.fromhex(secret), msg, hashlib.sha256).hexdigest()
 
 
-def fetch(df, team, team_id, user_id):
-    """
-    Ask the generator for team's file. Returns an open streaming response;
-    the caller must close it. Raises GeneratorError on any failure.
-    """
+def signed_params(df, team, team_id, user_id):
     ts = str(int(time.time()))
-    params = {
+    return {
         "team": team,
         "team_id": team_id,
         "user_id": user_id,
         "ts": ts,
         "sig": sign(df.secret, team, team_id, user_id, ts),
     }
+
+
+def is_link(df):
+    return (df.endpoint or "").startswith(LINK)
+
+
+def link_url(df, team, team_id, user_id):
+    """The signed URL a link-mode dynamic file sends the player to."""
+    url = df.endpoint[len(LINK) :]
+    sep = "&" if "?" in url else "?"
+    return url + sep + urlencode(signed_params(df, team, team_id, user_id))
+
+
+def fetch(df, team, team_id, user_id):
+    """
+    Ask the generator for team's file. Returns an open streaming response;
+    the caller must close it. Raises GeneratorError on any failure.
+    """
     try:
         r = requests.get(
             df.endpoint,
-            params=params,
+            params=signed_params(df, team, team_id, user_id),
             stream=True,
             timeout=(5, df.timeout or 60),
             allow_redirects=False,
@@ -118,6 +139,17 @@ def download(file_id, filename):
         abort(403)
 
     team_id = str(team.id) if team else ""
+    if is_link(df):
+        log(
+            "submissions",
+            "[{date}] {name} (team {team}) opened dynamic link {file} of challenge {chal}",
+            name=user.name,
+            team=identity,
+            file=df.filename,
+            chal=chal.id,
+        )
+        return redirect(link_url(df, identity, team_id, str(user.id)), code=303)
+
     try:
         r = fetch(df, identity, team_id, str(user.id))
     except GeneratorError as e:

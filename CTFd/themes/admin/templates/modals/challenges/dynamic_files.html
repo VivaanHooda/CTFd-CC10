@@ -3,6 +3,8 @@
 	<p class="text-muted small text-center">
 		Shown to players as a normal file. CTFd fetches each team's copy from the generator with a signed request.
 		Put the secret in the generator's <code>CTFD_DL_SECRET</code>.
+		For a challenge web page instead of a file, write the endpoint as <code>link+https://host/enter</code>:
+		the pill then sends the player there with the same signed query.
 	</p>
 
 	<table class="table table-sm table-striped">
@@ -52,7 +54,7 @@
 			</div>
 			<div class="form-group col-md-8">
 				<label class="small mb-0">Generator endpoint</label>
-				<input type="url" class="form-control form-control-sm" name="endpoint" placeholder="http://127.0.0.1:10130/ctfd" required>
+				<input type="text" class="form-control form-control-sm" name="endpoint" placeholder="http://127.0.0.1:10130/ctfd" required>
 			</div>
 		</div>
 		<div class="form-row">

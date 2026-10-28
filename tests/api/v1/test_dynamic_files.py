@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlsplit
 
 import requests
 
@@ -249,4 +250,67 @@ def test_dynamic_files_deleted_with_challenge():
         with login_as_user(app, "admin") as admin:
             assert admin.delete("/api/v1/challenges/1", json="").status_code == 200
         assert DynamicFiles.query.count() == 0
+    destroy_ctfd(app)
+
+
+def test_dynamic_link_redirects_with_signed_query():
+    """A link+https endpoint sends the player to the page with a signed query, no fetch"""
+    app = create_ctfd(user_mode="teams")
+    with app.app_context():
+        gen_challenge(app.db)
+        gen_dynamic_file(
+            app.db,
+            filename="open_the_bag",
+            endpoint="link+https://bag.example.com/enter",
+        )
+        team = gen_team(app.db, name="Argonauts", email="a@examplectf.com")
+        user = team.members[0]
+        user_name, user_id, team_id = user.name, user.id, team.id
+
+        with patch(GET) as get:
+            with login_as_user(app, user_name) as client:
+                r = client.get("/files/dynamic/1/open_the_bag")
+            get.assert_not_called()
+        assert r.status_code == 303
+        loc = urlsplit(r.headers["Location"])
+        assert (loc.scheme, loc.netloc, loc.path) == (
+            "https",
+            "bag.example.com",
+            "/enter",
+        )
+        q = {k: v[0] for k, v in parse_qs(loc.query).items()}
+        assert q["team"] == "Argonauts"
+        assert q["team_id"] == str(team_id)
+        assert q["user_id"] == str(user_id)
+        assert q["sig"] == sign(
+            SECRET, "Argonauts", str(team_id), str(user_id), q["ts"]
+        )
+    destroy_ctfd(app)
+
+
+def test_dynamic_link_admin_test_and_validation():
+    """Test follows one hop of a link; link+ only accepts https"""
+    app = create_ctfd()
+    with app.app_context():
+        gen_challenge(app.db)
+        gen_dynamic_file(app.db, endpoint="link+https://bag.example.com/enter")
+        with login_as_user(app, "admin") as admin:
+            with patch(GET, return_value=FakeResponse(b"", 303)) as get:
+                r = admin.get("/api/v1/dynamic_files/1/test?team=Argonauts", json="")
+                assert r.status_code == 200
+                assert r.get_json()["data"]["status"] == 303
+                url = get.call_args.args[0]
+                assert url.startswith("https://bag.example.com/enter?team=Argonauts&")
+                assert get.call_args.kwargs["allow_redirects"] is False
+            with patch(GET, return_value=FakeResponse(b"", 403)):
+                r = admin.get("/api/v1/dynamic_files/1/test?team=Argonauts", json="")
+                assert r.status_code == 502
+            for endpoint, code in (
+                ("link+https://bag.example.com/enter", 200),
+                ("link+http://bag.example.com/enter", 400),
+            ):
+                r = admin.patch(
+                    "/api/v1/dynamic_files/1", json={"endpoint": endpoint}
+                )
+                assert r.status_code == code
     destroy_ctfd(app)
