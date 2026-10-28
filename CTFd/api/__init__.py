@@ -7,6 +7,7 @@ from CTFd.api.v1.brackets import brackets_namespace
 from CTFd.api.v1.challenges import challenges_namespace
 from CTFd.api.v1.comments import comments_namespace
 from CTFd.api.v1.config import configs_namespace
+from CTFd.api.v1.dynamic_files import dynamic_files_namespace
 from CTFd.api.v1.exports import exports_namespace
 from CTFd.api.v1.files import files_namespace
 from CTFd.api.v1.flags import flags_namespace
@@ -65,6 +66,7 @@ CTFd_API_v1.add_namespace(teams_namespace, "/teams")
 CTFd_API_v1.add_namespace(users_namespace, "/users")
 CTFd_API_v1.add_namespace(statistics_namespace, "/statistics")
 CTFd_API_v1.add_namespace(files_namespace, "/files")
+CTFd_API_v1.add_namespace(dynamic_files_namespace, "/dynamic_files")
 CTFd_API_v1.add_namespace(notifications_namespace, "/notifications")
 CTFd_API_v1.add_namespace(configs_namespace, "/configs")
 CTFd_API_v1.add_namespace(pages_namespace, "/pages")

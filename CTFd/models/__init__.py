@@ -136,6 +136,7 @@ class Challenges(db.Model):
 
     module = db.relationship("Modules", foreign_keys=[module_id], lazy="select")
     files = db.relationship("ChallengeFiles", backref="challenge")
+    dynamic_files = db.relationship("DynamicFiles", backref="challenge")
     tags = db.relationship("Tags", backref="challenge")
     hints = db.relationship("Hints", backref="challenge")
     flags = db.relationship("Flags", backref="challenge")
@@ -377,6 +378,27 @@ class SolutionFiles(Files):
     solution_id = db.Column(
         db.Integer, db.ForeignKey("solutions.id", ondelete="CASCADE")
     )
+
+
+class DynamicFiles(db.Model):
+    """
+    A per-team challenge file. CTFd fetches it from the challenge's generator
+    (endpoint) with an HMAC-signed request naming the team, and streams it back.
+    """
+
+    __tablename__ = "dynamic_files"
+    id = db.Column(db.Integer, primary_key=True)
+    challenge_id = db.Column(
+        db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE")
+    )
+    filename = db.Column(db.String(128))
+    endpoint = db.Column(db.Text)
+    secret = db.Column(db.String(128))
+    bind = db.Column(db.String(32), default="team_name")
+    timeout = db.Column(db.Integer, default=60)
+
+    def __init__(self, *args, **kwargs):
+        super(DynamicFiles, self).__init__(**kwargs)
 
 
 class Flags(db.Model):

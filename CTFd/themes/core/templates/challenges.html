@@ -237,8 +237,8 @@
     line-height: 1.25;
     color: #f4ecdc;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    transform-origin: left center;
     font-weight: 700;
   }
 
@@ -535,17 +535,24 @@
       });
     }
 
-    // shrink each challenge name until it fits its card on one line (24px down to 13px);
-    // anything still too long ends in an ellipsis, with the full name on hover
+    // shrink each challenge name until it fits its card on one line (24px down to 10px);
+    // a name still too wide at 10px is squeezed horizontally, so the whole name always shows
     function fitName(el) {
       if (!el.clientWidth) return; // not laid out yet; the observer calls back once it is
-      var max = 24, min = 13, size = max;
+      var max = 24, min = 10, size = max;
+      el.style.transform = '';
       el.style.fontSize = max + 'px';
+      if (el.scrollWidth > el.clientWidth + 1) {
+        size = Math.max(min, Math.floor(max * el.clientWidth / el.scrollWidth));
+        el.style.fontSize = size + 'px';
+      }
       while (size > min && el.scrollWidth > el.clientWidth + 1) {
         size -= 1;
         el.style.fontSize = size + 'px';
       }
-      el.title = el.scrollWidth > el.clientWidth + 1 ? el.textContent : '';
+      if (el.scrollWidth > el.clientWidth + 1) {
+        el.style.transform = 'scaleX(' + (el.clientWidth / el.scrollWidth) + ')';
+      }
     }
 
     function fitAll() {

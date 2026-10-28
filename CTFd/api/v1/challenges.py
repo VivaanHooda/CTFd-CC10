@@ -475,6 +475,11 @@ class Challenge(Resource):
         else:
             files = [url_for("views.files", path=f.location) for f in chal.files]
 
+        files += [
+            url_for("dynamic_files.download", file_id=df.id, filename=df.filename)
+            for df in chal.dynamic_files
+        ]
+
         for hint in Hints.query.filter_by(challenge_id=chal.id).all():
             if hint.id in unlocked_hints or ctf_ended():
                 hints.append(

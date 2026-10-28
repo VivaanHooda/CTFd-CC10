@@ -11,6 +11,7 @@ from CTFd.exceptions.challenges import (
 from CTFd.models import (
     ChallengeFiles,
     Challenges,
+    DynamicFiles,
     Fails,
     Flags,
     Hints,
@@ -202,6 +203,7 @@ class BaseChallenge(object):
         for f in files:
             delete_file(f.id)
         ChallengeFiles.query.filter_by(challenge_id=challenge.id).delete()
+        DynamicFiles.query.filter_by(challenge_id=challenge.id).delete()
         Tags.query.filter_by(challenge_id=challenge.id).delete()
         Hints.query.filter_by(challenge_id=challenge.id).delete()
         solution = Solutions.query.filter_by(challenge_id=challenge.id).first()

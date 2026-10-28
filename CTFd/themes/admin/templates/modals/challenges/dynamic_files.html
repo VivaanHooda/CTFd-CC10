@@ -1,0 +1,183 @@
+<div id="dynamic-files" class="mt-4">
+	<h5 class="text-center">Dynamic files (per team)</h5>
+	<p class="text-muted small text-center">
+		Shown to players as a normal file. CTFd fetches each team's copy from the generator with a signed request.
+		Put the secret in the generator's <code>CTFD_DL_SECRET</code>.
+	</p>
+
+	<table class="table table-sm table-striped">
+		<thead>
+			<tr>
+				<td><b>File</b></td>
+				<td><b>Endpoint</b></td>
+				<td><b>Bind</b></td>
+				<td><b>Secret</b></td>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody id="dynamic-files-rows">
+			{% for df in challenge.dynamic_files %}
+			<tr data-id="{{ df.id }}">
+				<td>{{ df.filename }}</td>
+				<td class="text-break small">{{ df.endpoint }}<br><span class="text-muted">timeout {{ df.timeout or 60 }}s</span></td>
+				<td>{{ df.bind or "team_name" }}</td>
+				<td>
+					<code class="small">{{ df.secret[:8] }}…</code>
+					<button type="button" class="btn btn-sm btn-link p-0 dyn-copy" data-secret="{{ df.secret }}" title="Copy secret">
+						<i class="fas fa-copy"></i>
+					</button>
+				</td>
+				<td class="text-nowrap text-right">
+					<button type="button" class="btn btn-sm btn-outline-secondary dyn-test" title="Fetch once as a team">Test</button>
+					<button type="button" class="btn btn-sm btn-outline-secondary dyn-edit"
+						data-filename="{{ df.filename }}" data-endpoint="{{ df.endpoint }}"
+						data-bind="{{ df.bind or 'team_name' }}" data-timeout="{{ df.timeout or 60 }}" title="Edit">
+						<i class="fas fa-edit"></i>
+					</button>
+					<button type="button" class="btn btn-sm btn-outline-danger dyn-delete" title="Delete">
+						<i class="fas fa-times"></i>
+					</button>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<form id="dynamic-file-form" autocomplete="off">
+		<input type="hidden" name="id" value="">
+		<div class="form-row">
+			<div class="form-group col-md-4">
+				<label class="small mb-0">File name</label>
+				<input type="text" class="form-control form-control-sm" name="filename" placeholder="fleet.jpg" required>
+			</div>
+			<div class="form-group col-md-8">
+				<label class="small mb-0">Generator endpoint</label>
+				<input type="url" class="form-control form-control-sm" name="endpoint" placeholder="http://127.0.0.1:10130/ctfd" required>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group col-md-4">
+				<label class="small mb-0">Bind to</label>
+				<select class="form-control form-control-sm" name="bind">
+					<option value="team_name">team_name</option>
+					<option value="team_id">team_id</option>
+					<option value="user_name">user_name</option>
+					<option value="user_id">user_id</option>
+				</select>
+			</div>
+			<div class="form-group col-md-2">
+				<label class="small mb-0">Timeout (s)</label>
+				<input type="number" class="form-control form-control-sm" name="timeout" value="60" min="1" max="600">
+			</div>
+			<div class="form-group col-md-6">
+				<label class="small mb-0">Secret (hex, blank = generate)</label>
+				<input type="text" class="form-control form-control-sm" name="secret" placeholder="leave blank to keep / generate">
+			</div>
+		</div>
+		<div class="text-right">
+			<button type="button" class="btn btn-sm btn-outline-secondary d-none" id="dynamic-file-cancel">Cancel</button>
+			<button type="submit" class="btn btn-sm btn-success" id="dynamic-file-submit">Add dynamic file</button>
+		</div>
+	</form>
+</div>
+
+<script>
+(function () {
+	var root = document.getElementById("dynamic-files");
+	var form = document.getElementById("dynamic-file-form");
+	var submit = document.getElementById("dynamic-file-submit");
+	var cancel = document.getElementById("dynamic-file-cancel");
+	var challengeId = {{ challenge.id }};
+
+	function api(method, path, body) {
+		return fetch("{{ request.script_root }}/api/v1/dynamic_files" + path, {
+			method: method,
+			credentials: "same-origin",
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json",
+				"CSRF-Token": window.init.csrfNonce
+			},
+			body: body ? JSON.stringify(body) : undefined
+		}).then(function (r) { return r.json(); });
+	}
+
+	function errors(res) {
+		return Object.keys(res.errors || {}).map(function (k) {
+			return k + ": " + [].concat(res.errors[k]).join(", ");
+		}).join("\n") || "Request failed";
+	}
+
+	function reset() {
+		form.reset();
+		form.elements.id.value = "";
+		submit.textContent = "Add dynamic file";
+		cancel.classList.add("d-none");
+	}
+
+	cancel.addEventListener("click", reset);
+
+	form.addEventListener("submit", function (e) {
+		e.preventDefault();
+		var id = form.elements.id.value;
+		var body = {
+			filename: form.elements.filename.value,
+			endpoint: form.elements.endpoint.value,
+			bind: form.elements.bind.value,
+			timeout: form.elements.timeout.value
+		};
+		if (form.elements.secret.value) body.secret = form.elements.secret.value;
+		var req = id ? api("PATCH", "/" + id, body)
+			: api("POST", "", Object.assign({ challenge_id: challengeId }, body));
+		req.then(function (res) {
+			if (!res.success) return alert(errors(res));
+			if (!id) {
+				prompt("Dynamic file added. Put this secret in the generator's CTFD_DL_SECRET:", res.data.secret);
+			}
+			location.reload();
+		});
+	});
+
+	root.addEventListener("click", function (e) {
+		var btn = e.target.closest("button");
+		var row = btn && btn.closest("tr[data-id]");
+		if (!row) return;
+		var id = row.dataset.id;
+
+		if (btn.classList.contains("dyn-copy")) {
+			navigator.clipboard.writeText(btn.dataset.secret).then(
+				function () { btn.innerHTML = '<i class="fas fa-check"></i>'; },
+				function () { prompt("Secret:", btn.dataset.secret); }
+			);
+		} else if (btn.classList.contains("dyn-edit")) {
+			form.elements.id.value = id;
+			form.elements.filename.value = btn.dataset.filename;
+			form.elements.endpoint.value = btn.dataset.endpoint;
+			form.elements.bind.value = btn.dataset.bind;
+			form.elements.timeout.value = btn.dataset.timeout;
+			form.elements.secret.value = "";
+			submit.textContent = "Save";
+			cancel.classList.remove("d-none");
+			form.scrollIntoView({ behavior: "smooth" });
+		} else if (btn.classList.contains("dyn-delete")) {
+			if (!confirm("Delete this dynamic file?")) return;
+			api("DELETE", "/" + id).then(function (res) {
+				if (!res.success) return alert(errors(res));
+				location.reload();
+			});
+		} else if (btn.classList.contains("dyn-test")) {
+			var team = prompt("Fetch the file as which team (exact name)?");
+			if (!team) return;
+			btn.disabled = true;
+			btn.textContent = "…";
+			api("GET", "/" + id + "/test?team=" + encodeURIComponent(team)).then(function (res) {
+				btn.disabled = false;
+				btn.textContent = "Test";
+				if (!res.success) return alert("Test failed\n" + errors(res));
+				var d = res.data;
+				alert("OK: HTTP " + d.status + ", " + d.bytes + " bytes, " + d.content_type + ", " + d.seconds + "s");
+			});
+		}
+	});
+})();
+</script>
